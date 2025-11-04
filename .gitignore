@@ -1,0 +1,41 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/.angular
+
+
+# Node dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+/.project
+/.classpath
+/.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+.vscode/
+.vscode/*
+
+# Misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+testem.log
+typings/
+tsconfig.tsbuildinfo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment files (optional, jika berisi data sensitif)
+src/environments/environment.prod.ts
+src/environments/environment.ts
