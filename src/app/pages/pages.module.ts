@@ -28,12 +28,12 @@ import { DashboardComponent } from './dashboards/dashboard/dashboard.component';
 import { DashboardsModule } from "./dashboards/dashboards.module";
 import { AktivasiUserComponent } from './pengaturan/aktivasi-user/aktivasi-user.component';
 import { PengaturanModule } from './pengaturan/pengaturan.module';
+import { ReferensiKlausulAnnexComponent } from './pengaturan/referensi-klausul-annex/referensi-klausul-annex.component';
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    AktivasiUserComponent
   ],
   imports: [
     CommonModule,

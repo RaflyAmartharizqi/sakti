@@ -1,0 +1,123 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="REFERENSI KLAUSUL/ANNEX" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Referensi Klausul/Annex</h4>
+            <button class="btn btn-primary px-4" (click)="openModalReferensiKlausulAnnex(referensiKlausulAnnexModal)">
+                <i class="ri-add-box-line me-2"></i>Tambah
+            </button>
+        </div>
+
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-lg-6">
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="ri-search-line"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search">
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">No</th>
+                        <th>Standar</th>
+                        <th class="d-lg-table-cell">Kode Klausul/Annex</th>
+                        <th class="d-md-table-cell">Nama Klausul/Annex</th>
+                        <th class="d-md-table-cell">Deskripsi Klausul/Annex</th>
+                        <th class="text-center" style="width: 100px;">Status</th>
+                        <th class="text-center" style="width: 100px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let referensi of paginatedReferensiKlausulAnnex">
+                        <td class="text-center">{{ referensi.no }}</td>
+                        <td>
+                            <div>{{ referensi.standar }}</div>
+                        </td>
+                        <td class="d-sm-table-cell">{{ referensi.kode }}</td>
+                        <td class="d-md-table-cell">{{ referensi.nama }}</td>
+                        <td class="d-lg-table-cell">{{ referensi.deskripsi }}</td>
+                        <td class="text-center">
+                            <span class="badge" 
+                                [class.bg-success]="referensi.status === 'Aktif'"
+                                [class.bg-danger]="referensi.status !== 'Aktif'">
+                                {{ referensi.status }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiKlausulAnnex(referensi, referensiKlausulAnnexModal)">
+                                <i class="ri-edit-line d-md-none"></i>
+                                <span class="d-none d-md-inline">Edit</span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="paginatedReferensiKlausulAnnex.length === 0">
+                        <td colspan="6" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<ng-template #referensiKlausulAnnexModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Tambah Referensi Klausul/Annex</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form>
+        <div class="mb-3">
+            <label class="form-label">Standar</label>
+            <select class="form-select mb-3" aria-label="standar">
+                <option selected>Pilih Standar</option>
+                <option value="1">Assesment SMKI</option>
+                <option value="2">Audit ISO 2000-1</option>
+                <option value="3">Audit ISO 90001</option>
+            </select>        
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Kode Klausul/Annex</label>
+            <input type="text" class="form-control" placeholder="Masukkan kode klausul/annes">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nama Klausul/Annex</label>
+            <input type="text" class="form-control" placeholder="Masukkan nama klausul/annes">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Deskripsi Klausul/Annex</label>
+            <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan deskripsi klausul/annex"></textarea>
+        </div>
+        <div class="mb-4">
+            <label class="form-label fw-semibold d-block mb-2">Status</label>
+            <div class="form-check form-switch form-switch-lg">
+                <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch"name="status">
+                <label class="form-check-label ms-2" for="statusSwitch">
+                </label>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+                Batal
+            </button>
+            <button type="submit" class="btn btn-primary px-4">
+                Simpan
+            </button>
+        </div>
+    </form>
+  </div>
+</ng-template>

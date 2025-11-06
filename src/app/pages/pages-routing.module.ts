@@ -4,15 +4,11 @@ import { RouterModule, Routes } from '@angular/router';
 // Component pages
 import { DashboardComponent } from "./dashboards/dashboard/dashboard.component";
 import { AktivasiUserComponent } from './pengaturan/aktivasi-user/aktivasi-user.component';
-
+import { ReferensiKlausulAnnexComponent } from './pengaturan/referensi-klausul-annex/referensi-klausul-annex.component';
 const routes: Routes = [
     {
         path: "",
         component: DashboardComponent
-    },
-    {
-        path: "",
-        component: AktivasiUserComponent
     },
     {
       path: '', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule)

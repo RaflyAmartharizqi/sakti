@@ -1425,6 +1425,12 @@ export const MENU: MenuItem[] = [
         label: 'MENUITEMS.PENGATURAN.LIST.AKTIVASIUSER',
         link: '/pengaturan/aktivasi-user',
         parentId: 184
+      },
+      {
+        id: 186,
+        label: 'MENUITEMS.PENGATURAN.LIST.REFERENSIKLAUSULANNEX',
+        link: '/pengaturan/referensi-klausul-annex',
+        parentId: 184
       }
     ]
   },

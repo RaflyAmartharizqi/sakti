@@ -22,7 +22,7 @@ interface UserEksternal {
 @Component({
   selector: 'app-aktivasi-user',
   templateUrl: './aktivasi-user.component.html',
-  styleUrl: './aktivasi-user.component.scss'
+  styleUrls: ['./aktivasi-user.component.scss']
 })
 
 export class AktivasiUserComponent implements OnInit {
