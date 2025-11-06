@@ -26,11 +26,14 @@ import { PagesRoutingModule } from "./pages-routing.module";
 import { SharedModule } from "../shared/shared.module";
 import { DashboardComponent } from './dashboards/dashboard/dashboard.component';
 import { DashboardsModule } from "./dashboards/dashboards.module";
+import { AktivasiUserComponent } from './pengaturan/aktivasi-user/aktivasi-user.component';
+import { PengaturanModule } from './pengaturan/pengaturan.module';
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
+    AktivasiUserComponent
   ],
   imports: [
     CommonModule,
@@ -48,6 +51,7 @@ import { DashboardsModule } from "./dashboards/dashboards.module";
     SlickCarouselModule,
     LightboxModule,
     DashboardsModule,
+    PengaturanModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -1413,6 +1413,19 @@ export const MENU: MenuItem[] = [
         ]
       },
     ]
-  }
-
+  },
+  {
+    id: 184,
+    label: 'MENUITEMS.PENGATURAN.TEXT',
+    icon: 'ri-settings-2-line',
+    isCollapsed: true,
+    subItems: [
+      {
+        id: 185,
+        label: 'MENUITEMS.PENGATURAN.LIST.AKTIVASIUSER',
+        link: '/pengaturan/aktivasi-user',
+        parentId: 184
+      }
+    ]
+  },
 ];

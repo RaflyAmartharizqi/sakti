@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 // Component pages
 import { DashboardComponent } from "./dashboards/dashboard/dashboard.component";
+import { AktivasiUserComponent } from './pengaturan/aktivasi-user/aktivasi-user.component';
 
 const routes: Routes = [
     {
@@ -10,7 +11,14 @@ const routes: Routes = [
         component: DashboardComponent
     },
     {
+        path: "",
+        component: AktivasiUserComponent
+    },
+    {
       path: '', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule)
+    },
+    {
+      path: 'pengaturan', loadChildren: () => import('./pengaturan/pengaturan.module').then(m => m.PengaturanModule)
     },
 ];
 

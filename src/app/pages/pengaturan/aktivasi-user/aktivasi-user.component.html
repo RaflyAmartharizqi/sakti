@@ -1,0 +1,380 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="AKTIVASI USER" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Aktivasi User</h4>
+            <button class="btn btn-primary px-4" (click)="openModalPilihan(pilihanModal)">
+                <i class="ri-add-box-line me-2"></i>Tambah
+            </button>
+        </div>
+
+        <!-- Filter and Search Section -->
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-6">
+                <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+                    <option value="">Semua Status</option>
+                    <option value="aktif">Aktif</option>
+                    <option value="nonaktif">Non Aktif</option>
+                </select>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="ri-search-line"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearchChange()">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="d-flex align-items-center">
+                    <label class="me-2 text-nowrap">Show</label>
+                    <select class="form-select form-select-sm" style="width: 80px;" 
+                            [(ngModel)]="entriesPerPage" (change)="onEntriesPerPageChange()">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                    </select>
+                    <span class="ms-2 text-nowrap">Entries</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="userTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        [class.active]="activeTab === 'bpjs'"
+                        (click)="switchTab('bpjs')"
+                        type="button" 
+                        role="tab">
+                    <span class="d-none d-md-inline">User BPJS Kesehatan</span>
+                    <span class="d-md-none">BPJS</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        [class.active]="activeTab === 'eksternal'"
+                        (click)="switchTab('eksternal')"
+                        type="button" 
+                        role="tab">
+                    <span class="d-none d-md-inline">User Eksternal</span>
+                    <span class="d-md-none">Eksternal</span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="userTabContent">
+            <!-- BPJS Tab -->
+            <div class="tab-pane fade" 
+                 [class.show]="activeTab === 'bpjs'" 
+                 [class.active]="activeTab === 'bpjs'" 
+                 role="tabpanel">
+                <div *ngIf="activeTab === 'bpjs'" class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 60px;">No</th>
+                                <th>Nama/NPP</th>
+                                <th class="d-none d-lg-table-cell">Unit Kerja</th>
+                                <th class="d-none d-md-table-cell">Grup User</th>
+                                <th class="text-center" style="width: 100px;">Status</th>
+                                <th class="text-center" style="width: 100px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of paginatedUsersBPJS">
+                                <td class="text-center">{{ user.no }}</td>
+                                <td>
+                                    <div>{{ user.nama }}</div>
+                                    <small class="text-muted">({{ user.npp }})</small>
+                                    <!-- Mobile view - show hidden columns -->
+                                    <div class="d-lg-none mt-2">
+                                        <small class="text-muted d-block">Unit: {{ user.unitKerja }}</small>
+                                    </div>
+                                    <div class="d-md-none mt-1">
+                                        <small class="text-muted d-block">Grup: {{ user.grupUser }}</small>
+                                    </div>
+                                </td>
+                                <td class="d-none d-lg-table-cell">{{ user.unitKerja }}</td>
+                                <td class="d-none d-md-table-cell">{{ user.grupUser }}</td>
+                                <td class="text-center">
+                                    <span class="badge" 
+                                          [class.bg-success]="user.status === 'Aktif'"
+                                          [class.bg-danger]="user.status !== 'Aktif'">
+                                        {{ user.status }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-primary" (click)="onEditClickBPJS(user, bpjsModal)">
+                                        <i class="ri-edit-line d-md-none"></i>
+                                        <span class="d-none d-md-inline">Edit</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="paginatedUsersBPJS.length === 0">
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                        Tidak ada data
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Eksternal Tab -->
+            <div class="tab-pane fade" 
+                 [class.show]="activeTab === 'eksternal'" 
+                 [class.active]="activeTab === 'eksternal'" 
+                 role="tabpanel">
+                <div *ngIf="activeTab === 'eksternal'" class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 60px;">No</th>
+                                <th>Nama/NIK</th>
+                                <th class="d-none d-lg-table-cell">Email</th>
+                                <th class="d-none d-md-table-cell">Hak Akses</th>
+                                <th class="text-center" style="width: 100px;">Status</th>
+                                <th class="text-center d-md-table-cell">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of paginatedUsersEksternal">
+                                <td class="text-center">{{ user.no }}</td>
+                                <td>
+                                    <div>{{ user.nama }}</div>
+                                    <small class="text-muted">({{ user.nik }})</small>
+                                    <!-- Mobile view - show hidden columns -->
+                                    <div class="d-lg-none mt-2">
+                                        <small class="text-muted d-block">Email: {{ user.email }}</small>
+                                    </div>
+                                    <div class="d-md-none mt-1">
+                                        <small class="text-muted d-block">Hak Akses: {{ user.hakAkses }}</small>
+                                    </div>
+                                </td>
+                                <td class="d-none d-lg-table-cell">{{ user.email }}</td>
+                                <td class="d-none d-md-table-cell">{{ user.hakAkses }}</td>
+                                <td class="text-center">
+                                    <span class="badge" 
+                                          [class.bg-success]="user.status === 'Aktif'"
+                                          [class.bg-danger]="user.status !== 'Aktif'">
+                                        {{ user.status }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-primary m-1" (click)="onEditClickEksternal(user, eksternalModal)">
+                                        <i class="ri-edit-line d-md-none"></i>
+                                        <span class="d-none d-md-inline">Edit</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-success m-1" (click)="onEditClickEksternal(user, eksternalModal)">
+                                        <i class="ri-verified-badge-fill d-md-none"></i>
+                                        <span class="d-none d-md-inline">Kirim Aktivasi</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="paginatedUsersEksternal.length === 0">
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                        Tidak ada data
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
+            <div>
+                <span class="text-muted">{{ paginationInfo }}</span>
+            </div>
+            <nav *ngIf="totalPages > 0">
+                <ul class="pagination mb-0 flex-wrap">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="javascript:void(0)" (click)="previousPage()" tabindex="-1">
+                            <i class="ri-arrow-left-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" 
+                        *ngFor="let page of pageNumbers"
+                        [class.active]="page === currentPage"
+                        [class.disabled]="page === -1">
+                        <a class="page-link" 
+                           href="javascript:void(0)" 
+                           (click)="page !== -1 && goToPage(page)">
+                            {{ page === -1 ? '...' : page }}
+                        </a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                        <a class="page-link" href="javascript:void(0)" (click)="nextPage()">
+                            <i class="ri-arrow-right-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- ========== Modal 1: Pilihan Jenis Anggota ========== -->
+<ng-template #pilihanModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Pilih Jenis User</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body text-center">
+    <p>Pilih jenis user yang ingin ditambahkan:</p>
+    <div class="d-flex justify-content-center gap-3 mt-3">
+      <button class="btn btn-info" (click)="openModalBpjs(modal, bpjsModal)">Tambah User BPJS</button>
+      <button class="btn btn-success" (click)="openModalEksternal(modal, eksternalModal)">Tambah User Eksternal</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ========== Modal 2: Form Tambah Anggota BPJS ========== -->
+<ng-template #bpjsModal let-modal>
+  <div class="modal-header border-0 pb-0">
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body pt-2">
+    <h4 class="text-center mb-4">Aktivasi User</h4>
+    
+    <form>
+      <!-- Nama/NPP -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Nama/NPP</label>
+        <select class="form-select">
+            <option value="" disabled selected>Find ref by IHC</option>
+            <option value="">Yono</option>
+        </select>
+      </div>
+
+      <!-- Unit Kerja -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Unit Kerja</label>
+        <select class="form-select" disabled>
+            <option value="" disabled selected>Unit Kerja</option>
+            <option value="">PSI</option>
+        </select>
+      </div>
+
+      <!-- Grup User -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Grup User</label>
+        <select class="form-select">
+            <option value="" disabled selected>Pilih grup user</option>
+            <option value="">Asesor SMKI</option>
+            <option value="">Asesor Audit ISO</option>
+        </select>   
+      </div>
+
+      <!-- Status Toggle -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold d-block mb-2">Status</label>
+        <div class="form-check form-switch form-switch-lg">
+          <input class="form-check-input" 
+                 type="checkbox" 
+                 role="switch" 
+                 id="statusSwitch"
+                 name="status">
+          <label class="form-check-label ms-2" for="statusSwitch">
+            <!-- {{ modalForm.status ? 'Aktif' : 'Non Aktif' }} -->
+          </label>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex gap-2 justify-content-center">
+        <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+          Batal
+        </button>
+        <button type="submit" class="btn btn-primary px-4">
+          Simpan
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- ========== Modal 3: Form Tambah Anggota Eksternal ========== -->
+<ng-template #eksternalModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Tambah User Eksternal</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form>
+        <div class="mb-3">
+            <label class="form-label">NIK</label>
+            <input type="text" class="form-control" placeholder="Masukkan nik user">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nama</label>
+            <input type="text" class="form-control" placeholder="Masukkan nama user">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Instansi</label>
+            <input type="text" class="form-control" placeholder="Masukkan nama instansi">
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold d-block mb-2" style="color: #2d3748;">Hak Akses</label>
+            <div class="form-check mb-2">
+            <input class="form-check-input" 
+                    type="checkbox" 
+                    id="asesorSMKI"
+                    name="asesorSMKI">
+            <label class="form-check-label" for="asesorSMKI" style="color: #4a5568;">
+                Asesor SMKI
+            </label>
+            </div>
+            <div class="form-check">
+            <input class="form-check-input" 
+                    type="checkbox" 
+                    id="asesorAuditISO"
+                    name="asesorAuditISO">
+            <label class="form-check-label" for="asesorAuditISO" style="color: #4a5568;">
+                Asesor Audit ISO
+            </label>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold d-block mb-2">Status</label>
+            <div class="form-check form-switch form-switch-lg">
+            <input class="form-check-input" 
+                    type="checkbox" 
+                    role="switch" 
+                    id="statusSwitch"
+                    name="status">
+            <label class="form-check-label ms-2" for="statusSwitch">
+            </label>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+            Batal
+            </button>
+            <button type="submit" class="btn btn-primary px-4">
+            Simpan
+            </button>
+        </div>
+    </form>
+  </div>
+</ng-template>
+

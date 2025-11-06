@@ -286,6 +286,14 @@
           }
         }
       }
+    },
+    "PENGATURAN": {
+      "TEXT": "Pengaturan",
+      "LIST": {
+        "AKTIVASIUSER": "Aktivasi User",
+        "VECTOR": "Vector",
+        "LEAFLET": "Leaflet"
+      }
     }
   }
 }
