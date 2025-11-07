@@ -26,12 +26,14 @@ import { PengaturanRoutingModule } from "./pengaturan-routing.module";
 import { SharedModule } from '../../shared/shared.module';
 import { ReferensiKlausulAnnexComponent } from './referensi-klausul-annex/referensi-klausul-annex.component';
 import { AktivasiUserComponent } from './aktivasi-user/aktivasi-user.component';
+import { ReferensiPertanyaanSmkiComponent } from './referensi-pertanyaan-smki/referensi-pertanyaan-smki.component';
 
 
 @NgModule({
   declarations: [
     AktivasiUserComponent,
-    ReferensiKlausulAnnexComponent
+    ReferensiKlausulAnnexComponent,
+    ReferensiPertanyaanSmkiComponent
   ],
   imports: [
     CommonModule,

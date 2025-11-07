@@ -1,0 +1,193 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="REFERENSI PERTANYAAN SMKI" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Referensi Pertanyaan SMKI</h4>
+            <button class="btn btn-primary px-4" (click)="openModalReferensiPertanyaanSmki(referensiPertanyaanSmkiModal)">
+                <i class="ri-add-box-line me-2"></i>Tambah
+            </button>
+        </div>
+
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-lg-6">
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="ri-search-line"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search">
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">No</th>
+                        <th>Standar</th>
+                        <th>Area</th>
+                        <th class="d-lg-table-cell">Kode Area</th>
+                        <th class="d-md-table-cell">Kode Pertanyaan</th>
+                        <th class="d-md-table-cell">Pertanyaan</th>
+                        <th class="d-md-table-cell">Hasil yang Diharapkan</th>
+                        <th class="d-md-table-cell">Bidang</th>
+                        <th class="text-center" style="width: 100px;">Status</th>
+                        <th class="text-center" style="width: 100px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let referensi of paginatedReferensiPertanyaanSmki">
+                        <td class="text-center">{{ referensi.no }}</td>
+                        <td>
+                            <div>{{ referensi.standar }}</div>
+                        </td>
+                        <td class="d-sm-table-cell">{{ referensi.area }}</td>
+                        <td class="d-md-table-cell">{{ referensi.kodeArea }}</td>
+                        <td class="d-lg-table-cell">{{ referensi.kodePertanyaan }}</td>
+                        <td class="d-lg-table-cell">{{ referensi.pertanyaan }}</td>
+                        <td class="d-lg-table-cell">{{ referensi.hasilYangDiharapkan }}</td>
+                        <td class="d-lg-table-cell">{{ referensi.bidang }}</td>
+                        <td class="text-center">
+                            <span class="badge" 
+                                [class.bg-success]="referensi.status === 'Aktif'"
+                                [class.bg-danger]="referensi.status !== 'Aktif'">
+                                {{ referensi.status }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiPertanyaanSmki(referensi, referensiPertanyaanSmkiModal)">
+                                <i class="ri-edit-line d-md-none"></i>
+                                <span class="d-none d-md-inline">Edit</span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="paginatedReferensiPertanyaanSmki.length === 0">
+                        <td colspan="6" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<ng-template #referensiPertanyaanSmkiModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Tambah Referensi Pertanyaan SMKI</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Standar</label>
+                <select class="form-select mb-3" aria-label="standar">
+                    <option selected>Pilih Standar</option>
+                    <option value="1">Assesment SMKI</option>
+                    <option value="2">Audit ISO 2000-1</option>
+                    <option value="3">Audit ISO 90001</option>
+                </select>        
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Area</label>
+                <select class="form-select mb-3" aria-label="area">
+                    <option selected>Pilih Referensi Area sesuai dengan standar</option>
+                    <option value="1">Area A</option>
+                    <option value="2">Area B</option>
+                    <option value="3">Area C</option>
+                </select>        
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Pertanyaan</label>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan pertanyaan"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Hasil yang Diharapkan</label>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan hasil yang diharapkan"></textarea>
+            </div>
+            <!-- Custom Checkboxes Color -->
+            <div class="mb-3">
+            <label class="form-label fw-semibold">Bidang</label>
+            <div class="row">
+                <div class="col-md-6">
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="sdmukpKC">
+                    <label class="form-check-label" for="sdmukpKC">SDMUKP - KC</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="pkpKC">
+                    <label class="form-check-label" for="pkpKC">PKP - KC</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="pmuKC">
+                    <label class="form-check-label" for="pmuKC">PMU - KC</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="yanfaskesKC">
+                    <label class="form-check-label" for="yanfaskesKC">YANFASKES - KC</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="yanserKC">
+                    <label class="form-check-label" for="yanserKC">YANSER - KC</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="kepserKC">
+                    <label class="form-check-label" for="kepserKC">KEPSER - KC</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="adminGRCKC">
+                    <label class="form-check-label" for="adminGRCKC">Admin GRC KC</label>
+                </div>
+                </div>
+
+                <div class="col-md-6">
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="sdmukKepwil">
+                    <label class="form-check-label" for="sdmukKepwil">SDMUK - Kepwil</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="pkKepwil">
+                    <label class="form-check-label" for="pkKepwil">PK - Kepwil</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="kmlKepwil">
+                    <label class="form-check-label" for="kmlKepwil">KML - Kepwil</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="jpkKepwil">
+                    <label class="form-check-label" for="jpkKepwil">JPK - Kepwil</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="adminGRCKepwil">
+                    <label class="form-check-label" for="adminGRCKepwil">Admin GRC Kepwil</label>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold d-block mb-2">Status</label>
+                <div class="form-check form-switch form-switch-lg">
+                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch"name="status">
+                    <label class="form-check-label ms-2" for="statusSwitch">
+                    </label>
+                </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</ng-template>

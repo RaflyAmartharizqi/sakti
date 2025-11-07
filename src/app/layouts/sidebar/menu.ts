@@ -1431,6 +1431,12 @@ export const MENU: MenuItem[] = [
         label: 'MENUITEMS.PENGATURAN.LIST.REFERENSIKLAUSULANNEX',
         link: '/pengaturan/referensi-klausul-annex',
         parentId: 184
+      },
+      {
+        id: 187,
+        label: 'MENUITEMS.PENGATURAN.LIST.REFERENSIPERTANYAANSMKI',
+        link: '/pengaturan/referensi-pertanyaan-smki',
+        parentId: 184
       }
     ]
   },
