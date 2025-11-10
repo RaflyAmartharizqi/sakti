@@ -1437,6 +1437,12 @@ export const MENU: MenuItem[] = [
         label: 'MENUITEMS.PENGATURAN.LIST.REFERENSIPERTANYAANSMKI',
         link: '/pengaturan/referensi-pertanyaan-smki',
         parentId: 184
+      },
+      {
+        id: 188,
+        label: 'MENUITEMS.PENGATURAN.LIST.REFERENSIPERTANYAANAUDITISO',
+        link: '/pengaturan/referensi-pertanyaan-audit-iso',
+        parentId: 184
       }
     ]
   },

@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import {
   NgbToastModule
 } from '@ng-bootstrap/ng-bootstrap';
@@ -27,13 +27,16 @@ import { SharedModule } from '../../shared/shared.module';
 import { ReferensiKlausulAnnexComponent } from './referensi-klausul-annex/referensi-klausul-annex.component';
 import { AktivasiUserComponent } from './aktivasi-user/aktivasi-user.component';
 import { ReferensiPertanyaanSmkiComponent } from './referensi-pertanyaan-smki/referensi-pertanyaan-smki.component';
+import { ReferensiPertanyaanAuditIsoComponent } from './referensi-pertanyaan-audit-iso/referensi-pertanyaan-audit-iso.component';
+import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 
 
 @NgModule({
   declarations: [
     AktivasiUserComponent,
     ReferensiKlausulAnnexComponent,
-    ReferensiPertanyaanSmkiComponent
+    ReferensiPertanyaanSmkiComponent,
+    ReferensiPertanyaanAuditIsoComponent,
   ],
   imports: [
     CommonModule,
@@ -55,6 +58,9 @@ import { ReferensiPertanyaanSmkiComponent } from './referensi-pertanyaan-smki/re
     ReactiveFormsModule,
     NgbTooltipModule,
     NgbModalModule,
+    NgSelectModule,
+    FormsModule,
+    AsyncPipe
   ],
   schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -292,7 +292,8 @@
       "LIST": {
         "AKTIVASIUSER": "Aktivasi User",
         "REFERENSIKLAUSULANNEX": "Referensi Klausul/Annex",
-        "REFERENSIPERTANYAANSMKI": "Referensi Pertanyaan SMKI"
+        "REFERENSIPERTANYAANSMKI": "Referensi Pertanyaan SMKI",
+        "REFERENSIPERTANYAANAUDITISO": "Referensi Pertanyaan Audit ISO"
       }
     }
   }
