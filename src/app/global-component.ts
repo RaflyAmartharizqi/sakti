@@ -1,7 +1,7 @@
 export const GlobalComponent = {
     // Api Calling
-    API_URL : 'https://api-node.themesbrand.website/',
-    // API_URL : 'http://127.0.0.1:3000/',
+    // API_URL : 'https://api-node.themesbrand.website/',
+    API_URL : 'https://localhost:7235/api/v1/',
     headerToken : {'Authorization': `Bearer ${sessionStorage.getItem('token')}`},
 
     // Auth Api

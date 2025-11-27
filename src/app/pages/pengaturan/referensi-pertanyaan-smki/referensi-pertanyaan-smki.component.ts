@@ -25,6 +25,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
   entriesPerPage: number = 10;
   searchQuery: string = '';
   currentPage: number = 1;
+  isActive: boolean = false;
 
   referensiPertanyaanSmki: ReferensiPertanyaanSmki[] = [
     {

@@ -33,7 +33,6 @@ import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
-    AktivasiUserComponent,
     ReferensiKlausulAnnexComponent,
     ReferensiPertanyaanSmkiComponent,
     ReferensiPertanyaanAuditIsoComponent,
@@ -60,7 +59,8 @@ import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
     NgbModalModule,
     NgSelectModule,
     FormsModule,
-    AsyncPipe
+    AsyncPipe,
+    AktivasiUserComponent,
   ],
   schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })

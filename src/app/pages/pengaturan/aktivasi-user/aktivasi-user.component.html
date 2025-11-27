@@ -15,10 +15,10 @@
         <!-- Filter and Search Section -->
         <div class="row mb-3 g-3">
             <div class="col-12 col-md-6 col-lg-6">
-                <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+                <select class="form-select" [(ngModel)]="filters.status" (change)="onStatusFilterChange()">
                     <option value="">Semua Status</option>
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Non Aktif</option>
+                    <option value="true">Aktif</option>
+                    <option value="false">Non Aktif</option>
                 </select>
             </div>
             <div class="col-12 col-lg-6">
@@ -77,7 +77,7 @@
                  [class.show]="activeTab === 'bpjs'" 
                  [class.active]="activeTab === 'bpjs'" 
                  role="tabpanel">
-                <div *ngIf="activeTab === 'bpjs'" class="table-responsive">
+                <div [hidden]="activeTab !== 'bpjs'" class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead class="table-light">
                             <tr>
@@ -90,40 +90,51 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let user of paginatedUsersBPJS">
-                                <td class="text-center">{{ user.no }}</td>
+                            <tr *ngFor="let user of users let i = index">
+                                <td class="text-center">{{ i+1 }}</td>
                                 <td>
-                                    <div>{{ user.nama }}</div>
-                                    <small class="text-muted">({{ user.npp }})</small>
+                                    <div>{{ user.Nama }}</div>
+                                    <small class="text-muted">({{ user.Npp }})</small>
                                     <!-- Mobile view - show hidden columns -->
                                     <div class="d-lg-none mt-2">
-                                        <small class="text-muted d-block">Unit: {{ user.unitKerja }}</small>
+                                        <small class="text-muted d-block">Unit: {{ user.UnitKerja }}</small>
                                     </div>
                                     <div class="d-md-none mt-1">
-                                        <small class="text-muted d-block">Grup: {{ user.grupUser }}</small>
+                                        <small class="text-muted d-block">Grup: {{ user.AsesorSmki ? 'Asesor SMKI' : '' }}</small>
                                     </div>
                                 </td>
-                                <td class="d-none d-lg-table-cell">{{ user.unitKerja }}</td>
-                                <td class="d-none d-md-table-cell">{{ user.grupUser }}</td>
+                                <td class="d-none d-lg-table-cell">{{ user.UnitKerja }}</td>
+                                <td class="d-none d-md-table-cell">
+                                    {{ user.AsesorSmki ? 'Asesor SMKI' : '' }}
+                                    {{ user.AsesorIso ? 'Asesor ISO' : '' }}
+                                </td>
                                 <td class="text-center">
                                     <span class="badge" 
-                                          [class.bg-success]="user.status === 'Aktif'"
-                                          [class.bg-danger]="user.status !== 'Aktif'">
-                                        {{ user.status }}
+                                          [class.bg-success]="user.Status == true"
+                                          [class.bg-danger]="user.Status != true">
+                                        {{ user.Status ? 'Aktif' : 'Tidak Aktif' }}
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-primary" (click)="onEditClickBPJS(user, bpjsModal)">
+                                    <button class="btn btn-sm btn-primary" (click)="onEditClickBPJS(bpjsModal)">
                                         <i class="ri-edit-line d-md-none"></i>
                                         <span class="d-none d-md-inline">Edit</span>
                                     </button>
                                 </td>
                             </tr>
-                            <tr *ngIf="paginatedUsersBPJS.length === 0">
+                            <tr *ngIf="users.length === 0 && !isTabLoading">
                                 <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="ri-file-list-line fs-1 d-block mb-2"></i>
                                         Tidak ada data
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="isTabLoading">
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                        Memuat Data...
                                     </div>
                                 </td>
                             </tr>
@@ -137,7 +148,7 @@
                  [class.show]="activeTab === 'eksternal'" 
                  [class.active]="activeTab === 'eksternal'" 
                  role="tabpanel">
-                <div *ngIf="activeTab === 'eksternal'" class="table-responsive">
+                <div [hidden]="activeTab !== 'eksternal'" class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead class="table-light">
                             <tr>
@@ -150,44 +161,55 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let user of paginatedUsersEksternal">
-                                <td class="text-center">{{ user.no }}</td>
+                            <tr *ngFor="let user of users let i = index">
+                                <td class="text-center">{{ i + 1 }}</td>
                                 <td>
-                                    <div>{{ user.nama }}</div>
-                                    <small class="text-muted">({{ user.nik }})</small>
+                                    <div>{{ user.Nama }}</div>
+                                    <small class="text-muted">({{ user.Nik }})</small>
                                     <!-- Mobile view - show hidden columns -->
                                     <div class="d-lg-none mt-2">
-                                        <small class="text-muted d-block">Email: {{ user.email }}</small>
+                                        <small class="text-muted d-block">Email: {{ user.Email }}</small>
                                     </div>
                                     <div class="d-md-none mt-1">
-                                        <small class="text-muted d-block">Hak Akses: {{ user.hakAkses }}</small>
+                                        <small class="text-muted d-block">Hak Akses: {{ user.AsesorSmki }}</small>
                                     </div>
                                 </td>
-                                <td class="d-none d-lg-table-cell">{{ user.email }}</td>
-                                <td class="d-none d-md-table-cell">{{ user.hakAkses }}</td>
+                                <td class="d-none d-lg-table-cell">{{ user.Email }}</td>
+                                <td class="d-none d-md-table-cell">
+                                    {{ user.AsesorSmki ? 'Asesor SMKI dan ' : '' }}
+                                    {{ user.AsesorIso ? 'Asesor ISO' : '' }}
+                                </td>
                                 <td class="text-center">
                                     <span class="badge" 
-                                          [class.bg-success]="user.status === 'Aktif'"
-                                          [class.bg-danger]="user.status !== 'Aktif'">
-                                        {{ user.status }}
+                                          [class.bg-success]="user.Status == true"
+                                          [class.bg-danger]="user.Status == false">
+                                        {{ user.Status ? 'Aktif' : 'Non Aktif'}}
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-primary m-1" (click)="onEditClickEksternal(user, eksternalModal)">
+                                    <button class="btn btn-sm btn-primary m-1" (click)="onEditClickEksternal(eksternalModal)">
                                         <i class="ri-edit-line d-md-none"></i>
                                         <span class="d-none d-md-inline">Edit</span>
                                     </button>
-                                    <button class="btn btn-sm btn-success m-1" (click)="onEditClickEksternal(user, eksternalModal)">
+                                    <button class="btn btn-sm btn-success m-1" (click)="onEditClickEksternal(eksternalModal)">
                                         <i class="ri-verified-badge-fill d-md-none"></i>
                                         <span class="d-none d-md-inline">Kirim Aktivasi</span>
                                     </button>
                                 </td>
                             </tr>
-                            <tr *ngIf="paginatedUsersEksternal.length === 0">
+                            <tr *ngIf="users.length === 0 && !isTabLoading">
                                 <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="ri-file-list-line fs-1 d-block mb-2"></i>
                                         Tidak ada data
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="isTabLoading">
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                        Memuat Data...
                                     </div>
                                 </td>
                             </tr>
@@ -202,7 +224,7 @@
             <div>
                 <span class="text-muted">{{ paginationInfo }}</span>
             </div>
-            <nav *ngIf="totalPages > 0">
+            <nav *ngIf="totalPage > 0">
                 <ul class="pagination mb-0 flex-wrap">
                     <li class="page-item" [class.disabled]="currentPage === 1">
                         <a class="page-link" href="javascript:void(0)" (click)="previousPage()" tabindex="-1">
@@ -220,7 +242,7 @@
                             {{ page === -1 ? '...' : page }}
                         </a>
                     </li>
-                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <li class="page-item" [class.disabled]="currentPage === totalPage">
                         <a class="page-link" href="javascript:void(0)" (click)="nextPage()">
                             <i class="ri-arrow-right-s-line d-md-none"></i>
                             <span class="d-none d-md-inline">Next</span>
@@ -254,53 +276,70 @@
   </div>
   <div class="modal-body pt-2">
     <h4 class="text-center mb-4">Aktivasi User</h4>
-    
-    <form>
+    <form (ngSubmit)="createUser()" #userForm="ngForm">
       <!-- Nama/NPP -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Nama/NPP</label>
-        <select class="form-select">
-            <option value="" disabled selected>Find ref by IHC</option>
-            <option value="">Yono</option>
-        </select>
-      </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Nama / NPP</label>
+            <ng-select
+            [items]="listUserBpjs"
+            bindLabel="nama"
+            [typeahead]="searchInput$"
+            placeholder="Cari user BPJS dengan NPP"
+            [(ngModel)]="selectedUserBpjs"
+            (change)="onSelectUserBpjs($event)"
+            [loading]="isLoading"
+            [clearable]="true"
+            [minTermLength]="3"
+            notFoundText="Tidak ada data ditemukan"
+            name="searchUser"
+            >
+                <ng-template ng-option-tmp let-item="item">
+                    <div>
+                        <strong>{{ item.nama }}</strong> (NPP: {{ item.npp }})
+                        <br>
+                        <small class="text-muted">{{ item.namaunitkerja }}</small>
+                    </div>
+                </ng-template>
 
-      <!-- Unit Kerja -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Unit Kerja</label>
-        <select class="form-select" disabled>
-            <option value="" disabled selected>Unit Kerja</option>
-            <option value="">PSI</option>
-        </select>
-      </div>
-
-      <!-- Grup User -->
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Grup User</label>
-        <select class="form-select">
-            <option value="" disabled selected>Pilih grup user</option>
-            <option value="">Asesor SMKI</option>
-            <option value="">Asesor Audit ISO</option>
-        </select>   
-      </div>
-
-      <!-- Status Toggle -->
-      <div class="mb-4">
-        <label class="form-label fw-semibold d-block mb-2">Status</label>
-        <div class="form-check form-switch form-switch-lg">
-          <input class="form-check-input" 
-                 type="checkbox" 
-                 role="switch" 
-                 id="statusSwitch"
-                 name="status">
-          <label class="form-check-label ms-2" for="statusSwitch">
-            <!-- {{ modalForm.status ? 'Aktif' : 'Non Aktif' }} -->
-          </label>
+                <ng-template ng-label-tmp let-item="item">
+                    {{ item.nama }} (NPP: {{ item.npp }})
+                </ng-template>
+            </ng-select>
         </div>
-      </div>
 
-      <!-- Action Buttons -->
-      <div class="d-flex gap-2 justify-content-center">
+        <!-- Unit Kerja -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Unit Kerja</label>
+            <input type="text" class="form-control" name="UnitKerja" [(ngModel)]="userData.unitKerja" readonly disabled>
+        </div>
+
+        <!-- Grup User -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Grup User</label>
+            <select class="form-select" [(ngModel)]="selectedGrupUser" (change)="onSelectGrupUser($event)">
+                <option value="" disabled selected>Pilih grup user</option>
+                <option value="smki">Asesor SMKI</option>
+                <option value="iso">Asesor Audit ISO</option>
+            </select>
+        </div>
+
+        <!-- Status Toggle -->
+        <div class="mb-4">
+            <label class="form-label fw-semibold d-block mb-2">Status</label>
+            <div class="form-check form-switch form-switch-lg">
+            <input class="form-check-input" 
+                    type="checkbox" 
+                    role="switch" 
+                    id="statusSwitch"
+                    name="status"
+                    [(ngModel)]="userData.status">
+            <label class="form-check-label ms-2" for="statusSwitch">
+                {{ userData.status ? 'Aktif' : 'Non Aktif' }}
+            </label>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-center">
         <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
           Batal
         </button>
@@ -319,18 +358,18 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body">
-    <form>
+    <form (ngSubmit)="createUser()" #userForm="ngForm">
         <div class="mb-3">
             <label class="form-label">NIK</label>
-            <input type="text" class="form-control" placeholder="Masukkan nik user">
+            <input type="text" class="form-control" [(ngModel)]="userData.nik" (ngModelChange)="userData.nik = $event.toString()" name="Nik" placeholder="Masukkan nik user" required="Nik Required">
         </div>
         <div class="mb-3">
             <label class="form-label">Nama</label>
-            <input type="text" class="form-control" placeholder="Masukkan nama user">
+            <input type="text" class="form-control" [(ngModel)]="userData.nama" name="Nama" placeholder="Masukkan nama user">
         </div>
         <div class="mb-3">
-            <label class="form-label">Instansi</label>
-            <input type="text" class="form-control" placeholder="Masukkan nama instansi">
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control" [(ngModel)]="userData.email" name="Email" placeholder="Masukkan email user">
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold d-block mb-2" style="color: #2d3748;">Hak Akses</label>
@@ -338,7 +377,9 @@
             <input class="form-check-input" 
                     type="checkbox" 
                     id="asesorSMKI"
-                    name="asesorSMKI">
+                    [(ngModel)]="userData.asesorSmki"
+                    name="AsesorSMKI"
+                    >
             <label class="form-check-label" for="asesorSMKI" style="color: #4a5568;">
                 Asesor SMKI
             </label>
@@ -347,7 +388,8 @@
             <input class="form-check-input" 
                     type="checkbox" 
                     id="asesorAuditISO"
-                    name="asesorAuditISO">
+                    [(ngModel)]="userData.asesorIso"
+                    name="AsesorAuditISO">
             <label class="form-check-label" for="asesorAuditISO" style="color: #4a5568;">
                 Asesor Audit ISO
             </label>
@@ -357,17 +399,18 @@
         <div class="mb-4">
             <label class="form-label fw-semibold d-block mb-2">Status</label>
             <div class="form-check form-switch form-switch-lg">
-            <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch"name="status">
-            <label class="form-check-label ms-2" for="statusSwitch">
-            </label>
+                <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" [(ngModel)]="userData.status" name="status">
+                <label class="form-check-label ms-2" for="statusSwitch">
+                    {{ userData.status ? 'Aktif' : 'Non Aktif' }}
+                </label>
             </div>
         </div>
         <div class="d-flex gap-2 justify-content-center">
             <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
-            Batal
+                Batal
             </button>
             <button type="submit" class="btn btn-primary px-4">
-            Simpan
+                Simpan
             </button>
         </div>
     </form>
