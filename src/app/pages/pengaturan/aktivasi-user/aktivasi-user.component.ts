@@ -53,7 +53,11 @@ export class AktivasiUserComponent implements OnInit {
   entriesPerPage: number = 10;
   searchQuery: string = '';
   isTabLoading: boolean = false;
-
+  listUserBpjs: any[] = [];
+  selectedUserBpjs: any = null;
+  isLoading = false;
+  searchInput$ = new Subject<string>();
+  
   filters = {
     status: '',
     tipeUser: 'bpjs',
@@ -63,6 +67,7 @@ export class AktivasiUserComponent implements OnInit {
   }
 
   userData = {
+    id: null,
     tipeUser: '',
     nama: '',
     npp: null,
@@ -123,10 +128,6 @@ export class AktivasiUserComponent implements OnInit {
         this.loadUsers();
       },
       error: (err) => {
-        console.log("=== ERROR ===");
-        console.log("HTTP STATUS:", err.status);
-        console.log("BODY:", err.error);
-        console.log("MSG:", err.error?.metadata?.message);
         Swal.close();
         Swal.fire({
           title: "Error",
@@ -137,6 +138,23 @@ export class AktivasiUserComponent implements OnInit {
     });
   }
 
+  updateUser() {
+    if (!this.userData.id) {
+        Swal.fire("Error", "ID user tidak ditemukan.", "error");
+        return;
+      }
+    this.aktivasiUserService.update(this.userData.id, this.userData)
+      .subscribe({
+        next: (res) => {
+          Swal.fire("Sukses", "Data user berhasil diperbarui!", "success");
+          this.modalService.dismissAll();
+          this.loadUsers();   // reload tabel
+        },
+        error: (err) => {
+          Swal.fire("Error", err.error?.metadata?.message || "Gagal update user", "error");
+        }
+    });
+  }
 
 
 
@@ -250,33 +268,69 @@ ngOnInit(): void {
 
   // ===================== MODAL =====================
 
-  onEditClickBPJS(bpjsModal: TemplateRef<any>): void {
-    this.modalService.open(bpjsModal, { centered: true });
+  onEditClickBPJS(bpjsModalEdit: TemplateRef<any>, userId: number): void {
+    this.aktivasiUserService.getById(userId).subscribe({
+      next: (res) => {
+        const data = res.response;
+        this.userData = {
+          id: data.Id,
+          tipeUser: "bpjs",
+          nama: data.Nama,
+          npp: data.Npp,
+          nik: null,
+          unitKerja: data.UnitKerja,
+          email: data.Email ?? null,
+          asesorSmki: data.AsesorSmki,
+          asesorIso: data.AsesorIso,
+          status: data.Status
+        };
+        this.selectedUserBpjs = {
+          nama: data.Nama,
+          npp: data.Npp,
+          namaunitkerja: data.UnitKerja,
+          email: data.Email
+        };
+
+        const smki = data.AsesorSmki === 1 || data.AsesorSmki === true;
+        const iso  = data.AsesorIso === 1 || data.AsesorIso === true;
+
+        this.selectedGrupUser = smki ? "smki" : iso ? "iso" : "";
+
+        this.modalService.open(bpjsModalEdit, { centered: true });
+      },
+      error: () => {
+        Swal.fire("Error", "Gagal memuat data user.", "error");
+      }
+    });
   }
 
-  onEditClickEksternal(eksternalModal: TemplateRef<any>): void {
-    this.modalService.open(eksternalModal, { centered: true });
+  onEditClickEksternal(eksternalModalEdit: TemplateRef<any>, userId: number): void {
+        this.aktivasiUserService.getById(userId).subscribe({
+      next: (res) => {
+        const data = res.response;
+        this.userData = {
+          id: data.Id,
+          tipeUser: "eksternal",
+          nama: data.Nama,
+          npp: null,
+          nik: data.Nik,
+          email: data.Email ?? null,
+          unitKerja: null,
+          asesorSmki: data.AsesorSmki,
+          asesorIso: data.AsesorIso,
+          status: data.Status
+        };
+        this.modalService.open(eksternalModalEdit, { centered: true });
+      },
+      error: () => {
+        Swal.fire("Error", "Gagal memuat data user.", "error");
+      }
+    });
   }
 
   openModalPilihan(content: TemplateRef<any>) {
     this.modalService.open(content, { centered: true });
   }
-
-  resetUserData() {
-  this.userData = {
-    tipeUser: '',
-    nama: '',
-    npp: null,
-    nik: null,
-    unitKerja: null,
-    email: null,
-    asesorSmki: false,
-    asesorIso: false,
-    status: true
-  };
-  this.selectedUserBpjs = null;
-  this.listUserBpjs = [];
-}
 
   openModalBpjs(parentModal: any, bpjsModal: TemplateRef<any>) {
     parentModal.close();
@@ -292,37 +346,49 @@ ngOnInit(): void {
     this.modalService.open(eksternalModal, { centered: true });
   }
 
-  listUserBpjs: any[] = [];
-  selectedUserBpjs: any = null;
-  isLoading = false;
-  searchInput$ = new Subject<string>();
+  resetUserData() {
+    this.userData = {
+      id: null,
+      tipeUser: '',
+      nama: '',
+      npp: null,
+      nik: null,
+      unitKerja: null,
+      email: null,
+      asesorSmki: false,
+      asesorIso: false,
+      status: true
+    };
+    this.selectedUserBpjs = null;
+    this.listUserBpjs = [];
+  }
 
- trackByFn(item: any): any {
+  trackByFn(item: any): any {
     return item ? item.npp : null;
   }
 
-onSelectUserBpjs(item: any) {
-  console.log("=== DEBUG SELECT ===");
-  console.log("Item yang dipilih:", item);
-  console.log("namaunitkerja dari item:", item?.namaunitkerja);
-  
-  if (!item) {
-    // Clear data jika tidak ada yang dipilih
-    this.userData.nama = '';
-    this.userData.npp = null;
-    this.userData.unitKerja = null;
-    this.userData.email = null;
-    return;
-  }
+  onSelectUserBpjs(item: any) {
+    console.log("=== DEBUG SELECT ===");
+    console.log("Item yang dipilih:", item);
+    console.log("namaunitkerja dari item:", item?.namaunitkerja);
+    
+    if (!item) {
+      // Clear data jika tidak ada yang dipilih
+      this.userData.nama = '';
+      this.userData.npp = null;
+      this.userData.unitKerja = null;
+      this.userData.email = null;
+      return;
+    }
 
-  // Isi userData dengan data yang dipilih
-  this.userData.nama = item.nama || '';
-  this.userData.npp = item.npp || null;
-  this.userData.unitKerja = item.namaunitkerja || null;
-  this.userData.email = item.email || null;
-  
-  console.log("userData setelah diisi:", this.userData);
-  console.log("userData.unitKerja:", this.userData.unitKerja);
-}
+    // Isi userData dengan data yang dipilih
+    this.userData.nama = item.nama || '';
+    this.userData.npp = item.npp || null;
+    this.userData.unitKerja = item.namaunitkerja || null;
+    this.userData.email = item.email || null;
+    
+    console.log("userData setelah diisi:", this.userData);
+    console.log("userData.unitKerja:", this.userData.unitKerja);
+  }
 
 }

@@ -116,7 +116,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-primary" (click)="onEditClickBPJS(bpjsModal)">
+                                    <button class="btn btn-sm btn-primary" (click)="onEditClickBPJS(bpjsModalEdit, user.Id)">
                                         <i class="ri-edit-line d-md-none"></i>
                                         <span class="d-none d-md-inline">Edit</span>
                                     </button>
@@ -187,11 +187,11 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-primary m-1" (click)="onEditClickEksternal(eksternalModal)">
+                                    <button class="btn btn-sm btn-primary m-1" (click)="onEditClickEksternal(eksternalModalEdit, user.Id)">
                                         <i class="ri-edit-line d-md-none"></i>
                                         <span class="d-none d-md-inline">Edit</span>
                                     </button>
-                                    <button class="btn btn-sm btn-success m-1" (click)="onEditClickEksternal(eksternalModal)">
+                                    <button class="btn btn-sm btn-success m-1" (click)="onEditClickEksternal(eksternalModalEdit, user.Id)">
                                         <i class="ri-verified-badge-fill d-md-none"></i>
                                         <span class="d-none d-md-inline">Kirim Aktivasi</span>
                                     </button>
@@ -254,7 +254,7 @@
     </div>
 </div>
 
-<!-- ========== Modal 1: Pilihan Jenis Anggota ========== -->
+<!-- ========== Pilihan Jenis Anggota ========== -->
 <ng-template #pilihanModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">Pilih Jenis User</h5>
@@ -269,7 +269,7 @@
   </div>
 </ng-template>
 
-<!-- ========== Modal 2: Form Tambah Anggota BPJS ========== -->
+<!-- ========== Form Tambah Anggota BPJS ========== -->
 <ng-template #bpjsModal let-modal>
   <div class="modal-header border-0 pb-0">
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
@@ -351,7 +351,7 @@
   </div>
 </ng-template>
 
-<!-- ========== Modal 3: Form Tambah Anggota Eksternal ========== -->
+<!-- ========== Form Tambah Anggota Eksternal ========== -->
 <ng-template #eksternalModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">Tambah User Eksternal</h5>
@@ -359,6 +359,153 @@
   </div>
   <div class="modal-body">
     <form (ngSubmit)="createUser()" #userForm="ngForm">
+        <div class="mb-3">
+            <label class="form-label">NIK</label>
+            <input type="text" class="form-control" [(ngModel)]="userData.nik" (ngModelChange)="userData.nik = $event.toString()" name="Nik" placeholder="Masukkan nik user" required="Nik Required">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nama</label>
+            <input type="text" class="form-control" [(ngModel)]="userData.nama" name="Nama" placeholder="Masukkan nama user">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control" [(ngModel)]="userData.email" name="Email" placeholder="Masukkan email user">
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold d-block mb-2" style="color: #2d3748;">Hak Akses</label>
+            <div class="form-check mb-2">
+            <input class="form-check-input" 
+                    type="checkbox" 
+                    id="asesorSMKI"
+                    [(ngModel)]="userData.asesorSmki"
+                    name="AsesorSMKI"
+                    >
+            <label class="form-check-label" for="asesorSMKI" style="color: #4a5568;">
+                Asesor SMKI
+            </label>
+            </div>
+            <div class="form-check">
+            <input class="form-check-input" 
+                    type="checkbox" 
+                    id="asesorAuditISO"
+                    [(ngModel)]="userData.asesorIso"
+                    name="AsesorAuditISO">
+            <label class="form-check-label" for="asesorAuditISO" style="color: #4a5568;">
+                Asesor Audit ISO
+            </label>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold d-block mb-2">Status</label>
+            <div class="form-check form-switch form-switch-lg">
+                <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" [(ngModel)]="userData.status" name="status">
+                <label class="form-check-label ms-2" for="statusSwitch">
+                    {{ userData.status ? 'Aktif' : 'Non Aktif' }}
+                </label>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+                Batal
+            </button>
+            <button type="submit" class="btn btn-primary px-4">
+                Simpan
+            </button>
+        </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- ========== Form Edit User BPJS ========== -->
+<ng-template #bpjsModalEdit let-modal>
+  <div class="modal-header border-0 pb-0">
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body pt-2">
+    <h4 class="text-center mb-4">Edit User BPJS</h4>
+    <form (ngSubmit)="updateUser()" #userForm="ngForm">      <!-- Nama/NPP -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Nama / NPP</label>
+            <ng-select
+            [items]="listUserBpjs"
+            bindLabel="nama"
+            [typeahead]="searchInput$"
+            placeholder="Cari user BPJS dengan NPP"
+            [(ngModel)]="selectedUserBpjs"
+            (change)="onSelectUserBpjs($event)"
+            [loading]="isLoading"
+            [clearable]="true"
+            [minTermLength]="3"
+            notFoundText="Tidak ada data ditemukan"
+            name="searchUser"
+            >
+                <ng-template ng-option-tmp let-item="item">
+                    <div>
+                        <strong>{{ item.nama }}</strong> (NPP: {{ item.npp }})
+                        <br>
+                        <small class="text-muted">{{ item.namaunitkerja }}</small>
+                    </div>
+                </ng-template>
+
+                <ng-template ng-label-tmp let-item="item">
+                    {{ item.nama }} (NPP: {{ item.npp }})
+                </ng-template>
+            </ng-select>
+        </div>
+
+        <!-- Unit Kerja -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Unit Kerja</label>
+            <input type="text" class="form-control" name="UnitKerja" [(ngModel)]="userData.unitKerja" readonly disabled>
+        </div>
+
+        <!-- Grup User -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Grup User</label>
+            <select class="form-select" name="grupUser" [(ngModel)]="selectedGrupUser" (change)="onSelectGrupUser($event)">
+                <option value="" disabled>Pilih grup user</option>
+                <option value="smki">Asesor SMKI</option>
+                <option value="iso">Asesor Audit ISO</option>
+            </select>
+        </div>
+
+        <!-- Status Toggle -->
+        <div class="mb-4">
+            <label class="form-label fw-semibold d-block mb-2">Status</label>
+            <div class="form-check form-switch form-switch-lg">
+            <input class="form-check-input" 
+                    type="checkbox" 
+                    role="switch" 
+                    id="statusSwitch"
+                    name="status"
+                    [(ngModel)]="userData.status">
+            <label class="form-check-label ms-2" for="statusSwitch">
+                {{ userData.status ? 'Aktif' : 'Non Aktif' }}
+            </label>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-center">
+        <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+          Batal
+        </button>
+        <button type="submit" class="btn btn-primary px-4">
+          Simpan
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- ========== Form Edit Anggota Eksternal ========== -->
+<ng-template #eksternalModalEdit let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Tambah User Eksternal</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="updateUser()" #userForm="ngForm">
         <div class="mb-3">
             <label class="form-label">NIK</label>
             <input type="text" class="form-control" [(ngModel)]="userData.nik" (ngModelChange)="userData.nik = $event.toString()" name="Nik" placeholder="Masukkan nik user" required="Nik Required">

@@ -47,5 +47,25 @@ export class AktivasiUserService {
             }
         );
     }
+
+    update(id: number, payload: any) {
+        return this.http.put(
+            this.API_URL + `User/update/${id}`,
+            payload,
+            {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                })
+            }
+        );
+    }
+
+    getById(id: number):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}User/getuserbyid/${id}`,
+        );
+    }
+
 }
 
