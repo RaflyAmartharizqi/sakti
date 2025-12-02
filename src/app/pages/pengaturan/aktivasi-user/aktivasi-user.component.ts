@@ -102,6 +102,8 @@ export class AktivasiUserComponent implements OnInit {
   }
 
   loadUsers() {
+    this.isTabLoading = true;
+    this.users = [];   
     this.aktivasiUserService.get(this.filters).subscribe({
       next: (res) => {
         this.users = res.response.list;
@@ -174,9 +176,6 @@ ngOnInit(): void {
     this.filters.page = 1;
     this.currentPage = 1;
     this.users = [];
-
-    // 2. Set loading agar UI nunjukin spinner
-    this.isTabLoading = true;
     this.loadUsers();
   }
 

@@ -91,7 +91,9 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let user of users let i = index">
-                                <td class="text-center">{{ i+1 }}</td>
+                                <td class="text-center">
+                                    {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
+                                </td>
                                 <td>
                                     <div>{{ user.Nama }}</div>
                                     <small class="text-muted">({{ user.Npp }})</small>
@@ -162,7 +164,9 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let user of users let i = index">
-                                <td class="text-center">{{ i + 1 }}</td>
+                                <td class="text-center">
+                                    {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
+                                </td>
                                 <td>
                                     <div>{{ user.Nama }}</div>
                                     <small class="text-muted">({{ user.Nik }})</small>
