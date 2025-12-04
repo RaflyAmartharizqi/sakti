@@ -1,5 +1,6 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ReferensiPertanyaanSmkiService } from './referensi-pertanyaan-smki.service';
 
 interface ReferensiPertanyaanSmki {
   no: number,
@@ -20,7 +21,10 @@ interface ReferensiPertanyaanSmki {
 })
 export class ReferensiPertanyaanSmkiComponent implements OnInit {
   breadCrumbItems!: Array<{}>;
-  constructor(private modalService: NgbModal) {}
+  constructor(
+    private modalService: NgbModal,
+    private refPertanyaanSmkiServcie: ReferensiPertanyaanSmkiService
+  ) {}
 
   entriesPerPage: number = 10;
   searchQuery: string = '';
@@ -46,6 +50,8 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
       { label: 'Pengaturan' },
       { label: 'Referensi Pertanyaan SMKI', active: true }
     ];
+    this.getSmkiBidang();
+    this.getStandarKlausulAnnex();
   }
 
   get filteredReferensiPertanyaanSmki(): ReferensiPertanyaanSmki[] {
@@ -76,4 +82,54 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
   openModalReferensiPertanyaanSmki(referensiPertanyaanSmkiModal: TemplateRef<any>) {
     this.modalService.open(referensiPertanyaanSmkiModal, { centered: true });
   } 
+
+  smkiBidangKC: any[] = [];
+  smkiBidangKepwil: any[] = [];
+  standarKlausulAnnex: any[] = [];
+  refKlausulAnnex: any[] = [];
+  selectedStandar = '';
+  selectedKlausulAnnex = null;
+
+
+  getSmkiBidang() {
+    this.refPertanyaanSmkiServcie.getSmkiBidang().subscribe({
+      next: (res: any) => {
+
+        const data = res.response.list;
+
+        this.smkiBidangKC = data.filter((x: any) => x.Jenis === 'KC');
+        this.smkiBidangKepwil = data.filter((x: any) => x.Jenis === 'Kepwil');
+
+        console.log('KC:', this.smkiBidangKC);
+        console.log('Kepwil:', this.smkiBidangKepwil);
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  getStandarKlausulAnnex() {
+    this.refPertanyaanSmkiServcie.getStandarKalusulAnnex().subscribe({
+      next: (res: any) => {
+        this.standarKlausulAnnex = res.response;
+        console.log(this.standarKlausulAnnex);
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  getRefKlausulAnnexByStandar(selectedStandar: string) {
+    this.refPertanyaanSmkiServcie.getRefKlausulAnnexByStandar(selectedStandar).subscribe({
+      next: (res: any) => {
+        this.refKlausulAnnex = res.response;
+        console.log(this.refKlausulAnnex);
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  onStandarChange() {
+    console.log("OKEH");
+    this.getRefKlausulAnnexByStandar(this.selectedStandar);
+  }
+
 }

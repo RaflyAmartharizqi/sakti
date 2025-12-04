@@ -8,21 +8,14 @@ import { filter } from 'lodash';
   providedIn: 'root'
 })
 
-export class AktivasiUserService {
-
+export class ReferensiPertanyaanSmkiService {
     private API_URL = GlobalComponent.API_URL;
 
     constructor(private http: HttpClient) {}
 
-    searchUserBpjs(npp: string): Observable<any> {
-        return this.http.get(
-        this.API_URL + `User/searchuserbpjs/${npp}`,
-        );
-    }
-
     create(payload: any) {
         return this.http.post(
-            this.API_URL + 'User/insert',
+            this.API_URL + 'RefKlausulAnnex/insert',
             payload,
             {
                 headers: new HttpHeaders({
@@ -33,29 +26,27 @@ export class AktivasiUserService {
         );
     }
 
-    get(filters: any):Observable<any> {
+    getSmkiBidang():Observable<any> {
         return this.http.get(
-            `${this.API_URL}User/getlistuser`,
-            {
-                params: {
-                    tipeUser: filters.tipeUser,
-                    status: filters.status ??  null,
-                    page: filters.page ?? 1,
-                    limit: filters.limit ?? 10,
-                    search: filters.search ?? null,
-                }
-            }
+            `${this.API_URL}BidangSmki/getlist`
         );
     }
 
-    getAsesor():Observable<any> {
+    getStandarKalusulAnnex():Observable<any> {
         return this.http.get(
-            `${this.API_URL}Asesor/getlist`,
-    )}
+            `${this.API_URL}RefKlausulAnnex/getstandar`
+        );
+    }
+
+    getRefKlausulAnnexByStandar(standar: string):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}RefKlausulAnnex/getbystandar/${standar}`
+        );
+    }
 
     update(id: number, payload: any) {
         return this.http.put(
-            this.API_URL + `User/update/${id}`,
+            this.API_URL + `RefKlausulAnnex/update/${id}`,
             payload,
             {
                 headers: new HttpHeaders({
@@ -68,7 +59,7 @@ export class AktivasiUserService {
 
     getById(id: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}User/getuserbyid/${id}`,
+            `${this.API_URL}RefKlausulAnnex/getbyid/${id}`,
         );
     }
 

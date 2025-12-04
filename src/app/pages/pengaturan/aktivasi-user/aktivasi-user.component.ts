@@ -68,38 +68,27 @@ export class AktivasiUserComponent implements OnInit {
 
   userData = {
     id: null,
+    asesorId: [] as number[],
     tipeUser: '',
     nama: '',
     npp: null,
     nik: null,
     unitKerja: null,
     email: null,
-    asesorSmki: false,
-    asesorIso: false,
     status: true
   };
 
   users: any[] = [];
+  asesor: any[] = [];
   totalData = 0;
   totalPage = 0;
   from = 0;
   to = 0;
   currentPage = 0;
   selectedGrupUser = '';
-  
-  onSelectGrupUser(event: any) {
-    const value = event.target.value;
+  selectedAsesor: number = 0;
 
-    if (value === "smki") {
-      this.userData.asesorSmki = true;
-      this.userData.asesorIso = false;
-    } else if (value === "iso") {
-      this.userData.asesorSmki = false;
-      this.userData.asesorIso = true;
-    }
-
-    console.log(this.userData);
-  }
+  // ========== Get Insert Update Data ============
 
   loadUsers() {
     this.isTabLoading = true;
@@ -117,7 +106,17 @@ export class AktivasiUserComponent implements OnInit {
     });
   }
 
+  getAsesor() { 
+    this.aktivasiUserService.getAsesor().subscribe({
+      next: (res) => {
+        this.asesor = res.response.list;
+        console.log(this.asesor);
+      }
+    });
+  }
+
   createUser() {
+    console.log(this.userData);
     this.aktivasiUserService.create(this.userData).subscribe({
       next: (res) => {
         Swal.close();
@@ -158,15 +157,16 @@ export class AktivasiUserComponent implements OnInit {
     });
   }
 
+  // ================ ngOnInit =================
 
-
-ngOnInit(): void {
-  this.breadCrumbItems = [
-    { label: 'Pengaturan' },
-    { label: 'Aktivasi User', active: true }
-  ];
-  this.loadUsers();
-}
+  ngOnInit(): void {
+    this.breadCrumbItems = [
+      { label: 'Pengaturan' },
+      { label: 'Aktivasi User', active: true }
+    ];
+    this.loadUsers();
+    this.getAsesor();
+  }
 
    // ===================== TAB =====================
 
@@ -177,6 +177,7 @@ ngOnInit(): void {
     this.currentPage = 1;
     this.users = [];
     this.loadUsers();
+    this.resetFilters();
   }
 
   // ===================== FILTER =====================
@@ -264,36 +265,48 @@ ngOnInit(): void {
       this.loadUsers();
     }
   }
-
+  selectedAsesorId: number | null = null;
+  onAsesorChange(asesorId: number | null) {
+      if (asesorId) {
+        this.userData.asesorId = [asesorId];
+      } else {
+        this.userData.asesorId = [];
+      }
+      console.log("Updated asesorId:", this.userData.asesorId);
+    }
+  
   // ===================== MODAL =====================
-
   onEditClickBPJS(bpjsModalEdit: TemplateRef<any>, userId: number): void {
     this.aktivasiUserService.getById(userId).subscribe({
       next: (res) => {
         const data = res.response;
+        
         this.userData = {
-          id: data.Id,
-          tipeUser: "bpjs",
-          nama: data.Nama,
-          npp: data.Npp,
-          nik: null,
-          unitKerja: data.UnitKerja,
-          email: data.Email ?? null,
-          asesorSmki: data.AsesorSmki,
-          asesorIso: data.AsesorIso,
-          status: data.Status
+          id: data.id,
+          tipeUser: data.tipeUser,
+          nama: data.nama,
+          npp: data.npp,
+          nik: data.nik,
+          unitKerja: data.unitKerja,
+          email: data.email ?? null,
+          asesorId: data.asesor ? data.asesor.map((x:any) => x.id) : [],
+          status: data.status
         };
+        
+        // ✅ Set selectedAsesorId untuk auto-select
+        this.selectedAsesorId = this.userData.asesorId.length > 0 
+          ? this.userData.asesorId[0] 
+          : null;
+        
         this.selectedUserBpjs = {
-          nama: data.Nama,
-          npp: data.Npp,
-          namaunitkerja: data.UnitKerja,
-          email: data.Email
+          nama: data.nama,
+          npp: data.npp,
+          namaunitkerja: data.unitKerja,
+          email: data.email
         };
 
-        const smki = data.AsesorSmki === 1 || data.AsesorSmki === true;
-        const iso  = data.AsesorIso === 1 || data.AsesorIso === true;
-
-        this.selectedGrupUser = smki ? "smki" : iso ? "iso" : "";
+        console.log("asesorId (array):", this.userData.asesorId);
+        console.log("selectedAsesorId (single):", this.selectedAsesorId);
 
         this.modalService.open(bpjsModalEdit, { centered: true });
       },
@@ -303,22 +316,26 @@ ngOnInit(): void {
     });
   }
 
+  // ✅ Update method onEditClickEksternal
   onEditClickEksternal(eksternalModalEdit: TemplateRef<any>, userId: number): void {
-        this.aktivasiUserService.getById(userId).subscribe({
+    this.aktivasiUserService.getById(userId).subscribe({
       next: (res) => {
         const data = res.response;
+        
         this.userData = {
-          id: data.Id,
-          tipeUser: "eksternal",
-          nama: data.Nama,
-          npp: null,
-          nik: data.Nik,
-          email: data.Email ?? null,
-          unitKerja: null,
-          asesorSmki: data.AsesorSmki,
-          asesorIso: data.AsesorIso,
-          status: data.Status
+          id: data.id,
+          tipeUser: data.tipeUser,
+          nama: data.nama,
+          npp: data.npp,
+          nik: data.nik,
+          unitKerja: data.unitKerja,
+          email: data.email ?? null,
+          asesorId: data.asesor ? data.asesor.map((x:any) => x.id) : [],
+          status: data.status
         };
+
+        console.log("asesorId (Eksternal):", this.userData.asesorId);
+
         this.modalService.open(eksternalModalEdit, { centered: true });
       },
       error: () => {
@@ -331,13 +348,16 @@ ngOnInit(): void {
     this.modalService.open(content, { centered: true });
   }
 
+  // ✅ Update openModalBpjs
   openModalBpjs(parentModal: any, bpjsModal: TemplateRef<any>) {
     parentModal.close();
     this.resetUserData();
     this.userData.tipeUser = 'bpjs';
+    this.selectedAsesorId = null;
     this.modalService.open(bpjsModal, { centered: true });
   }
 
+  // ✅ Update openModalEksternal
   openModalEksternal(parentModal: any, eksternalModal: TemplateRef<any>) {
     parentModal.close();
     this.resetUserData();
@@ -345,19 +365,20 @@ ngOnInit(): void {
     this.modalService.open(eksternalModal, { centered: true });
   }
 
+
   resetUserData() {
     this.userData = {
       id: null,
+      asesorId: [],
       tipeUser: '',
       nama: '',
       npp: null,
       nik: null,
       unitKerja: null,
       email: null,
-      asesorSmki: false,
-      asesorIso: false,
       status: true
     };
+    this.selectedAsesorId = null; // ✅ Reset juga
     this.selectedUserBpjs = null;
     this.listUserBpjs = [];
   }
@@ -367,12 +388,7 @@ ngOnInit(): void {
   }
 
   onSelectUserBpjs(item: any) {
-    console.log("=== DEBUG SELECT ===");
-    console.log("Item yang dipilih:", item);
-    console.log("namaunitkerja dari item:", item?.namaunitkerja);
-    
     if (!item) {
-      // Clear data jika tidak ada yang dipilih
       this.userData.nama = '';
       this.userData.npp = null;
       this.userData.unitKerja = null;
@@ -380,14 +396,25 @@ ngOnInit(): void {
       return;
     }
 
-    // Isi userData dengan data yang dipilih
     this.userData.nama = item.nama || '';
     this.userData.npp = item.npp || null;
     this.userData.unitKerja = item.namaunitkerja || null;
     this.userData.email = item.email || null;
-    
-    console.log("userData setelah diisi:", this.userData);
-    console.log("userData.unitKerja:", this.userData.unitKerja);
   }
+
+  checkBoxAsesor(asesorId: number, event: any) {
+    if (event.target.checked) {
+      if (!this.userData.asesorId.includes(asesorId)) {
+        this.userData.asesorId.push(asesorId);
+      }
+    } else {
+      const index = this.userData.asesorId.indexOf(asesorId);
+      if (index > -1) {
+        this.userData.asesorId.splice(index, 1);
+      }
+    }
+    console.log("Updated asesorId (Eksternal):", this.userData.asesorId);
+  }
+
 
 }

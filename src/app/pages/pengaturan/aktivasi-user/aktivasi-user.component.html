@@ -95,30 +95,35 @@
                                     {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
                                 </td>
                                 <td>
-                                    <div>{{ user.Nama }}</div>
-                                    <small class="text-muted">({{ user.Npp }})</small>
+                                    <div>{{ user.nama }}</div>
+                                    <small class="text-muted">({{ user.npp }})</small>
                                     <!-- Mobile view - show hidden columns -->
                                     <div class="d-lg-none mt-2">
-                                        <small class="text-muted d-block">Unit: {{ user.UnitKerja }}</small>
+                                        <small class="text-muted d-block">Unit: {{ user.unitKerja }}</small>
                                     </div>
                                     <div class="d-md-none mt-1">
-                                        <small class="text-muted d-block">Grup: {{ user.AsesorSmki ? 'Asesor SMKI' : '' }}</small>
+                                        <small class="text-muted d-block">Grup: 
+                                            <span *ngFor="let a of user.asesor; let last = last">
+                                                {{ a.nama }}<span *ngIf="!last">, </span>
+                                            </span>
+                                        </small>
                                     </div>
                                 </td>
-                                <td class="d-none d-lg-table-cell">{{ user.UnitKerja }}</td>
+                                <td class="d-none d-lg-table-cell">{{ user.unitKerja }}</td>
                                 <td class="d-none d-md-table-cell">
-                                    {{ user.AsesorSmki ? 'Asesor SMKI' : '' }}
-                                    {{ user.AsesorIso ? 'Asesor ISO' : '' }}
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge" 
-                                          [class.bg-success]="user.Status == true"
-                                          [class.bg-danger]="user.Status != true">
-                                        {{ user.Status ? 'Aktif' : 'Tidak Aktif' }}
+                                    <span *ngFor="let a of user.asesor; let last = last">
+                                        {{ a.nama }}<span *ngIf="!last">, </span>
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-primary" (click)="onEditClickBPJS(bpjsModalEdit, user.Id)">
+                                    <span class="badge" 
+                                          [class.bg-success]="user.status == true"
+                                          [class.bg-danger]="user.status != true">
+                                        {{ user.status ? 'Aktif' : 'Tidak Aktif' }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-primary" (click)="onEditClickBPJS(bpjsModalEdit, user.id)">
                                         <i class="ri-edit-line d-md-none"></i>
                                         <span class="d-none d-md-inline">Edit</span>
                                     </button>
@@ -168,34 +173,39 @@
                                     {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
                                 </td>
                                 <td>
-                                    <div>{{ user.Nama }}</div>
-                                    <small class="text-muted">({{ user.Nik }})</small>
+                                    <div>{{ user.nama }}</div>
+                                    <small class="text-muted">({{ user.nik }})</small>
                                     <!-- Mobile view - show hidden columns -->
                                     <div class="d-lg-none mt-2">
-                                        <small class="text-muted d-block">Email: {{ user.Email }}</small>
+                                        <small class="text-muted d-block">Email: {{ user.email }}</small>
                                     </div>
                                     <div class="d-md-none mt-1">
-                                        <small class="text-muted d-block">Hak Akses: {{ user.AsesorSmki }}</small>
+                                        <small class="text-muted d-block">Grup: 
+                                            <span *ngFor="let a of user.asesor; let last = last">
+                                                {{ a.nama }}<span *ngIf="!last">, </span>
+                                            </span>
+                                        </small>                                    
                                     </div>
                                 </td>
-                                <td class="d-none d-lg-table-cell">{{ user.Email }}</td>
+                                <td class="d-none d-lg-table-cell">{{ user.email }}</td>
                                 <td class="d-none d-md-table-cell">
-                                    {{ user.AsesorSmki ? 'Asesor SMKI dan ' : '' }}
-                                    {{ user.AsesorIso ? 'Asesor ISO' : '' }}
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge" 
-                                          [class.bg-success]="user.Status == true"
-                                          [class.bg-danger]="user.Status == false">
-                                        {{ user.Status ? 'Aktif' : 'Non Aktif'}}
+                                    <span *ngFor="let a of user.asesor; let last = last">
+                                        {{ a.nama }}<span *ngIf="!last">, </span>
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-primary m-1" (click)="onEditClickEksternal(eksternalModalEdit, user.Id)">
+                                    <span class="badge" 
+                                          [class.bg-success]="user.status == true"
+                                          [class.bg-danger]="user.status == false">
+                                        {{ user.status ? 'Aktif' : 'Non Aktif'}}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-primary m-1" (click)="onEditClickEksternal(eksternalModalEdit, user.id)">
                                         <i class="ri-edit-line d-md-none"></i>
                                         <span class="d-none d-md-inline">Edit</span>
                                     </button>
-                                    <button class="btn btn-sm btn-success m-1" (click)="onEditClickEksternal(eksternalModalEdit, user.Id)">
+                                    <button class="btn btn-sm btn-success m-1" (click)="onEditClickEksternal(eksternalModalEdit, user.id)">
                                         <i class="ri-verified-badge-fill d-md-none"></i>
                                         <span class="d-none d-md-inline">Kirim Aktivasi</span>
                                     </button>
@@ -320,14 +330,15 @@
         <!-- Grup User -->
         <div class="mb-3">
             <label class="form-label fw-semibold">Grup User</label>
-            <select class="form-select" [(ngModel)]="selectedGrupUser" (change)="onSelectGrupUser($event)">
-                <option value="" disabled selected>Pilih grup user</option>
-                <option value="smki">Asesor SMKI</option>
-                <option value="iso">Asesor Audit ISO</option>
+            <select class="form-select" [(ngModel)]="userData.asesorId" name="asesorId">
+                <option value="" disabled selected>Pilih Asesor</option>
+                <option *ngFor="let a of asesor" [ngValue]="[a.id]">
+                    {{ a.nama }}
+                </option>
             </select>
         </div>
 
-        <!-- Status Toggle -->
+        <!-- Status -->
         <div class="mb-4">
             <label class="form-label fw-semibold d-block mb-2">Status</label>
             <div class="form-check form-switch form-switch-lg">
@@ -376,27 +387,18 @@
             <input type="text" class="form-control" [(ngModel)]="userData.email" name="Email" placeholder="Masukkan email user">
         </div>
         <div class="mb-3">
-            <label class="form-label fw-semibold d-block mb-2" style="color: #2d3748;">Hak Akses</label>
-            <div class="form-check mb-2">
-            <input class="form-check-input" 
-                    type="checkbox" 
-                    id="asesorSMKI"
-                    [(ngModel)]="userData.asesorSmki"
-                    name="AsesorSMKI"
-                    >
-            <label class="form-check-label" for="asesorSMKI" style="color: #4a5568;">
-                Asesor SMKI
-            </label>
-            </div>
-            <div class="form-check">
-            <input class="form-check-input" 
-                    type="checkbox" 
-                    id="asesorAuditISO"
-                    [(ngModel)]="userData.asesorIso"
-                    name="AsesorAuditISO">
-            <label class="form-check-label" for="asesorAuditISO" style="color: #4a5568;">
-                Asesor Audit ISO
-            </label>
+            <label class="form-label fw-semibold">Pilih Asesor</label>
+
+            <div *ngFor="let a of asesor">
+                <input 
+                type="checkbox"
+                [checked]="userData.asesorId.includes(a.id)"
+                (change)="checkBoxAsesor(a.Id, $event)"
+                id="asesor_{{a.id}}"
+                >
+                <label class="ms-2" for="asesor_{{a.id}}">
+                {{ a.nama }}
+                </label>
             </div>
         </div>
 
@@ -448,7 +450,7 @@
                     <div>
                         <strong>{{ item.nama }}</strong> (NPP: {{ item.npp }})
                         <br>
-                        <small class="text-muted">{{ item.namaunitkerja }}</small>
+                        <small class="text-muted">{{ item.namaUnitKerja }}</small>
                     </div>
                 </ng-template>
 
@@ -461,18 +463,25 @@
         <!-- Unit Kerja -->
         <div class="mb-3">
             <label class="form-label fw-semibold">Unit Kerja</label>
-            <input type="text" class="form-control" name="UnitKerja" [(ngModel)]="userData.unitKerja" readonly disabled>
+            <input type="text" class="form-control" name="unitKerja" [(ngModel)]="userData.unitKerja" readonly disabled>
         </div>
 
-        <!-- Grup User -->
         <div class="mb-3">
-            <label class="form-label fw-semibold">Grup User</label>
-            <select class="form-select" name="grupUser" [(ngModel)]="selectedGrupUser" (change)="onSelectGrupUser($event)">
-                <option value="" disabled>Pilih grup user</option>
-                <option value="smki">Asesor SMKI</option>
-                <option value="iso">Asesor Audit ISO</option>
+            <label class="form-label fw-semibold">
+            Grup User
+            </label>
+            <select 
+                class="form-select" 
+                [(ngModel)]="selectedAsesorId"
+                (ngModelChange)="onAsesorChange($event)"
+                name="asesorId"
+                required>
+                <option [ngValue]="null" disabled>Pilih Asesor</option>
+                <option *ngFor="let a of asesor" [ngValue]="a.id">
+                    {{ a.nama }}
+                </option>
             </select>
-        </div>
+      </div>
 
         <!-- Status Toggle -->
         <div class="mb-4">
@@ -524,26 +533,16 @@
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold d-block mb-2" style="color: #2d3748;">Hak Akses</label>
-            <div class="form-check mb-2">
-            <input class="form-check-input" 
-                    type="checkbox" 
-                    id="asesorSMKI"
-                    [(ngModel)]="userData.asesorSmki"
-                    name="AsesorSMKI"
-                    >
-            <label class="form-check-label" for="asesorSMKI" style="color: #4a5568;">
-                Asesor SMKI
-            </label>
-            </div>
-            <div class="form-check">
-            <input class="form-check-input" 
-                    type="checkbox" 
-                    id="asesorAuditISO"
-                    [(ngModel)]="userData.asesorIso"
-                    name="AsesorAuditISO">
-            <label class="form-check-label" for="asesorAuditISO" style="color: #4a5568;">
-                Asesor Audit ISO
-            </label>
+            <div *ngFor="let a of asesor">
+                <input 
+                    type="checkbox"
+                    [checked]="userData.asesorId.includes(a.id)"
+                    (change)="checkBoxAsesor(a.id, $event)"
+                    id="asesor_{{a.id}}"
+                >
+                <label class="ms-2" for="asesor_{{a.id}}">
+                    {{ a.nama }}
+                </label>
             </div>
         </div>
 

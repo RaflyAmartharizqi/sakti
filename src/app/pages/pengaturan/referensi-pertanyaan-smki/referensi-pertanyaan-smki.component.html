@@ -89,21 +89,25 @@
         <form>
             <div class="mb-3">
                 <label class="form-label">Standar</label>
-                <select class="form-select mb-3" aria-label="standar">
-                    <option selected>Pilih Standar</option>
-                    <option value="1">Assesment SMKI</option>
-                    <option value="2">Audit ISO 2000-1</option>
-                    <option value="3">Audit ISO 90001</option>
-                </select>        
+                <select class="form-select mb-3"
+                        aria-label="standar"
+                        [(ngModel)]="selectedStandar"
+                        (change)="onStandarChange()">
+                    <option value="">Pilih Standar</option>
+                    <option *ngFor="let item of standarKlausulAnnex" 
+                            [value]="item.Standar">
+                        {{ item.Standar }}
+                    </option>
+                </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">Area</label>
-                <select class="form-select mb-3" aria-label="area">
-                    <option selected>Pilih Referensi Area sesuai dengan standar</option>
-                    <option value="1">Area A</option>
-                    <option value="2">Area B</option>
-                    <option value="3">Area C</option>
-                </select>        
+                <label class="form-label">Klausul/Annex</label>
+                <select class="form-select mb-3" aria-label="area" [(ngModel)]="selectedKlausulAnnex">
+                    <option value="">Pilih Referensi Area sesuai standar</option>
+                    <option *ngFor="let item of refKlausulAnnex" [value]="item.Id">
+                        {{ item.Nama }} - {{ item.Kode }}
+                    </option>
+                </select>    
             </div>
             <div class="mb-3">
                 <label class="form-label">Pertanyaan</label>
@@ -118,57 +122,16 @@
             <label class="form-label fw-semibold">Bidang</label>
             <div class="row">
                 <div class="col-md-6">
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="sdmukpKC">
-                    <label class="form-check-label" for="sdmukpKC">SDMUKP - KC</label>
+                    <div class="form-check mb-2" *ngFor="let item of smkiBidangKC">
+                        <input class="form-check-input" type="checkbox" [id]="item.Id">
+                        <label class="form-check-label" [for]="item.Id">{{ item.Nama }}</label>
+                    </div>
                 </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="pkpKC">
-                    <label class="form-check-label" for="pkpKC">PKP - KC</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="pmuKC">
-                    <label class="form-check-label" for="pmuKC">PMU - KC</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="yanfaskesKC">
-                    <label class="form-check-label" for="yanfaskesKC">YANFASKES - KC</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="yanserKC">
-                    <label class="form-check-label" for="yanserKC">YANSER - KC</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="kepserKC">
-                    <label class="form-check-label" for="kepserKC">KEPSER - KC</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="adminGRCKC">
-                    <label class="form-check-label" for="adminGRCKC">Admin GRC KC</label>
-                </div>
-                </div>
-
                 <div class="col-md-6">
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="sdmukKepwil">
-                    <label class="form-check-label" for="sdmukKepwil">SDMUK - Kepwil</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="pkKepwil">
-                    <label class="form-check-label" for="pkKepwil">PK - Kepwil</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="kmlKepwil">
-                    <label class="form-check-label" for="kmlKepwil">KML - Kepwil</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="jpkKepwil">
-                    <label class="form-check-label" for="jpkKepwil">JPK - Kepwil</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="adminGRCKepwil">
-                    <label class="form-check-label" for="adminGRCKepwil">Admin GRC Kepwil</label>
-                </div>
+                    <div class="form-check mb-2" *ngFor="let item of smkiBidangKepwil">
+                        <input class="form-check-input" type="checkbox" [id]="item.Id">
+                        <label class="form-check-label" [for]="item.Id">{{ item.Nama }}</label>
+                    </div>
                 </div>
             </div>
             </div>

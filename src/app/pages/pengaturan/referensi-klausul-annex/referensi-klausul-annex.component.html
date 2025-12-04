@@ -62,27 +62,27 @@
                     <tr *ngFor="let data of refKlausulAnnex let i = index">
                         <td class="text-center">{{ i+1 }}</td>
                         <td>
-                            <div>{{ data.Standar }}</div>
+                            <div>{{ data.standar }}</div>
                         </td>
-                        <td class="d-sm-table-cell">{{ data.Kode }}</td>
-                        <td class="d-md-table-cell">{{ data.Nama }}</td>
-                        <td class="d-lg-table-cell">{{ data.Deskripsi }}</td>
+                        <td class="d-sm-table-cell">{{ data.kode }}</td>
+                        <td class="d-md-table-cell">{{ data.nama }}</td>
+                        <td class="d-lg-table-cell">{{ data.deskripsi }}</td>
                         <td class="text-center">
                             <span class="badge" 
-                                [class.bg-success]="data.Status === 1"
-                                [class.bg-danger]="data.Status !== 1">
-                                {{ data.Status ? 'Aktif' : 'Tidak Aktif'}}
+                                [class.bg-success]="data.status === 1"
+                                [class.bg-danger]="data.status !== 1">
+                                {{ data.status ? 'Aktif' : 'Tidak Aktif'}}
                             </span>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiKlausulAnnex(updateReferensiKlausulAnnexModal, data.Id)">
+                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiKlausulAnnex(updateReferensiKlausulAnnexModal, data.id)">
                                 <i class="ri-edit-line d-md-none"></i>
                                 <span class="d-none d-md-inline">Edit</span>
                             </button>
                         </td>
                     </tr>
                     <tr *ngIf="refKlausulAnnex.length === 0 && !isLoading">
-                        <td colspan="6" class="text-center py-4">
+                        <td colspan="7" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="ri-file-list-line fs-1 d-block mb-2"></i>
                                 Tidak ada data
@@ -90,7 +90,7 @@
                         </td>
                     </tr>
                     <tr *ngIf="isLoading">
-                        <td colspan="6" class="text-center py-4">
+                        <td colspan="7" class="text-center py-4">
                             <div class="text-muted">
                                 <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
                                 Memuat Data...
