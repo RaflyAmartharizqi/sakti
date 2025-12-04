@@ -60,5 +60,11 @@ export class ReferensiKlausulAnnexService {
         );
     }
 
+    getStandarAssesment():Observable<any> {
+        return this.http.get(
+            `${this.API_URL}StandarAssesment/getlist`,
+        );
+    }
+
 }
 

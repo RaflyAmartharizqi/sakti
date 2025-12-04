@@ -27,7 +27,7 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
 
   refKlausulAnnexData = {
     id: null,
-    standar: '',
+    standarAssesmentId: null,
     kode: '',
     nama: '',
     deskripsi: '',
@@ -39,7 +39,7 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
       { label: 'Pengaturan' },
       { label: 'Referensi Klausul/Annex', active: true }
     ];
-    
+    this.getStandarAssesment();
     this.loadData();
   }
 
@@ -49,12 +49,12 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
       next: (res) => {
         const data = res.response;
         this.refKlausulAnnexData = {
-          id: data.Id,
-          standar: data.Standar,
-          kode: data.Kode,
-          nama: data.Nama,
-          deskripsi: data.Deskripsi,
-          status: data.Status === 1 ? true : false
+          id: data.id,
+          standarAssesmentId: data.standarAssesmentId,
+          kode: data.kode,
+          nama: data.nama,
+          deskripsi: data.deskripsi,
+          status: data.status === 1 ? true : false
         };
         console.log(this.refKlausulAnnexData);
         this.modalService.open(updateReferensiKlausulAnnexModal, { centered: true });
@@ -71,6 +71,7 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
   }
 
   refKlausulAnnex: any[] = [];
+  standarAssesment: any[] = [];
   totalData = 0;
   totalPage = 0;
   from = 0;
@@ -82,6 +83,15 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
     limit: 10,
     search: '',
     status: null,
+  }
+
+  getStandarAssesment() {
+    this.refKlausulAnnexService.getStandarAssesment().subscribe({
+      next: (res) => {
+        this.standarAssesment = res.response.list;
+        console.log(this.standarAssesment);
+      }
+    });
   }
 
   loadData() {
@@ -153,7 +163,7 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
   resetData() {
     this.refKlausulAnnexData = {
       id: null,
-      standar: '',
+      standarAssesmentId: null,
       kode: '',
       nama: '',
       deskripsi: '',
@@ -191,6 +201,60 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
     this.filters.page = 1;
     this.currentPage = 1;
     this.loadData();
+  }
+
+    // ===================== PAGINATION =====================
+
+  get paginationInfo(): string {
+    if (this.totalData === 0) {
+      return 'Showing 0 to 0 of 0 entries';
+    }
+    return `Showing ${this.from} to ${this.to} of ${this.totalData} entries`;
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const totalPages = this.totalPage;
+    const currentPage = this.currentPage;
+
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, -1, totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, -1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, -1, currentPage - 1, currentPage, currentPage + 1, -1, totalPages);
+      }
+    }
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPage && page !== this.currentPage) {
+      this.currentPage = page;
+      this.filters.page = page;
+      this.loadData();
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.filters.page = this.currentPage;
+      this.loadData();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPage) {
+      this.currentPage++;
+      this.filters.page = this.currentPage;
+      this.loadData();
+    }
   }
 
 }
