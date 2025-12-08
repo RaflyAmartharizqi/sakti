@@ -7,20 +7,41 @@
         <!-- Header Section -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <h4 class="mb-0">Referensi Pertanyaan SMKI</h4>
-            <button class="btn btn-primary px-4" (click)="openModalReferensiPertanyaanSmki(referensiPertanyaanSmkiModal)">
+            <button class="btn btn-primary px-4" (click)="openModalReferensiPertanyaanSmki(tambahReferensiPertanyaanSmkiModal)">
                 <i class="ri-add-box-line me-2"></i>Tambah
             </button>
         </div>
 
+        <!-- Filter and Search Section -->
         <div class="row mb-3 g-3">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-md-6 col-lg-6">
+                <select class="form-select" [(ngModel)]="filters.status" (change)="onStatusFilterChange()">
+                <option [ngValue]="null">Semua Status</option>
+                <option [ngValue]="1">Aktif</option>
+                <option [ngValue]="0">Non Aktif</option>
+                </select>
             </div>
             <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <span class="input-group-text">
                         <i class="ri-search-line"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearchChange()">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="d-flex align-items-center">
+                    <label class="me-2 text-nowrap">Show</label>
+                    <select class="form-select form-select-sm" style="width: 80px;" 
+                            [(ngModel)]="entriesPerPage" (change)="onEntriesPerPageChange()">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                    </select>
+                    <span class="ms-2 text-nowrap">Entries</span>
                 </div>
             </div>
         </div>
@@ -41,106 +62,222 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let referensi of paginatedReferensiPertanyaanSmki">
-                        <td class="text-center">{{ referensi.no }}</td>
-                        <td>
-                            <div>{{ referensi.standar }}</div>
+                    <tr *ngFor="let data of refPertanyaanSmki let i = index">
+                        <td class="text-center">
+                            {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
                         </td>
-                        <td class="d-sm-table-cell">{{ referensi.area }}</td>
-                        <td class="d-md-table-cell">{{ referensi.kodeArea }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.kodePertanyaan }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.pertanyaan }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.hasilYangDiharapkan }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.bidang }}</td>
+                        <td>
+                            <div>{{ data.standar }}</div>
+                        </td>
+                        <td class="d-sm-table-cell">{{ data.namaRefKlausulAnnex }}</td>
+                        <td class="d-md-table-cell">{{ data.kodeRefKlausulAnnex }}</td>
+                        <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanSmki }}</td>
+                        <td class="d-lg-table-cell">{{ data.pertanyaan }}</td>
+                        <td class="d-lg-table-cell">{{ data.hasilYangDiharapkan }}</td>
+                        <td class="d-lg-table-cell">{{ data.bidang }}</td>
                         <td class="text-center">
                             <span class="badge" 
-                                [class.bg-success]="referensi.status === 'Aktif'"
-                                [class.bg-danger]="referensi.status !== 'Aktif'">
-                                {{ referensi.status }}
+                                [class.bg-success]="data.status === 1"
+                                [class.bg-danger]="data.status !== 1">
+                                {{ data.status ? 'Aktif' : 'Tidak Aktif' }}
                             </span>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiPertanyaanSmki(referensi, referensiPertanyaanSmkiModal)">
+                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiPertanyaanSmki(updateReferensiPertanyaanSmkiModal, data.id)">
                                 <i class="ri-edit-line d-md-none"></i>
                                 <span class="d-none d-md-inline">Edit</span>
                             </button>
                         </td>
                     </tr>
-                    <tr *ngIf="paginatedReferensiPertanyaanSmki.length === 0">
-                        <td colspan="6" class="text-center py-4">
+                    <tr *ngIf="refPertanyaanSmki.length === 0 && !isLoading">
+                        <td colspan="10" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="ri-file-list-line fs-1 d-block mb-2"></i>
                                 Tidak ada data
                             </div>
                         </td>
                     </tr>
+                    <tr *ngIf="isLoading">
+                        <td colspan="10" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
+            <div>
+                <span class="text-muted">{{ paginationInfo }}</span>
+            </div>
+            <nav *ngIf="totalPage > 0">
+                <ul class="pagination mb-0 flex-wrap">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="javascript:void(0)" (click)="previousPage()" tabindex="-1">
+                            <i class="ri-arrow-left-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" 
+                        *ngFor="let page of pageNumbers"
+                        [class.active]="page === currentPage"
+                        [class.disabled]="page === -1">
+                        <a class="page-link" 
+                           href="javascript:void(0)" 
+                           (click)="page !== -1 && goToPage(page)">
+                            {{ page === -1 ? '...' : page }}
+                        </a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPage">
+                        <a class="page-link" href="javascript:void(0)" (click)="nextPage()">
+                            <i class="ri-arrow-right-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
 
-<ng-template #referensiPertanyaanSmkiModal let-modal>
+<ng-template #tambahReferensiPertanyaanSmkiModal let-modal>
     <div class="modal-header">
         <h5 class="modal-title">Tambah Referensi Pertanyaan SMKI</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
     </div>
     <div class="modal-body">
-        <form>
+        <form (ngSubmit)="create()" #refPertanyaanSmkiForm="ngForm">
             <div class="mb-3">
                 <label class="form-label">Standar</label>
                 <select class="form-select mb-3"
-                        aria-label="standar"
+                        name="standarAssesment"
                         [(ngModel)]="selectedStandar"
-                        (change)="onStandarChange()">
-                    <option value="">Pilih Standar</option>
-                    <option *ngFor="let item of standarKlausulAnnex" 
-                            [value]="item.Standar">
-                        {{ item.Standar }}
+                        (change)="onStandarChange()"
+                        disabled>
+                <option [ngValue]="null" disabled selected>-- Pilih Standar Assesment --</option>
+                <option *ngFor="let item of standarAssesment" [ngValue]="item.id">
+                    {{ item.nama }}
+                </option>
+                </select>
+
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Klausul/Annex</label>
+                <select class="form-select mb-3"
+                        name="refKlausulAnnexId"
+                        [(ngModel)]="refPertanyaanSmkiData.refKlausulAnnexId">
+                    <option [ngValue]="null" disabled selected>-- Pilih Klausul/Annex --</option>
+                    <option *ngFor="let item of refKlausulAnnex" [ngValue]="item.id">
+                        {{ item.nama }} - {{ item.kode }}
                     </option>
                 </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">Klausul/Annex</label>
-                <select class="form-select mb-3" aria-label="area" [(ngModel)]="selectedKlausulAnnex">
-                    <option value="">Pilih Referensi Area sesuai standar</option>
-                    <option *ngFor="let item of refKlausulAnnex" [value]="item.Id">
-                        {{ item.Nama }} - {{ item.Kode }}
-                    </option>
-                </select>    
-            </div>
-            <div class="mb-3">
                 <label class="form-label">Pertanyaan</label>
-                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan pertanyaan"></textarea>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="pertanyaan" [(ngModel)]="refPertanyaanSmkiData.pertanyaan" placeholder="Masukkan pertanyaan"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Hasil yang Diharapkan</label>
-                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan hasil yang diharapkan"></textarea>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="hasilYangDiharapkan" [(ngModel)]="refPertanyaanSmkiData.hasilYangDiharapkan" placeholder="Masukkan hasil yang diharapkan"></textarea>
             </div>
+
             <!-- Custom Checkboxes Color -->
             <div class="mb-3">
-            <label class="form-label fw-semibold">Bidang</label>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-check mb-2" *ngFor="let item of smkiBidangKC">
-                        <input class="form-check-input" type="checkbox" [id]="item.Id">
-                        <label class="form-check-label" [for]="item.Id">{{ item.Nama }}</label>
-                    </div>
+                <label class="form-label fw-semibold">Bidang</label>
+                <div class="form-check mb-2" *ngFor="let item of smkiBidang">
+                    <input type="checkbox"
+                            class="form-check-input"
+                            [value]="item.id"
+                            [checked]="refPertanyaanSmkiData.bidangSmkiId.includes(item.id)"
+                            (change)="checkBoxBidang(item.id,$event)"
+                            id="smkiBidang{{item.id}}">
+                    <label class="form-check-label" for="asesor_{{item.id}}">{{ item.nama }}</label>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-check mb-2" *ngFor="let item of smkiBidangKepwil">
-                        <input class="form-check-input" type="checkbox" [id]="item.Id">
-                        <label class="form-check-label" [for]="item.Id">{{ item.Nama }}</label>
-                    </div>
-                </div>
-            </div>
             </div>
             <div class="mb-4">
                 <label class="form-label fw-semibold d-block mb-2">Status</label>
                 <div class="form-check form-switch form-switch-lg">
-                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch"name="status" [(ngModel)]="isActive">
+                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refPertanyaanSmkiData.status">
                     <label class="form-check-label ms-2" for="statusSwitch">
-                        {{ isActive ? 'Aktif' : 'Tidak Aktif' }}
+                        {{ refPertanyaanSmkiData.status ? 'Aktif' : 'Tidak Aktif' }}
+                    </label>
+                </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #updateReferensiPertanyaanSmkiModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Referensi Pertanyaan SMKI</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="update()" #refPertanyaanSmkiForm="ngForm">
+            <div class="mb-3">
+                <label class="form-label">Standar</label>
+                <select class="form-select mb-3"
+                        name="standarAssesment"
+                        [(ngModel)]="selectedStandar"
+                        (change)="onStandarChange()"
+                        disabled>
+                <option [ngValue]="null" disabled selected>-- Pilih Standar Assesment --</option>
+                <option *ngFor="let item of standarAssesment" [ngValue]="item.id">
+                    {{ item.nama }}
+                </option>
+                </select>
+
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Klausul/Annex</label>
+                <select class="form-select mb-3"
+                        name="refKlausulAnnexId"
+                        [(ngModel)]="refPertanyaanSmkiData.refKlausulAnnexId">
+                    <option [ngValue]="null" disabled selected>-- Pilih Klausul/Annex --</option>
+                    <option *ngFor="let item of refKlausulAnnex" [ngValue]="item.id">
+                        {{ item.nama }} - {{ item.kode }}
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Pertanyaan</label>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="pertanyaan" [(ngModel)]="refPertanyaanSmkiData.pertanyaan" placeholder="Masukkan pertanyaan"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Hasil yang Diharapkan</label>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="hasilYangDiharapkan" [(ngModel)]="refPertanyaanSmkiData.hasilYangDiharapkan" placeholder="Masukkan hasil yang diharapkan"></textarea>
+            </div>
+
+            <!-- Modal Edit -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Bidang</label>
+                <div class="form-check mb-2" *ngFor="let item of smkiBidang">
+                    <input type="checkbox"
+                        class="form-check-input"
+                        [value]="item.id"
+                        id="bidangEdit{{ item.id }}"
+                        [checked]="refPertanyaanSmkiData.bidangSmkiId.includes(item.id)"
+                        (change)="checkBoxBidang(item.id,$event)">
+                    <label class="form-check-label" for="bidangEdit{{ item.id }}">{{ item.nama }}</label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold d-block mb-2">Status</label>
+                <div class="form-check form-switch form-switch-lg">
+                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refPertanyaanSmkiData.status">
+                    <label class="form-check-label ms-2" for="statusSwitch">
+                        {{ refPertanyaanSmkiData.status ? 'Aktif' : 'Tidak Aktif' }}
                     </label>
                 </div>
             </div>

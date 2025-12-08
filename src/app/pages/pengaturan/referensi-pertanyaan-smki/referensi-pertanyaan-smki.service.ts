@@ -15,7 +15,7 @@ export class ReferensiPertanyaanSmkiService {
 
     create(payload: any) {
         return this.http.post(
-            this.API_URL + 'RefKlausulAnnex/insert',
+            this.API_URL + 'RefPertanyaanSmki/insert',
             payload,
             {
                 headers: new HttpHeaders({
@@ -26,27 +26,41 @@ export class ReferensiPertanyaanSmkiService {
         );
     }
 
+    get(filters: any):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}RefPertanyaanSmki/getlist`,
+            {
+                params: {
+                    page: filters.page ?? 1,
+                    limit: filters.limit ?? 10,
+                    search: filters.search ?? null,
+                    status: filters.status ?? null,
+                }
+            }
+        );
+    }
+
     getSmkiBidang():Observable<any> {
         return this.http.get(
             `${this.API_URL}BidangSmki/getlist`
         );
     }
 
-    getStandarKalusulAnnex():Observable<any> {
+    getRefKlausulAnnexByStandar(standarAssesmentId: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefKlausulAnnex/getstandar`
+            `${this.API_URL}RefKlausulAnnex/getbystandar/${standarAssesmentId}`
         );
     }
 
-    getRefKlausulAnnexByStandar(standar: string):Observable<any> {
+    getStandarAssesment():Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefKlausulAnnex/getbystandar/${standar}`
+            `${this.API_URL}StandarAssesment/getlist`
         );
     }
 
     update(id: number, payload: any) {
         return this.http.put(
-            this.API_URL + `RefKlausulAnnex/update/${id}`,
+            this.API_URL + `RefPertanyaanSmki/update/${id}`,
             payload,
             {
                 headers: new HttpHeaders({
@@ -59,7 +73,7 @@ export class ReferensiPertanyaanSmkiService {
 
     getById(id: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefKlausulAnnex/getbyid/${id}`,
+            `${this.API_URL}RefPertanyaanSmki/getbyid/${id}`,
         );
     }
 

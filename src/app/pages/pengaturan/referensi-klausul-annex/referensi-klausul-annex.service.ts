@@ -56,7 +56,7 @@ export class ReferensiKlausulAnnexService {
 
     getById(id: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefKlausulAnnex/getbyid/${id}`,
+            `${this.API_URL}RefPertanyaanSmki/getbyid/${id}`,
         );
     }
 

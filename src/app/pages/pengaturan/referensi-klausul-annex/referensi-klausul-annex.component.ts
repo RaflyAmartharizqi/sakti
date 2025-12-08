@@ -169,7 +169,6 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
       deskripsi: '',
       status: true
     };
-
   }
 
   // ===================== FILTER =====================

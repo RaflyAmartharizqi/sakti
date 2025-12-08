@@ -60,7 +60,9 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let data of refKlausulAnnex let i = index">
-                        <td class="text-center">{{ i+1 }}</td>
+                        <td class="text-center">
+                            {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
+                        </td>
                         <td>
                             <div>{{ data.standar }}</div>
                         </td>
@@ -100,7 +102,7 @@
                 </tbody>
             </table>
         </div>
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
             <div>
                 <span class="text-muted">{{ paginationInfo }}</span>
             </div>
