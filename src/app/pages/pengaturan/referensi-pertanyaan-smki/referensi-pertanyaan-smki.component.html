@@ -52,7 +52,7 @@
                         <th class="text-center" style="width: 60px;">No</th>
                         <th>Standar</th>
                         <th>Area</th>
-                        <th class="d-lg-table-cell">Kode Area</th>
+                        <th class="d-lg-table-cell">Kode Klausul/Annex</th>
                         <th class="d-md-table-cell">Kode Pertanyaan</th>
                         <th class="d-md-table-cell">Pertanyaan</th>
                         <th class="d-md-table-cell">Hasil yang Diharapkan</th>
@@ -161,26 +161,35 @@
                     {{ item.nama }}
                 </option>
                 </select>
-
             </div>
             <div class="mb-3">
                 <label class="form-label">Klausul/Annex</label>
                 <select class="form-select mb-3"
                         name="refKlausulAnnexId"
+                        required
                         [(ngModel)]="refPertanyaanSmkiData.refKlausulAnnexId">
-                    <option [ngValue]="null" disabled selected>-- Pilih Klausul/Annex --</option>
+                    <option [ngValue]="null" disabled>-- Pilih Klausul/Annex --</option>
                     <option *ngFor="let item of refKlausulAnnex" [ngValue]="item.id">
                         {{ item.nama }} - {{ item.kode }}
                     </option>
                 </select>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && !refPertanyaanSmkiData.refKlausulAnnexId">
+                    Wajib memilih Klausul/Annex.
+                </small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Pertanyaan</label>
                 <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="pertanyaan" [(ngModel)]="refPertanyaanSmkiData.pertanyaan" placeholder="Masukkan pertanyaan"></textarea>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && !refPertanyaanSmkiData.pertanyaan">
+                    Pertanyaan wajib diisi.
+                </small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Hasil yang Diharapkan</label>
-                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="hasilYangDiharapkan" [(ngModel)]="refPertanyaanSmkiData.hasilYangDiharapkan" placeholder="Masukkan hasil yang diharapkan"></textarea>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="hasilYangDiharapkan" [(ngModel)]="refPertanyaanSmkiData.hasilYangDiharapkan" placeholder="Masukkan hasil yang diharapkan" required></textarea>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && !refPertanyaanSmkiData.hasilYangDiharapkan">
+                    Hasil yang diharapkan wajib diisi.
+                </small>
             </div>
 
             <!-- Custom Checkboxes Color -->
@@ -192,14 +201,18 @@
                             [value]="item.id"
                             [checked]="refPertanyaanSmkiData.bidangSmkiId.includes(item.id)"
                             (change)="checkBoxBidang(item.id,$event)"
+                            required
                             id="smkiBidang{{item.id}}">
                     <label class="form-check-label" for="asesor_{{item.id}}">{{ item.nama }}</label>
                 </div>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.bidangSmkiId.length === 0">
+                    Minimal pilih 1 bidang.
+                </small>
             </div>
             <div class="mb-4">
                 <label class="form-label fw-semibold d-block mb-2">Status</label>
                 <div class="form-check form-switch form-switch-lg">
-                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refPertanyaanSmkiData.status">
+                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refPertanyaanSmkiData.status" required>
                     <label class="form-check-label ms-2" for="statusSwitch">
                         {{ refPertanyaanSmkiData.status ? 'Aktif' : 'Tidak Aktif' }}
                     </label>
@@ -236,7 +249,6 @@
                     {{ item.nama }}
                 </option>
                 </select>
-
             </div>
             <div class="mb-3">
                 <label class="form-label">Klausul/Annex</label>
@@ -248,17 +260,24 @@
                         {{ item.nama }} - {{ item.kode }}
                     </option>
                 </select>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && !refPertanyaanSmkiData.refKlausulAnnexId">
+                    Wajib memilih Klausul/Annex.
+                </small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Pertanyaan</label>
                 <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="pertanyaan" [(ngModel)]="refPertanyaanSmkiData.pertanyaan" placeholder="Masukkan pertanyaan"></textarea>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && !refPertanyaanSmkiData.pertanyaan">
+                    Pertanyaan wajib diisi.
+                </small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Hasil yang Diharapkan</label>
                 <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="hasilYangDiharapkan" [(ngModel)]="refPertanyaanSmkiData.hasilYangDiharapkan" placeholder="Masukkan hasil yang diharapkan"></textarea>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && !refPertanyaanSmkiData.hasilYangDiharapkan">
+                    Hasil yang diharapkan wajib diisi.
+                </small>
             </div>
-
-            <!-- Modal Edit -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Bidang</label>
                 <div class="form-check mb-2" *ngFor="let item of smkiBidang">
@@ -270,8 +289,10 @@
                         (change)="checkBoxBidang(item.id,$event)">
                     <label class="form-check-label" for="bidangEdit{{ item.id }}">{{ item.nama }}</label>
                 </div>
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.bidangSmkiId.length === 0">
+                    Minimal pilih 1 bidang.
+                </small>
             </div>
-
             <div class="mb-4">
                 <label class="form-label fw-semibold d-block mb-2">Status</label>
                 <div class="form-check form-switch form-switch-lg">

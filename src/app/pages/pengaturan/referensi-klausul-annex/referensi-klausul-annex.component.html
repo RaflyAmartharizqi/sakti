@@ -142,49 +142,79 @@
         <h5 class="modal-title">Tambah Referensi Klausul/Annex</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
     </div>
+
     <div class="modal-body">
         <form (ngSubmit)="create()" #refKlausulAnnexForm="ngForm">
+
+            <!-- Standar -->
             <div class="mb-3">
                 <label class="form-label">Standar</label>
-                <select class="form-select mb-3" aria-label="standar" [(ngModel)]="refKlausulAnnexData.standarAssesmentId" name="standarAssesmentId">
-                    <option value=null disabled selected>-- Pilih Standar Assesment --</option>
+                <select class="form-select mb-1"
+                        name="standarAssesmentId"
+                        required
+                        [(ngModel)]="refKlausulAnnexData.standarAssesmentId">
+                    <option value="null" disabled>-- Pilih Standar Assesment --</option>
                     <option *ngFor="let item of standarAssesment" [value]="item.id">
                         {{ item.nama }}
                     </option>
                 </select>
+                <small class="text-danger" *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.standarAssesmentId">
+                    Standar wajib dipilih.
+                </small>
             </div>
+
+            <!-- Kode Klausul -->
             <div class="mb-3">
                 <label class="form-label">Kode Klausul/Annex</label>
-                <input type="text" class="form-control" placeholder="Masukkan kode klausul/annes" [(ngModel)]="refKlausulAnnexData.kode" name="kode">
+                <input type="text" class="form-control" placeholder="Masukkan kode klausul/annex"
+                       name="kode" required [(ngModel)]="refKlausulAnnexData.kode">
+                <small class="text-danger" *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.kode">
+                    Kode wajib diisi.
+                </small>
             </div>
+
+            <!-- Nama Klausul -->
             <div class="mb-3">
                 <label class="form-label">Nama Klausul/Annex</label>
-                <input type="text" class="form-control" placeholder="Masukkan nama klausul/annes" [(ngModel)]="refKlausulAnnexData.nama" name="nama">
+                <input type="text" class="form-control" placeholder="Masukkan nama klausul/annex"
+                       name="nama" required [(ngModel)]="refKlausulAnnexData.nama">
+                <small class="text-danger" *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.nama">
+                    Nama wajib diisi.
+                </small>
             </div>
+
+            <!-- Deskripsi -->
             <div class="mb-3">
                 <label class="form-label">Deskripsi Klausul/Annex</label>
-                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan deskripsi klausul/annex" [(ngModel)]="refKlausulAnnexData.deskripsi" name="deskripsi"></textarea>
+                <textarea class="form-control" rows="3" placeholder="Masukkan deskripsi klausul/annex"
+                          name="deskripsi" required [(ngModel)]="refKlausulAnnexData.deskripsi"></textarea>
+                <small class="text-danger" *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.deskripsi">
+                    Deskripsi wajib diisi.
+                </small>
             </div>
+
+            <!-- Status -->
             <div class="mb-4">
                 <label class="form-label fw-semibold d-block mb-2">Status</label>
                 <div class="form-check form-switch form-switch-lg">
-                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refKlausulAnnexData.status">
-                    <label class="form-check-label ms-2" for="statusSwitch">
+                    <input class="form-check-input" type="checkbox"
+                           name="status" [(ngModel)]="refKlausulAnnexData.status">
+                    <label class="form-check-label ms-2">
                         {{ refKlausulAnnexData.status ? 'Aktif' : 'Tidak Aktif' }}
                     </label>
                 </div>
             </div>
+
+            <!-- Button -->
             <div class="d-flex gap-2 justify-content-center">
-                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
-                    Batal
-                </button>
-                <button type="submit" class="btn btn-primary px-4">
-                    Simpan
-                </button>
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">Batal</button>
+                <button type="submit" class="btn btn-primary px-4">Simpan</button>
             </div>
+
         </form>
     </div>
 </ng-template>
+
 
 <!-- ========== Modal Update Data Referensi Klausul Annex ========== -->
 <ng-template #updateReferensiKlausulAnnexModal let-modal>
@@ -192,51 +222,86 @@
         <h5 class="modal-title">Update Referensi Klausul/Annex</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
     </div>
+
     <div class="modal-body">
         <form (ngSubmit)="update()" #refKlausulAnnexForm="ngForm">
+
+            <!-- Standar -->
             <div class="mb-3">
                 <label class="form-label">Standar</label>
-                <select class="form-select mb-3"
-                        [(ngModel)]="refKlausulAnnexData.standarAssesmentId"
-                        name="standarAssesmentId">
+                <select class="form-select mb-1"
+                        name="standarAssesmentId"
+                        required
+                        [(ngModel)]="refKlausulAnnexData.standarAssesmentId">
 
                     <option [ngValue]="null" disabled>-- Pilih Standar Assesment --</option>
-
                     <option *ngFor="let item of standarAssesment" [ngValue]="item.id">
                         {{ item.nama }}
                     </option>
                 </select>
-
+                <small class="text-danger"
+                    *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.standarAssesmentId">
+                    Standar wajib dipilih.
+                </small>
             </div>
+
+            <!-- Kode -->
             <div class="mb-3">
                 <label class="form-label">Kode Klausul/Annex</label>
-                <input type="text" class="form-control" placeholder="Masukkan kode klausul/annes" [(ngModel)]="refKlausulAnnexData.kode" name="kode">
+                <input type="text" class="form-control"
+                        placeholder="Masukkan kode klausul/annex"
+                        name="kode" required
+                        [(ngModel)]="refKlausulAnnexData.kode">
+                <small class="text-danger"
+                    *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.kode">
+                    Kode wajib diisi.
+                </small>
             </div>
+
+            <!-- Nama -->
             <div class="mb-3">
                 <label class="form-label">Nama Klausul/Annex</label>
-                <input type="text" class="form-control" placeholder="Masukkan nama klausul/annes" [(ngModel)]="refKlausulAnnexData.nama" name="nama">
+                <input type="text" class="form-control"
+                        placeholder="Masukkan nama klausul/annex"
+                        name="nama" required
+                        [(ngModel)]="refKlausulAnnexData.nama">
+                <small class="text-danger"
+                       *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.nama">
+                    Nama wajib diisi.
+                </small>
             </div>
+
+            <!-- Deskripsi -->
             <div class="mb-3">
                 <label class="form-label">Deskripsi Klausul/Annex</label>
-                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan deskripsi klausul/annex" [(ngModel)]="refKlausulAnnexData.deskripsi" name="deskripsi"></textarea>
+                <textarea class="form-control" rows="3" required
+                        placeholder="Masukkan deskripsi klausul/annex"
+                        name="deskripsi"
+                        [(ngModel)]="refKlausulAnnexData.deskripsi"></textarea>
+                <small class="text-danger"
+                       *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.deskripsi">
+                    Deskripsi wajib diisi.
+                </small>
             </div>
+
+            <!-- Status -->
             <div class="mb-4">
                 <label class="form-label fw-semibold d-block mb-2">Status</label>
                 <div class="form-check form-switch form-switch-lg">
-                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refKlausulAnnexData.status">
-                    <label class="form-check-label ms-2" for="statusSwitch">
+                    <input class="form-check-input" type="checkbox"
+                           name="status" [(ngModel)]="refKlausulAnnexData.status">
+                    <label class="form-check-label ms-2">
                         {{ refKlausulAnnexData.status ? 'Aktif' : 'Tidak Aktif' }}
                     </label>
                 </div>
             </div>
+
+            <!-- Action Button -->
             <div class="d-flex gap-2 justify-content-center">
-                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
-                    Batal
-                </button>
-                <button type="submit" class="btn btn-primary px-4">
-                    Simpan
-                </button>
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">Batal</button>
+                <button type="submit" class="btn btn-primary px-4">Simpan</button>
             </div>
+
         </form>
     </div>
 </ng-template>

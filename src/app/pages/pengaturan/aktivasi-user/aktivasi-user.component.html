@@ -319,6 +319,10 @@
                     {{ item.nama }} (NPP: {{ item.npp }})
                 </ng-template>
             </ng-select>
+            <small class="text-danger"
+                *ngIf="userForm.submitted && !selectedUserBpjs">
+                Nama/NPP wajib dipilih.
+            </small>
         </div>
 
         <!-- Unit Kerja -->
@@ -331,11 +335,15 @@
         <div class="mb-3">
             <label class="form-label fw-semibold">Grup User</label>
             <select class="form-select" [(ngModel)]="userData.asesorId" name="asesorId">
-                <option value="" disabled selected>Pilih Asesor</option>
+                <option value="null" disabled>Pilih Asesor</option>
                 <option *ngFor="let a of asesor" [ngValue]="[a.id]">
                     {{ a.nama }}
                 </option>
             </select>
+            <small class="text-danger"
+                *ngIf="userForm.submitted && userData.asesorId?.length === 0">
+                Grup user wajib dipilih.
+            </small>
         </div>
 
         <!-- Status -->
@@ -377,29 +385,44 @@
         <div class="mb-3">
             <label class="form-label">NIK</label>
             <input type="text" class="form-control" [(ngModel)]="userData.nik" (ngModelChange)="userData.nik = $event.toString()" name="Nik" placeholder="Masukkan nik user" required="Nik Required">
+            <small class="text-danger"
+                *ngIf="userForm.submitted && !userData.nik">
+                NIK wajib diisi.
+            </small>
         </div>
         <div class="mb-3">
             <label class="form-label">Nama</label>
             <input type="text" class="form-control" [(ngModel)]="userData.nama" name="Nama" placeholder="Masukkan nama user">
+            <small class="text-danger"
+                   *ngIf="userForm.submitted && !userData.nama">
+                Nama wajib diisi.
+            </small>
         </div>
         <div class="mb-3">
             <label class="form-label">Email</label>
             <input type="text" class="form-control" [(ngModel)]="userData.email" name="Email" placeholder="Masukkan email user">
+            <small class="text-danger"
+                   *ngIf="userForm.submitted && !userData.email">
+                Email wajib diisi.
+            </small>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold">Pilih Asesor</label>
-
             <div *ngFor="let a of asesor">
                 <input 
                 type="checkbox"
                 [checked]="userData.asesorId.includes(a.id)"
-                (change)="checkBoxAsesor(a.Id, $event)"
+                (change)="checkBoxAsesor(a.id, $event)"
                 id="asesor_{{a.id}}"
                 >
                 <label class="ms-2" for="asesor_{{a.id}}">
                 {{ a.nama }}
                 </label>
             </div>
+            <small class="text-danger"
+                   *ngIf="userForm.submitted && (!userData.asesorId || userData.asesorId.length===0)">
+                Minimal pilih 1 asesor.
+            </small>
         </div>
 
         <div class="mb-4">
@@ -458,6 +481,10 @@
                     {{ item.nama }} (NPP: {{ item.npp }})
                 </ng-template>
             </ng-select>
+            <small class="text-danger"
+                *ngIf="userForm.submitted && !selectedUserBpjs">
+                Nama/NPP wajib dipilih.
+            </small>
         </div>
 
         <!-- Unit Kerja -->
@@ -481,6 +508,10 @@
                     {{ a.nama }}
                 </option>
             </select>
+            <small class="text-danger"
+                *ngIf="userForm.submitted && userData.asesorId?.length === 0">
+                Grup user wajib dipilih.
+            </small>
       </div>
 
         <!-- Status Toggle -->
@@ -522,14 +553,26 @@
         <div class="mb-3">
             <label class="form-label">NIK</label>
             <input type="text" class="form-control" [(ngModel)]="userData.nik" (ngModelChange)="userData.nik = $event.toString()" name="Nik" placeholder="Masukkan nik user" required="Nik Required">
+            <small class="text-danger"
+                *ngIf="userForm.submitted && !userData.nik">
+                NIK wajib diisi.
+            </small>
         </div>
         <div class="mb-3">
             <label class="form-label">Nama</label>
             <input type="text" class="form-control" [(ngModel)]="userData.nama" name="Nama" placeholder="Masukkan nama user">
+            <small class="text-danger"
+                *ngIf="userForm.submitted && !userData.nama">
+                Nama wajib diisi.
+            </small>
         </div>
         <div class="mb-3">
             <label class="form-label">Email</label>
             <input type="text" class="form-control" [(ngModel)]="userData.email" name="Email" placeholder="Masukkan email user">
+            <small class="text-danger"
+                *ngIf="userForm.submitted && !userData.email">
+                Email wajib diisi.
+            </small>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold d-block mb-2" style="color: #2d3748;">Hak Akses</label>
@@ -544,6 +587,10 @@
                     {{ a.nama }}
                 </label>
             </div>
+            <small class="text-danger"
+                *ngIf="userForm.submitted && (!userData.asesorId || userData.asesorId.length===0)">
+                Minimal pilih 1 hak akses.
+            </small>
         </div>
 
         <div class="mb-4">

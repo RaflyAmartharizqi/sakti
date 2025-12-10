@@ -102,7 +102,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
   getRefKlausulAnnexByStandar(selectedStandar: number) {
     this.refPertanyaanSmkiService.getRefKlausulAnnexByStandar(selectedStandar).subscribe({
       next: (res: any) => {
-        this.refKlausulAnnex = res.response;
+        this.refKlausulAnnex = res.response.list;
         console.log(this.refKlausulAnnex);
       },
       error: (err) => console.error(err)
@@ -126,6 +126,12 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
   }
 
   create() {
+    if (!this.refPertanyaanSmkiData.refKlausulAnnexId ||
+        !this.refPertanyaanSmkiData.pertanyaan ||
+        !this.refPertanyaanSmkiData.hasilYangDiharapkan ||
+        this.refPertanyaanSmkiData.bidangSmkiId.length == 0) {
+        return;
+    }
     const payload = {
       ...this.refPertanyaanSmkiData,
       status: this.refPertanyaanSmkiData.status ? 1 : 0
@@ -200,6 +206,12 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
   }
 
   update() {
+    if (!this.refPertanyaanSmkiData.refKlausulAnnexId ||
+        !this.refPertanyaanSmkiData.pertanyaan ||
+        !this.refPertanyaanSmkiData.hasilYangDiharapkan ||
+        this.refPertanyaanSmkiData.bidangSmkiId.length == 0) {
+        return;
+    }
     if (!this.refPertanyaanSmkiData.id) {
       Swal.fire("Error", "ID Referensi Pertanyaan tidak ditemukan.", "error");
       return;

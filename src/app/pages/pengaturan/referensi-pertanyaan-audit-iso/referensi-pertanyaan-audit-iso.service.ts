@@ -8,7 +8,7 @@ import { filter } from 'lodash';
   providedIn: 'root'
 })
 
-export class ReferensiKlausulAnnexService {
+export class ReferensiPertanyaanAuditIso {
 
     private API_URL = GlobalComponent.API_URL;
 
@@ -16,7 +16,7 @@ export class ReferensiKlausulAnnexService {
 
     create(payload: any) {
         return this.http.post(
-            this.API_URL + 'RefKlausulAnnex/insert',
+            this.API_URL + 'RefPertanyaanIso/insert',
             payload,
             {
                 headers: new HttpHeaders({
@@ -29,7 +29,7 @@ export class ReferensiKlausulAnnexService {
 
     get(filters: any):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefKlausulAnnex/getlist`,
+            `${this.API_URL}RefPertanyaanIso/getlist`,
             {
                 params: {
                     page: filters.page ?? 1,
@@ -43,7 +43,7 @@ export class ReferensiKlausulAnnexService {
 
     update(id: number, payload: any) {
         return this.http.put(
-            this.API_URL + `RefKlausulAnnex/update/${id}`,
+            this.API_URL + `RefPertanyaanIso/update/${id}`,
             payload,
             {
                 headers: new HttpHeaders({
@@ -56,13 +56,31 @@ export class ReferensiKlausulAnnexService {
 
     getById(id: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefKlausulAnnex/getbyid/${id}`,
+            `${this.API_URL}RefPertanyaanIso/getbyid/${id}`,
+        );
+    }
+
+    getBidangIso():Observable<any> {
+        return this.http.get(
+            `${this.API_URL}BidangIso/getlist`,
+        );
+    }
+
+    getRefKlausulAnnexByStandar(standarAssesmentId: number):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}RefKlausulAnnex/getbystandar/${standarAssesmentId}`
+        );
+    }
+
+    getRefKlausulAnnexById(id: number):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}RefKlausulAnnex/getbyid/${id}`
         );
     }
 
     getStandarAssesment():Observable<any> {
         return this.http.get(
-            `${this.API_URL}StandarAssesment/getlist`,
+            `${this.API_URL}StandarAssesment/getlist`
         );
     }
 

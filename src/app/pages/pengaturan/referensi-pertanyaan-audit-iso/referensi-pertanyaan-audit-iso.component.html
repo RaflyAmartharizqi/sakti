@@ -7,20 +7,41 @@
         <!-- Header Section -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <h4 class="mb-0">Referensi Pertanyaan Audit ISO</h4>
-            <button class="btn btn-primary px-4" (click)="openModalReferensiPertanyaanAuditIso(referensiPertanyaanAuditIsoModal)">
+            <button class="btn btn-primary px-4" (click)="openModalReferensiPertanyaanAuditIso(tambahReferensiPertanyaanAuditIsoModal)">
                 <i class="ri-add-box-line me-2"></i>Tambah
             </button>
         </div>
 
+        <!-- Filter and Search Section -->
         <div class="row mb-3 g-3">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-md-6 col-lg-6">
+                <select class="form-select" [(ngModel)]="filters.status" (change)="onStatusFilterChange()">
+                <option [ngValue]="null">Semua Status</option>
+                <option [ngValue]="1">Aktif</option>
+                <option [ngValue]="0">Non Aktif</option>
+                </select>
             </div>
             <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <span class="input-group-text">
                         <i class="ri-search-line"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearchChange()">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="d-flex align-items-center">
+                    <label class="me-2 text-nowrap">Show</label>
+                    <select class="form-select form-select-sm" style="width: 80px;" 
+                            [(ngModel)]="entriesPerPage" (change)="onEntriesPerPageChange()">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                    </select>
+                    <span class="ms-2 text-nowrap">Entries</span>
                 </div>
             </div>
         </div>
@@ -30,9 +51,9 @@
                     <tr>
                         <th class="text-center" style="width: 60px;">No</th>
                         <th>Standar</th>
-                        <th>Area</th>
-                        <th class="d-lg-table-cell">Kode Area</th>
-                        <th class="d-md-table-cell">Kode Pertanyaan</th>
+                        <th>Klausul/Annex</th>
+                        <th>Kode Klausul/Annex</th>
+                        <th class="d-md-table-cell">Kode Sub-Klausul/Annex</th>
                         <th class="d-md-table-cell">Pertanyaan</th>
                         <th class="d-md-table-cell">Hasil yang Diharapkan</th>
                         <th class="d-md-table-cell">Bidang</th>
@@ -41,88 +62,260 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let referensi of paginatedReferensiPertanyaanAuditIso">
-                        <td class="text-center">{{ referensi.no }}</td>
-                        <td>
-                            <div>{{ referensi.standar }}</div>
+                    <tr *ngFor="let data of refPertanyaanIso let i = index">
+                        <td class="text-center">
+                            {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
                         </td>
-                        <td class="d-sm-table-cell">{{ referensi.area }}</td>
-                        <td class="d-md-table-cell">{{ referensi.kodeArea }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.kodePertanyaan }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.pertanyaan }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.hasilYangDiharapkan }}</td>
-                        <td class="d-lg-table-cell">{{ referensi.bidang }}</td>
+                        <td>
+                            <div>{{ data.standar }}</div>
+                        </td>
+                        <td class="d-sm-table-cell">{{ data.namaRefKlausulAnnex }}</td>
+                        <td class="d-md-table-cell">{{ data.kodeRefKlausulAnnex }}</td>
+                        <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanIso }}</td>
+                        <td class="d-lg-table-cell">{{ data.pertanyaan }}</td>
+                        <td class="d-lg-table-cell">{{ data.hasilYangDiharapkan }}</td>
+                        <td class="d-lg-table-cell">{{ data.bidang }}</td>
                         <td class="text-center">
                             <span class="badge" 
-                                [class.bg-success]="referensi.status === 'Aktif'"
-                                [class.bg-danger]="referensi.status !== 'Aktif'">
-                                {{ referensi.status }}
+                                [class.bg-success]="data.status === 1"
+                                [class.bg-danger]="data.status === 0">
+                                {{ data.status ? "Aktif" : "Tidak Aktif"}}
                             </span>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiPertanyaanAuditIso(referensi, referensiPertanyaanAuditIsoModal)">
+                            <button class="btn btn-sm btn-primary" (click)="onEditClickReferensiPertanyaanAuditIso(updateReferensiPertanyaanAuditIsoModal, data.id)">
                                 <i class="ri-edit-line d-md-none"></i>
                                 <span class="d-none d-md-inline">Edit</span>
                             </button>
                         </td>
                     </tr>
-                    <tr *ngIf="paginatedReferensiPertanyaanAuditIso.length === 0">
-                        <td colspan="6" class="text-center py-4">
+                    <tr *ngIf="refPertanyaanIso.length === 0 && !isLoading">
+                        <td colspan="10" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="ri-file-list-line fs-1 d-block mb-2"></i>
                                 Tidak ada data
                             </div>
                         </td>
                     </tr>
+                    <tr *ngIf="isLoading">
+                        <td colspan="10" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
+            <div>
+                <span class="text-muted">{{ paginationInfo }}</span>
+            </div>
+            <nav *ngIf="totalPage > 0">
+                <ul class="pagination mb-0 flex-wrap">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="javascript:void(0)" (click)="previousPage()" tabindex="-1">
+                            <i class="ri-arrow-left-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" 
+                        *ngFor="let page of pageNumbers"
+                        [class.active]="page === currentPage"
+                        [class.disabled]="page === -1">
+                        <a class="page-link" 
+                           href="javascript:void(0)" 
+                           (click)="page !== -1 && goToPage(page)">
+                            {{ page === -1 ? '...' : page }}
+                        </a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPage">
+                        <a class="page-link" href="javascript:void(0)" (click)="nextPage()">
+                            <i class="ri-arrow-right-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
 
-<ng-template #referensiPertanyaanAuditIsoModal let-modal>
+<ng-template #tambahReferensiPertanyaanAuditIsoModal let-modal>
     <div class="modal-header">
         <h5 class="modal-title">Tambah Referensi Pertanyaan Audit ISO</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
     </div>
     <div class="modal-body">
-        <form>
+        <form (ngSubmit)="create()" #refPertanyaanIsoForm="ngForm">
             <div class="mb-3">
                 <label class="form-label">Standar</label>
-                <select class="form-select mb-3" aria-label="standar">
-                    <option selected>Pilih Standar</option>
-                    <option value="2">Audit ISO 2000-1</option>
-                    <option value="3">Audit ISO 90001</option>
-                </select>        
+                <select class="form-select mb-3"
+                        name="standarAssesment"
+                        [(ngModel)]="selectedStandar"
+                        (change)="onStandarChange()"
+                        >
+                <option [ngValue]="null" disabled>-- Pilih Standar Assesment --</option>
+                <option *ngFor="let item of standarAssesment" [ngValue]="item.id">
+                    {{ item.nama }}
+                </option>
+                </select>
+                <small class="text-danger" 
+                       *ngIf="refPertanyaanIsoForm.submitted && !selectedStandar">
+                    Standar harus dipilih.
+                </small>
             </div>
             <div class="mb-3">
-                <label class="form-label">Area</label>
-                <select class="form-select mb-3" aria-label="area">
-                    <option selected>Pilih Referensi Area sesuai dengan standar</option>
-                    <option value="1">Area A</option>
-                    <option value="2">Area B</option>
-                    <option value="3">Area C</option>
-                </select>        
+                <label class="form-label">Klausul/Annex</label>
+                <select class="form-select mb-3"
+                        name="refKlausulAnnexId"
+                        [(ngModel)]="refPertanyaanIsoData.refKlausulAnnexId">
+                    <option [ngValue]="null" disabled selected>-- Pilih Klausul/Annex --</option>
+                    <option *ngFor="let item of refKlausulAnnex" [ngValue]="item.id">
+                        {{ item.nama }} - {{ item.kode }}
+                    </option>
+                </select>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && !refPertanyaanIsoData.refKlausulAnnexId">
+                    Klausul/Annex wajib dipilih.
+                </small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Pertanyaan</label>
-                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan pertanyaan"></textarea>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="pertanyaan" [(ngModel)]="refPertanyaanIsoData.pertanyaan" placeholder="Masukkan pertanyaan"></textarea>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && !refPertanyaanIsoData.pertanyaan">
+                    Pertanyaan wajib diisi.
+                </small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Hasil yang Diharapkan</label>
-                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" placeholder="Masukkan hasil yang diharapkan"></textarea>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="hasilYangDiharapkan" [(ngModel)]="refPertanyaanIsoData.hasilYangDiharapkan" placeholder="Masukkan hasil yang diharapkan"></textarea>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && !refPertanyaanIsoData.hasilYangDiharapkan">
+                    Hasil yang diharapkan wajib diisi.
+                </small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Pilih Bidang Audit</label>
                 <ng-select
-                    [items]="bidangOptions"
+                    [items]="bidangIso"
                     bindLabel="nama"
-                    bindValue="id"
+                    bindValue="value"
                     [multiple]="true"
+                    groupBy="namaGroups"
                     placeholder="Pilih bidang audit..."
-                    name=   "bidang"
-                    [(ngModel)]="selectedBidang">
+                    name="bidang"
+                    [(ngModel)]="refPertanyaanIsoData.bidangIsoId">
                 </ng-select>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
+                    Minimal pilih 1 bidang audit.
+                </small>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold d-block mb-2">Status</label>
+                <div class="form-check form-switch form-switch-lg">
+                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refPertanyaanIsoData.status">
+                    <label class="form-check-label ms-2" for="statusSwitch">
+                        {{ refPertanyaanIsoData.status ? 'Aktif' : 'Tidak Aktif' }}
+                    </label>
+                </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #updateReferensiPertanyaanAuditIsoModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Referensi Pertanyaan Audit ISO</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="update()" #refPertanyaanIsoForm="ngForm">
+            <div class="mb-3">
+                <label class="form-label">Standar</label>
+                <select class="form-select mb-3"
+                        name="standarAssesment"
+                        [(ngModel)]="selectedStandar"
+                        (change)="onStandarChange()">
+                    <option [ngValue]="null">-- Pilih Standar Assesment --</option>
+                    <option *ngFor="let item of standarAssesment" [ngValue]="item.id">
+                        {{ item.nama }}
+                    </option>
+                </select>
+                <small class="text-danger" 
+                       *ngIf="refPertanyaanIsoForm.submitted && !selectedStandar">
+                    Standar harus dipilih.
+                </small>
+            </div>
+
+            <!-- Klausul/Annex -->
+            <div class="mb-3">
+                <label class="form-label">Klausul/Annex</label>
+                <select class="form-select mb-3"
+                        name="refKlausulAnnexId"
+                        [(ngModel)]="refPertanyaanIsoData.refKlausulAnnexId">
+                    <option [ngValue]="null">-- Pilih Klausul/Annex --</option>
+                    <option *ngFor="let item of refKlausulAnnex" [ngValue]="item.id">
+                        {{ item.nama }} - {{ item.kode }}
+                    </option>
+                </select>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && !refPertanyaanIsoData.refKlausulAnnexId">
+                    Klausul/Annex wajib dipilih.
+                </small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Pertanyaan</label>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="pertanyaan" [(ngModel)]="refPertanyaanIsoData.pertanyaan" placeholder="Masukkan pertanyaan"></textarea>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && !refPertanyaanIsoData.pertanyaan">
+                    Pertanyaan wajib diisi.
+                </small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Hasil yang Diharapkan</label>
+                <textarea class="form-control" id="exampleFormControlTextarea5" rows="3" name="hasilYangDiharapkan" [(ngModel)]="refPertanyaanIsoData.hasilYangDiharapkan" placeholder="Masukkan hasil yang diharapkan"></textarea>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && !refPertanyaanIsoData.hasilYangDiharapkan">
+                    Hasil yang diharapkan wajib diisi.
+                </small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Pilih Bidang Audit</label>
+                <ng-select
+                    [items]="bidangIso"
+                    bindLabel="nama"
+                    bindValue="value"
+                    [multiple]="true"
+                    groupBy="namaGroups"
+                    placeholder="Pilih bidang audit..."
+                    name="bidang"
+                    [(ngModel)]="refPertanyaanIsoData.bidangIsoId">
+                </ng-select>
+                <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
+                    Minimal pilih 1 bidang.
+                </small>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold d-block mb-2">Status</label>
+                <div class="form-check form-switch form-switch-lg">
+                    <input class="form-check-input" type="checkbox" role="switch" id="statusSwitch" name="status" [(ngModel)]="refPertanyaanIsoData.status">
+                    <label class="form-check-label ms-2" for="statusSwitch">
+                        {{ refPertanyaanIsoData.status ? 'Aktif' : 'Tidak Aktif' }}
+                    </label>
+                </div>
             </div>
             <div class="d-flex gap-2 justify-content-center">
                 <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">

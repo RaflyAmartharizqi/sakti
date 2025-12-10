@@ -111,6 +111,12 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
   }
 
   create() {
+      if (!this.refKlausulAnnexData.standarAssesmentId ||
+      !this.refKlausulAnnexData.kode ||
+      !this.refKlausulAnnexData.nama ||
+      !this.refKlausulAnnexData.deskripsi) {
+      return;
+    }
     const payload = {
       ...this.refKlausulAnnexData,
       status: this.refKlausulAnnexData.status ? 1 : 0
@@ -138,6 +144,12 @@ export class ReferensiKlausulAnnexComponent implements OnInit{
   }
 
   update() {
+    if (!this.refKlausulAnnexData.standarAssesmentId ||
+      !this.refKlausulAnnexData.kode ||
+      !this.refKlausulAnnexData.nama ||
+      !this.refKlausulAnnexData.deskripsi) {
+      return;
+    }
     if (!this.refKlausulAnnexData.id) {
         Swal.fire("Error", "ID user tidak ditemukan.", "error");
         return;

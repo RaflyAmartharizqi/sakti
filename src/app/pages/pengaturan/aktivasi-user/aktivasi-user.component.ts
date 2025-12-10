@@ -116,7 +116,19 @@ export class AktivasiUserComponent implements OnInit {
   }
 
   createUser() {
-    console.log(this.userData);
+    if (this.userData.tipeUser === "bpjs") {
+      if (!this.selectedUserBpjs || !this.userData.asesorId) {
+          return;
+      }
+    } else if (this.userData.tipeUser === "eksternal") {
+      if (!this.userData.nik ||
+          !this.userData.nama ||
+          !this.userData.email ||
+          !this.userData.asesorId ||
+          this.userData.asesorId.length === 0 && this.userData.tipeUser === "eksternal") {
+          return;
+      }
+    }
     this.aktivasiUserService.create(this.userData).subscribe({
       next: (res) => {
         Swal.close();
@@ -140,6 +152,19 @@ export class AktivasiUserComponent implements OnInit {
   }
 
   updateUser() {
+    if (this.userData.tipeUser === "bpjs") {
+      if (!this.selectedUserBpjs || !this.userData.asesorId) {
+          return;
+      }
+    } else if (this.userData.tipeUser === "eksternal") {
+      if (!this.userData.nik ||
+          !this.userData.nama ||
+          !this.userData.email ||
+          !this.userData.asesorId ||
+          this.userData.asesorId.length === 0 && this.userData.tipeUser === "eksternal") {
+          return;
+      }
+    }
     if (!this.userData.id) {
         Swal.fire("Error", "ID user tidak ditemukan.", "error");
         return;
