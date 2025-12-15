@@ -1,0 +1,195 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="JADWAL AUDIT" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+ 
+<div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Jadwal Audit</h4>
+        </div>
+
+        <!-- Filter and Search Section -->
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-6">
+                <div class="d-flex align-items-center">
+                    <label class="me-2 text-nowrap">Show</label>
+                    <select class="form-select form-select-sm" style="width: 80px;" 
+                            [(ngModel)]="entriesPerPage" (change)="onEntriesPerPageChange()">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                    </select>
+                    <span class="ms-2 text-nowrap">Entries</span>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="ri-search-line"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearchChange()">
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">No</th>
+                        <th class="d-lg-table-cell">Unit Kerja</th>
+                        <th class="d-md-table-cell">Periode</th>
+                        <th class="d-lg-table-cell">Waktu Pelaksanaan</th>
+                        <th class="d-lg-table-cell">Ketua Tim Asesor</th>
+                        <th class="d-lg-table-cell">Tim Asesor</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">
+                            1
+                        </td>
+                        <td class="d-lg-table-cell">KC Palembang</td>
+                        <td class="d-md-table-cell">2025</td>
+                        <td class="d-lg-table-cell">17-03-25 s/d 20-03-25</td>
+                        <td class="d-lg-table-cell">Sandi J</td>
+                        <td class="d-lg-table-cell">Laras, Dwi, Tegar</td>
+                        <td class="text-center">
+                            <button class="btn btn-primary px-4" (click)="openModalEditJadwalAudit(editJadwalAudit)">
+                                <i class="ri-edit-line d-md-none"></i>
+                                <span class="d-none d-md-inline">Edit</span>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- <tr *ngIf="refKlausulAnnex.length === 0 && !isLoading">
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="isLoading">
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                    </tr> -->
+                </tbody>
+            </table>
+        </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
+            <div>
+                <span class="text-muted">{{ paginationInfo }}</span>
+            </div>
+            <nav *ngIf="totalPage > 0">
+                <ul class="pagination mb-0 flex-wrap">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="javascript:void(0)" (click)="previousPage()" tabindex="-1">
+                            <i class="ri-arrow-left-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" 
+                        *ngFor="let page of pageNumbers"
+                        [class.active]="page === currentPage"
+                        [class.disabled]="page === -1">
+                        <a class="page-link" 
+                           href="javascript:void(0)" 
+                           (click)="page !== -1 && goToPage(page)">
+                            {{ page === -1 ? '...' : page }}
+                        </a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPage">
+                        <a class="page-link" href="javascript:void(0)" (click)="nextPage()">
+                            <i class="ri-arrow-right-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- ========== Modal Tambah Data Jadwal Audit ========== -->
+<ng-template #editJadwalAudit let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Jadwal Audit</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <form #refKlausulAnnexForm="ngForm">
+
+            <!-- Standar -->
+            <div class="mb-3">
+                <label class="form-label">Unit Kerja</label>
+                <select class="form-select mb-1"
+                        name="standarAssesmentId"
+                        required
+                        >
+                    <option value="null" disabled>-- KC Semarang --</option>
+                    <!-- <option *ngFor="let item of standarAssesment" [value]="item.id">
+                        {{ item.nama }}
+                    </option> -->
+                </select>
+                <!-- <small class="text-danger" *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.standarAssesmentId">
+                    Standar wajib dipilih.
+                </small> -->
+            </div>
+
+            <!-- Kode Klausul -->
+            <div class="mb-3">
+                <label class="form-label">Waktu</label>
+                <input class="form-control flatpickr-input" type="text" mwlFlatpickr [altInput]="true" [convertModelValue]="true" mode="range">
+                <!-- <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
+                    Minimal pilih 1 bidang.
+                </small> -->
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ketua Asesor</label>
+                <ng-select
+                    bindLabel="nama"
+                    bindValue="value"
+                    groupBy="namaGroups"
+                    placeholder="Pilih bidang audit..."
+                    name="bidang">
+                </ng-select>
+                <!-- <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
+                    Minimal pilih 1 bidang.
+                </small> -->
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tim Asesor</label>
+                <ng-select
+                    bindLabel="nama"
+                    bindValue="value"
+                    [multiple]="true"
+                    groupBy="namaGroups"
+                    placeholder="Pilih bidang audit..."
+                    name="bidang">
+                </ng-select>
+                <!-- <small class="text-danger"
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
+                    Minimal pilih 1 bidang.
+                </small> -->
+            </div>
+
+            <!-- Button -->
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">Batal</button>
+                <button type="submit" class="btn btn-primary px-4">Simpan</button>
+            </div>
+
+        </form>
+    </div>
+</ng-template>

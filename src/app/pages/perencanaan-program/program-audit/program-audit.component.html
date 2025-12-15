@@ -1,0 +1,264 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="PROGRAM AUDIT" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+ 
+<div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Program Audit</h4>
+            <button class="btn btn-primary px-4" (click)="openModalTambahProgramAudit(tambahProgramAudit)">
+                <i class="ri-add-box-line me-2"></i>Tambah Program
+            </button>
+        </div>
+
+        <!-- Filter and Search Section -->
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-6">
+                <select class="form-select" [(ngModel)]="filters.periode" (change)="onPeriodeFilterChange()">
+                <option [ngValue]="null">Semua Periode</option>
+                <option [ngValue]="2025">2025</option>
+                <option [ngValue]="2026">2026</option>
+                </select>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="ri-search-line"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearchChange()">
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="d-flex align-items-center">
+                    <label class="me-2 text-nowrap">Show</label>
+                    <select class="form-select form-select-sm" style="width: 80px;" 
+                            [(ngModel)]="entriesPerPage" (change)="onEntriesPerPageChange()">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                    </select>
+                    <span class="ms-2 text-nowrap">Entries</span>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">No</th>
+                        <th class="d-lg-table-cell">Kategori Program</th>
+                        <th class="d-lg-table-cell">Unit Kerja</th>
+                        <th class="d-md-table-cell">Periode</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of programAudit let i = index">
+                        <td class="text-center">
+                            {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
+                        </td>
+                        <td class="d-sm-table-cell">{{ data.kategoriProgram }}</td>
+                        <td class="d-sm-table-cell">{{ data.unitKerja }}</td>
+                        <td class="d-md-table-cell">{{ data.periode }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-primary" (click)="onEditClickProgramAudit(updateProgramAuditModal, data.id)">
+                                <i class="ri-edit-line d-md-none"></i>
+                                <span class="d-none d-md-inline">Edit</span>
+                            </button>
+                            <button 
+                                class="btn btn-sm btn-success m-1" 
+                                [routerLink]="['/perencanaan-program/jadwal-audit']">
+                                    <i class="ri-verified-badge-fill d-md-none"></i>
+                                    <span class="d-none d-md-inline">Jadwal {{ data.kategoriProgram }}</span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="programAudit.length === 0 && !isLoading">
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="isLoading">
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
+            <div>
+                <span class="text-muted">{{ paginationInfo }}</span>
+            </div>
+            <nav *ngIf="totalPage > 0">
+                <ul class="pagination mb-0 flex-wrap">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="javascript:void(0)" (click)="previousPage()" tabindex="-1">
+                            <i class="ri-arrow-left-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" 
+                        *ngFor="let page of pageNumbers"
+                        [class.active]="page === currentPage"
+                        [class.disabled]="page === -1">
+                        <a class="page-link" 
+                           href="javascript:void(0)" 
+                           (click)="page !== -1 && goToPage(page)">
+                            {{ page === -1 ? '...' : page }}
+                        </a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPage">
+                        <a class="page-link" href="javascript:void(0)" (click)="nextPage()">
+                            <i class="ri-arrow-right-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- ========== Modal Tambah Data Program Audit ========== -->
+<ng-template #tambahProgramAudit let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Tambah Program Audit</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <form (ngSubmit)="create()" #programAuditForm="ngForm">
+            <!-- Standar -->
+            <div class="mb-3">
+                <label class="form-label">Kategori Program</label>
+                <select class="form-select mb-3"
+                        name="standarAssesmentId"
+                        [(ngModel)]="selectedStandar"
+                        (change)="onStandarChange()">
+                    <option [ngValue]="null" disabled selected hidden>-- Pilih Standar Assesment --</option>
+                    <option *ngFor="let item of standarAssesment" [ngValue]="item">
+                        {{ item.nama }}
+                    </option>
+                </select>
+                <small class="text-danger" *ngIf="programAuditForm.submitted && !programAuditData.standarAssesmentId">
+                    Standar wajib dipilih.
+                </small>
+            </div>
+
+            <!-- Unit Kerja -->
+            <div class="mb-3">
+                <label class="form-label">Pilih Unit Kerja</label>
+                <ng-select
+                    #unitKerjaSelect
+                    [items]="unitKerja"
+                    bindLabel="unitKerja"
+                    bindValue="id"
+                    [multiple]="true"
+                    groupBy="grupUnitKerja"
+                    [trackByFn]="trackByFn"
+                    [(ngModel)]="programAuditData.unitKerjaId"
+                    name="unitKerjaId">
+                </ng-select>
+                <small class="text-danger"
+                    *ngIf="programAuditForm.submitted && (!programAuditData.unitKerjaId || programAuditData.unitKerjaId.length == 0)">
+                    Minimal pilih 1 bidang.
+                </small>
+            </div>
+
+            <!-- Periode -->
+            <div class="mb-3">
+                <label class="form-label">Periode</label>
+                <input type="number" class="form-control" placeholder="Masukkan Periode"
+                       name="periode" required [(ngModel)]="programAuditData.periode">
+                <small class="text-danger" *ngIf="programAuditForm.submitted && !programAuditData.periode">
+                    Periode wajib diisi.
+                </small>
+            </div>
+
+            <!-- Button -->
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">Batal</button>
+                <button type="submit" class="btn btn-primary px-4">Simpan</button>
+            </div>
+
+        </form>
+    </div>
+</ng-template>
+
+<!-- ========== Modal Update Data Program Audit ========== -->
+<ng-template #updateProgramAuditModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Tambah Program Audit</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <form (ngSubmit)="update()" #programAuditForm="ngForm">
+
+            <!-- Standar -->
+            <div class="mb-3">
+                <label class="form-label">Kategori Program</label>
+                <select class="form-select mb-3"
+                        name="standarAssesmentId"
+                        [(ngModel)]="selectedStandar"
+                        (change)="onStandarChange()">
+                    <option [ngValue]="null" disabled selected hidden>-- Pilih Standar Assesment --</option>
+                    <option *ngFor="let item of standarAssesment" [ngValue]="item">
+                        {{ item.nama }}
+                    </option>
+                </select>
+                <small class="text-danger" *ngIf="programAuditForm.submitted && !programAuditData.standarAssesmentId">
+                    Standar wajib dipilih.
+                </small>
+            </div>
+
+            <!-- Unit Kerja -->
+            <div class="mb-3">
+                <label class="form-label">Pilih Unit Kerja</label>
+                <ng-select
+                    #unitKerjaSelect
+                    [items]="unitKerja"
+                    bindLabel="unitKerja"
+                    bindValue="id"
+                    [multiple]="true"
+                    groupBy="grupUnitKerja"
+                    [trackByFn]="trackByFn"
+                    [(ngModel)]="programAuditData.unitKerjaId"
+                    name="unitKerjaId">
+                </ng-select>
+                <small class="text-danger"
+                    *ngIf="programAuditForm.submitted && (!programAuditData.unitKerjaId || programAuditData.unitKerjaId.length == 0)">
+                    Minimal pilih 1 bidang.
+                </small>
+            </div>
+
+            <!-- Periode -->
+            <div class="mb-3">
+                <label class="form-label">Periode</label>
+                <input type="number" class="form-control" placeholder="Masukkan Periode"
+                       name="periode" required [(ngModel)]="programAuditData.periode">
+                <small class="text-danger" *ngIf="programAuditForm.submitted && !programAuditData.periode">
+                    Periode wajib diisi.
+                </small>
+            </div>
+
+            <!-- Button -->
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">Batal</button>
+                <button type="submit" class="btn btn-primary px-4">Simpan</button>
+            </div>
+
+        </form>
+    </div>
+</ng-template>

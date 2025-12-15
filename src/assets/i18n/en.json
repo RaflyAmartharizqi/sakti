@@ -287,6 +287,13 @@
         }
       }
     },
+    "PERENCANAANPROGRAM": {
+      "TEXT": "Perencanaan Program",
+      "LIST": {
+        "PROGRAMAUDIT": "Program Audit",
+        "JADWALAUDIT": "Jadwal Audit"
+      }
+    },
     "PENGATURAN": {
       "TEXT": "Pengaturan",
       "LIST": {

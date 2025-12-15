@@ -20,6 +20,20 @@ export const MENU: MenuItem[] = [
       }
     ]
   },
+    {
+    id: 4,
+    label: 'MENUITEMS.PERENCANAANPROGRAM.TEXT',
+    icon: 'ri-calendar-todo-line',
+    isCollapsed: true,
+    subItems: [
+      {
+        id: 5,
+        label: 'MENUITEMS.PERENCANAANPROGRAM.LIST.PROGRAMAUDIT',
+        link: '/perencanaan-program/program-audit',
+        parentId: 4
+      },
+    ]
+  },
   {
     id: 184,
     label: 'MENUITEMS.PENGATURAN.TEXT',
