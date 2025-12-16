@@ -5,18 +5,22 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FlatpickrModule } from 'angularx-flatpickr';
+import { JadwalAuditService } from './jadwal-audit.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-jadwal',
+  selector: 'app-jadwal-audit',
   standalone: true,
   imports: [CommonModule, SharedModule, NgSelectModule, FormsModule, FlatpickrModule],
-  templateUrl: './jadwal.component.html',
-  styleUrl: './jadwal.component.scss'
+  templateUrl: './jadwal-audit.component.html',
+  styleUrl: './jadwal-audit.component.scss'
 })
-export class JadwalComponent implements OnInit {
-    constructor(
+export class JadwalAuditComponent {
+  jenisAuditId!: number;
+  constructor(
+    private route: ActivatedRoute,
     private modalService: NgbModal,
-    // private refKlausulAnnexService: ReferensiKlausulAnnexService
+    private jadwalAuditService: JadwalAuditService
   ) {}
   breadCrumbItems!: Array<{}>;
   ngOnInit(): void {
@@ -24,6 +28,10 @@ export class JadwalComponent implements OnInit {
       { label: 'Perencanaan Program' },
       { label: 'Jadwal Audit', active: true }
     ];
+    this.route.paramMap.subscribe(params => {
+      this.filters.jenisAuditId = Number(params.get('jenisAuditId'));
+      this.loadData();
+    });
   }
   searchQuery = '';
   entriesPerPage = 10;
@@ -32,48 +40,62 @@ export class JadwalComponent implements OnInit {
   from = 0;
   to = 0;
   currentPage = 0;
+  isLoading = false;
   filters = {
     page: 1,
     limit: 10,
     search: '',
-    status: null,
+    jenisAuditId: null as number | null,
   }
+  kodeJenisAudit= '';
+  jadwalAudit: any[] = [];
 
   openModalEditJadwalAudit(editJadwalAudit: TemplateRef<any>) {
     // this.resetData();
     this.modalService.open(editJadwalAudit, { centered: true });
   }
 
+  loadData() {
+    this.isLoading = true;
+    this.jadwalAudit= [];
+    this.jadwalAuditService.get(this.filters).subscribe({
+      next: (res) => {
+        this.jadwalAudit = res.response.list;
+        this.totalData = res.response.totalData;
+        this.totalPage = res.response.totalPage;
+        this.from = res.response.from;
+        this.to = res.response.to;
+        this.currentPage = res.response.page;
+        this.kodeJenisAudit = res.response.kodeJenisAudit;
+        this.isLoading = false;
+      }
+    });
+  }
+
   // ===================== FILTER =====================
 
-  onStatusFilterChange(): void {
-    // value dari select: '', 'aktif', 'nonaktif'
-    this.filters.page = 1;
-    this.currentPage = 1;
-    // this.loadUsers();
-  }
 
   onSearchChange(): void {
     this.filters.search = this.searchQuery;
     this.filters.page = 1;
     this.currentPage = 1;
-    // this.loadUsers();
+    this.loadData();
   }
 
   onEntriesPerPageChange(): void {
     this.filters.limit = this.entriesPerPage;
     this.filters.page = 1;
     this.currentPage = 1;
-    // this.loadUsers();
+    this.loadData();
   }
 
   resetFilters(): void {
-    this.filters.status = null;
+    this.filters.jenisAuditId = null;
     this.searchQuery = '';
     this.filters.search = '';
     this.filters.page = 1;
     this.currentPage = 1;
-    // this.loadUsers();
+    this.loadData();
   }
 
   // ===================== PAGINATION =====================
@@ -110,7 +132,7 @@ export class JadwalComponent implements OnInit {
     if (page >= 1 && page <= this.totalPage && page !== this.currentPage) {
       this.currentPage = page;
       this.filters.page = page;
-      // this.loadUsers();
+      this.loadData();
     }
   }
 
@@ -118,7 +140,7 @@ export class JadwalComponent implements OnInit {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.filters.page = this.currentPage;
-      // this.loadUsers();
+      this.loadData();
     }
   }
 
@@ -126,9 +148,7 @@ export class JadwalComponent implements OnInit {
     if (this.currentPage < this.totalPage) {
       this.currentPage++;
       this.filters.page = this.currentPage;
-      // this.loadUsers();
+      this.loadData();
     }
-  }
-  
-  selectedAsesorId: number | null = null;
+  }  
 }

@@ -70,10 +70,15 @@
                                 <span class="d-none d-md-inline">Edit</span>
                             </button>
                             <button 
-                                class="btn btn-sm btn-success m-1" 
-                                [routerLink]="['/perencanaan-program/jadwal-audit']">
+                                class="btn btn-sm btn-success m-1"
+                                [routerLink]="[
+                                    '/perencanaan-program/jadwal-audit',
+                                    data.jenisAuditId
+                                ]">
                                     <i class="ri-verified-badge-fill d-md-none"></i>
-                                    <span class="d-none d-md-inline">Jadwal {{ data.kategoriProgram }}</span>
+                                    <span class="d-none d-md-inline">
+                                    Jadwal {{ data.jenisAuditNama }}
+                                    </span>
                             </button>
                         </td>
                     </tr>

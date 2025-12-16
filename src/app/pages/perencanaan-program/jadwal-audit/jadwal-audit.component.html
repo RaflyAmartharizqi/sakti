@@ -6,7 +6,7 @@
     <div class="card-body">
         <!-- Header Section -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-            <h4 class="mb-0">Jadwal Audit</h4>
+            <h4 class="mb-0">Jadwal Audit {{ kodeJenisAudit }}</h4>
         </div>
 
         <!-- Filter and Search Section -->
@@ -38,6 +38,7 @@
                 <thead class="table-light">
                     <tr>
                         <th class="text-center" style="width: 60px;">No</th>
+                        <th class="d-lg-table-cell" *ngIf="kodeJenisAudit !== 'SMKI'">Kategori Program</th>
                         <th class="d-lg-table-cell">Unit Kerja</th>
                         <th class="d-md-table-cell">Periode</th>
                         <th class="d-lg-table-cell">Waktu Pelaksanaan</th>
@@ -47,15 +48,42 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                   <tr *ngFor="let data of jadwalAudit let i = index">
                         <td class="text-center">
-                            1
+                            {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
                         </td>
-                        <td class="d-lg-table-cell">KC Palembang</td>
-                        <td class="d-md-table-cell">2025</td>
-                        <td class="d-lg-table-cell">17-03-25 s/d 20-03-25</td>
-                        <td class="d-lg-table-cell">Sandi J</td>
-                        <td class="d-lg-table-cell">Laras, Dwi, Tegar</td>
+                        <td class="d-lg-table-cell" *ngIf="kodeJenisAudit !== 'SMKI'">{{ data.kategoriProgram }}</td>
+                        <td class="d-lg-table-cell">{{ data.unitKerja }}</td>
+                        <td class="d-md-table-cell">{{ data.periode }}</td>
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngIf="data.tanggalMulai && data.tanggalSelesai; else belumTanggal">
+                                {{ data.tanggalMulai }} / {{ data.tanggalSelesai }}
+                            </ng-container>
+
+                            <ng-template #belumTanggal>
+                                <span class="badge bg-warning">Belum dijadwalkan</span>
+                            </ng-template>
+                        </td>
+
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngIf="data.ketuaTim; else belumKetua">
+                                {{ data.ketuaTim }}
+                            </ng-container>
+
+                            <ng-template #belumKetua>
+                                <span class="badge bg-secondary">Belum ditentukan</span>
+                            </ng-template>
+                        </td>
+
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngIf="data.timAsesor; else belumAsesor">
+                                {{ data.timAsesor }}
+                            </ng-container>
+
+                            <ng-template #belumAsesor>
+                                <span class="badge bg-info">Belum ditambahkan</span>
+                            </ng-template>
+                        </td>
                         <td class="text-center">
                             <button class="btn btn-primary px-4" (click)="openModalEditJadwalAudit(editJadwalAudit)">
                                 <i class="ri-edit-line d-md-none"></i>
@@ -63,7 +91,7 @@
                             </button>
                         </td>
                     </tr>
-                    <!-- <tr *ngIf="refKlausulAnnex.length === 0 && !isLoading">
+                    <tr *ngIf="jadwalAudit.length === 0 && !isLoading">
                         <td colspan="7" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="ri-file-list-line fs-1 d-block mb-2"></i>
@@ -78,7 +106,7 @@
                                 Memuat Data...
                             </div>
                         </td>
-                    </tr> -->
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -116,7 +144,7 @@
     </div>
 </div>
 
-<!-- ========== Modal Tambah Data Jadwal Audit ========== -->
+<!-- ========== Modal Edit Data Jadwal Audit ========== -->
 <ng-template #editJadwalAudit let-modal>
     <div class="modal-header">
         <h5 class="modal-title">Edit Jadwal Audit</h5>
@@ -143,7 +171,7 @@
                 </small> -->
             </div>
 
-            <!-- Kode Klausul -->
+            <!-- Waktu -->
             <div class="mb-3">
                 <label class="form-label">Waktu</label>
                 <input class="form-control flatpickr-input" type="text" mwlFlatpickr [altInput]="true" [convertModelValue]="true" mode="range">
