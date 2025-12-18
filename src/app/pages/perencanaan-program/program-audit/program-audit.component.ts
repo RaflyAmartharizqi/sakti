@@ -49,7 +49,7 @@ export class ProgramAuditComponent implements OnInit {
 
   isLoading= false;
   standarAssesment: any[] = [];
-  jenisAuditId= 0;
+  programAuditId= 0;
   jenisAudit = '';
   programAuditData = {
     id: null,
@@ -187,10 +187,7 @@ export class ProgramAuditComponent implements OnInit {
   onStandarChange() {
     if (!this.selectedStandar) return;
     
-    console.log("HOHO:", this.selectedStandar);
     this.programAuditData.standarAssesmentId = this.selectedStandar.id;
-    console.log(this.selectedStandar.id);
-    console.log(this.programAuditData.standarAssesmentId);
     const kode = this.selectedStandar.kode;
     this.programAuditData.unitKerjaId = [];
     setTimeout(() => {

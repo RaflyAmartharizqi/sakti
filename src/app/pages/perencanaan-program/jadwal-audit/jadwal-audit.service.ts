@@ -35,9 +35,59 @@ export class JadwalAuditService {
                     page: filters.page ?? 1,
                     limit: filters.limit ?? 10,
                     search: filters.search ?? null,
-                    jenisAuditId: filters.jenisAuditId ?? null,
+                    programAuditId: filters.programAuditId ?? null,
                 }
             }
+        );
+    }
+
+    getByJadwalUnitKerjaAuditId(jadwalUnitKerjaAuditId: number):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}JadwalAudit/getbyjadwalunitkerjaauditid/${jadwalUnitKerjaAuditId}`,
+        );
+    }
+
+    getByJadwalProgramAuditId(jadwalProgramAuditId: number):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}JadwalAudit/getbyjadwalprogramauditid/${jadwalProgramAuditId}`,
+        );
+    }
+
+    getUnitKerjaByJenisAudit():Observable<any> {
+        return this.http.get(
+            `${this.API_URL}UnitKerja/getlist`
+        );
+    }
+
+    updateSmki(payload: any) {
+        return this.http.put(
+            this.API_URL + `JadwalAudit/updatesmki`,
+            payload,
+            {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                })
+            }
+        );
+    }
+
+    updateIso(payload: any) {
+        return this.http.put(
+            this.API_URL + `JadwalAudit/updateiso`,
+            payload,
+            {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                })
+            }
+        );
+    }
+
+    getListUserByAsesor(kode: string):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}User/getlistuserbyasesor/${kode}`,
         );
     }
 

@@ -9,7 +9,7 @@ const routes: Routes = [
             .then(m => m.ProgramAuditComponent)
   },
   {
-    path: 'jadwal-audit/:jenisAuditId',
+    path: 'jadwal-audit/:programAuditId',
         loadComponent: () =>
           import('./jadwal-audit/jadwal-audit.component')
             .then(m => m.JadwalAuditComponent)

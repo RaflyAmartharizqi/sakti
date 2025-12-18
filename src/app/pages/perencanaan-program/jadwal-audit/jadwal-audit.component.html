@@ -57,7 +57,8 @@
                         <td class="d-md-table-cell">{{ data.periode }}</td>
                         <td class="d-lg-table-cell">
                             <ng-container *ngIf="data.tanggalMulai && data.tanggalSelesai; else belumTanggal">
-                                {{ data.tanggalMulai }} / {{ data.tanggalSelesai }}
+                                {{ data.tanggalMulai | date:'dd MMMM yyyy' }} -
+                                {{ data.tanggalSelesai | date:'dd MMMM yyyy' }}
                             </ng-container>
 
                             <ng-template #belumTanggal>
@@ -84,15 +85,27 @@
                                 <span class="badge bg-info">Belum ditambahkan</span>
                             </ng-template>
                         </td>
-                        <td class="text-center">
-                            <button class="btn btn-primary px-4" (click)="openModalEditJadwalAudit(editJadwalAudit)">
+                        <td class="text-center" *ngIf="kodeJenisAudit === 'SMKI'">
+                            <button class="btn btn-primary px-4" (click)="onEditClickJadwalAuditSmki(updateJadwalAuditSmkiModal, data.jadwalUnitKerjaAuditId)">
+                                <i class="ri-edit-line d-md-none"></i>
+                                <span class="d-none d-md-inline">Edit</span>
+                            </button>
+                        </td>
+                        <td class="text-center" *ngIf="kodeJenisAudit === 'ISO'">
+                            <button class="btn btn-primary px-4" (click)="onEditClickJadwalAuditIso(updateJadwalAuditIsoModal, data.jadwalProgramAuditId )">
                                 <i class="ri-edit-line d-md-none"></i>
                                 <span class="d-none d-md-inline">Edit</span>
                             </button>
                         </td>
                     </tr>
                     <tr *ngIf="jadwalAudit.length === 0 && !isLoading">
-                        <td colspan="7" class="text-center py-4">
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit !== 'SMKI'">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit == 'SMKI'">
                             <div class="text-muted">
                                 <i class="ri-file-list-line fs-1 d-block mb-2"></i>
                                 Tidak ada data
@@ -100,7 +113,13 @@
                         </td>
                     </tr>
                     <tr *ngIf="isLoading">
-                        <td colspan="7" class="text-center py-4">
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit !== 'SMKI'">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit == 'SMKI'">
                             <div class="text-muted">
                                 <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
                                 Memuat Data...
@@ -144,72 +163,272 @@
     </div>
 </div>
 
-<!-- ========== Modal Edit Data Jadwal Audit ========== -->
-<ng-template #editJadwalAudit let-modal>
+<!-- ========== Modal Edit Jadwal Audit ISO ========== -->
+<ng-template #updateJadwalAuditIsoModal let-modal>
     <div class="modal-header">
         <h5 class="modal-title">Edit Jadwal Audit</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
     </div>
 
     <div class="modal-body">
-        <form #refKlausulAnnexForm="ngForm">
-
-            <!-- Standar -->
+        <form (ngSubmit)="updateIso()" #updateIsoForm="ngForm">
+            <div class="mb-3">
+                <label class="form-label">Kategori Program</label>
+                <input type="text" class="form-control"
+                       name="kategoriProgram" [(ngModel)]="isoForm.kategoriProgram" disabled>
+            </div>
+            <!-- Unit Kerja -->
             <div class="mb-3">
                 <label class="form-label">Unit Kerja</label>
-                <select class="form-select mb-1"
-                        name="standarAssesmentId"
-                        required
-                        >
-                    <option value="null" disabled>-- KC Semarang --</option>
-                    <!-- <option *ngFor="let item of standarAssesment" [value]="item.id">
-                        {{ item.nama }}
-                    </option> -->
-                </select>
-                <!-- <small class="text-danger" *ngIf="refKlausulAnnexForm.submitted && !refKlausulAnnexData.standarAssesmentId">
-                    Standar wajib dipilih.
-                </small> -->
+                <ng-select
+                    #unitKerjaSelect
+                    [items]="unitKerja"
+                    bindLabel="unitKerja"
+                    bindValue="id"
+                    [multiple]="true"
+                    [trackByFn]="trackByFn"
+                    [(ngModel)]="unitKerjaId"
+                    name="unitKerjaId"
+                    disabled>
+                </ng-select>
             </div>
 
             <!-- Waktu -->
             <div class="mb-3">
                 <label class="form-label">Waktu</label>
-                <input class="form-control flatpickr-input" type="text" mwlFlatpickr [altInput]="true" [convertModelValue]="true" mode="range">
-                <!-- <small class="text-danger"
-                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
-                    Minimal pilih 1 bidang.
-                </small> -->
+                <input
+                    class="form-control"
+                    mwlFlatpickr
+                    [minDate]="isoForm.tanggalMulai || 'today'"
+                    mode="range"
+                    [(ngModel)]="isoForm.rangeTanggal"
+                    name="rangeTanggal"
+                />
+                <small class="text-danger" *ngIf="updateIsoForm.submitted && !isoForm.rangeTanggal">
+                    Range waktu audit harus diisi.
+                </small>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="form-label">Ketua Asesor</label>
+                <ng-select
+                    [items]="users"
+                    bindLabel="nama"
+                    bindValue="id"
+                    [(ngModel)]="isoForm.userIdKetua"
+                    name="userIdKetua"
+                    placeholder="Pilih Ketua Asesor"
+                    [clearable]="false"
+                    (change)="onKetuaTimChange()">
+                    <ng-template ng-option-tmp let-item="item">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <span>{{ item.nama }}</span>
+
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                        <div class="d-flex align-items-center gap-2">
+                            <span>{{ item.nama }}</span>
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
+                </ng-select>
+                <small class="text-danger"
+                       *ngIf="updateIsoForm.submitted && !isoForm.userIdKetua">
+                    Ketua harus diisi.
+                </small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tim Asesor</label>
+                <ng-select
+                    [items]="usersFiltered"
+                    bindLabel="nama"
+                    bindValue="id"
+                    [(ngModel)]="isoForm.timAsesor"
+                    [multiple]="true"
+                    name="timAsesor"
+                    placeholder="Pilih Tim Asesor">
+                    <ng-template ng-option-tmp let-item="item">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <span>{{ item.nama }}</span>
+
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                        <div class="d-flex align-items-center gap-2">
+                            <span>{{ item.nama }}</span>
+
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
+                </ng-select>
+                <small class="text-danger"
+                       *ngIf="updateIsoForm.submitted && (!isoForm.timAsesor || isoForm.timAsesor.length == 0)">
+                    Minimal Pilih 1 Tim Asesor.
+                </small>
+            </div>
+
+            <!-- Button -->
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light px-4" (click)="modal.dismiss()">Batal</button>
+                <button type="submit" class="btn btn-primary px-4">Simpan</button>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<!-- ========== Modal Edit Data Jadwal Audit SMKI ========== -->
+<ng-template #updateJadwalAuditSmkiModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Jadwal Audit</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <form (ngSubmit)="updateSmki()" #updateSmkiForm="ngForm">
+
+            <!-- Unit Kerja -->
+            <div class="mb-3">
+                <label class="form-label">Unit Kerja</label>
+                <input type="text" class="form-control"
+                       name="unitKerja" [(ngModel)]="smkiForm.unitKerja" disabled>
+            </div>
+
+             <!-- Waktu -->
+            <div class="mb-3">
+                <label class="form-label">Waktu</label>
+                <input
+                    class="form-control"
+                    mwlFlatpickr
+                    [minDate]="smkiForm.tanggalMulai || 'today'"
+                    mode="range"
+                    [(ngModel)]="smkiForm.rangeTanggal"
+                    name="rangeTanggal"
+                />
+                <small class="text-danger" *ngIf="updateSmkiForm.submitted && !smkiForm.rangeTanggal">
+                    Range waktu audit harus diisi.
+                </small>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Ketua Asesor</label>
                 <ng-select
+                    [items]="users"
                     bindLabel="nama"
-                    bindValue="value"
-                    groupBy="namaGroups"
-                    placeholder="Pilih bidang audit..."
-                    name="bidang">
-                </ng-select>
-                <!-- <small class="text-danger"
-                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
-                    Minimal pilih 1 bidang.
-                </small> -->
-            </div>
+                    bindValue="id"
+                    [(ngModel)]="smkiForm.userIdKetua"
+                    name="userIdKetua"
+                    placeholder="Pilih Ketua Asesor"
+                    [clearable]="false"
+                    (change)="onKetuaTimChange()">
+                    <ng-template ng-option-tmp let-item="item">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <span>{{ item.nama }}</span>
 
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                        <div class="d-flex align-items-center gap-2">
+                            <span>{{ item.nama }}</span>
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
+                </ng-select>
+                <small class="text-danger"
+                       *ngIf="updateSmkiForm.submitted && !smkiForm.userIdKetua">
+                    Ketua harus diisi.
+                </small>
+            </div>
             <div class="mb-3">
                 <label class="form-label">Tim Asesor</label>
                 <ng-select
+                    [items]="usersFiltered"
                     bindLabel="nama"
-                    bindValue="value"
+                    bindValue="id"
+                    [(ngModel)]="smkiForm.timAsesor"
                     [multiple]="true"
-                    groupBy="namaGroups"
-                    placeholder="Pilih bidang audit..."
-                    name="bidang">
+                    [clearable]="true"
+                    name="timAsesor"
+                    placeholder="Pilih Tim Asesor">
+                    <ng-template ng-option-tmp let-item="item">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <span>{{ item.nama }}</span>
+
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                        <div class="d-flex align-items-center gap-2">
+                            <span>{{ item.nama }}</span>
+
+                            <span
+                                class="badge"
+                                [ngClass]="{
+                                    'bg-success': item.tipeUser === 'bpjs',
+                                    'bg-primary': item.tipeUser === 'eksternal'
+                                }">
+                                {{ item.tipeUser | uppercase }}
+                            </span>
+                        </div>
+                    </ng-template>
                 </ng-select>
-                <!-- <small class="text-danger"
-                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
-                    Minimal pilih 1 bidang.
-                </small> -->
+                <small class="text-danger"
+                       *ngIf="updateSmkiForm.submitted && (!smkiForm.timAsesor || smkiForm.timAsesor.length == 0)">
+                    Minimal Pilih 1 Tim Asesor.
+                </small>
             </div>
 
             <!-- Button -->

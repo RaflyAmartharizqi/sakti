@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -7,16 +7,26 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FlatpickrModule } from 'angularx-flatpickr';
 import { JadwalAuditService } from './jadwal-audit.service';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
+
+interface UnitKerja {
+  id: number;
+  nama: string;
+  kodeGrupUnitKerja: string;
+};
 
 @Component({
   selector: 'app-jadwal-audit',
   standalone: true,
   imports: [CommonModule, SharedModule, NgSelectModule, FormsModule, FlatpickrModule],
   templateUrl: './jadwal-audit.component.html',
-  styleUrl: './jadwal-audit.component.scss'
+  styleUrl: './jadwal-audit.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
-export class JadwalAuditComponent {
-  jenisAuditId!: number;
+
+export class JadwalAuditComponent implements OnInit {
+  programAuditId!: number;
   constructor(
     private route: ActivatedRoute,
     private modalService: NgbModal,
@@ -29,7 +39,7 @@ export class JadwalAuditComponent {
       { label: 'Jadwal Audit', active: true }
     ];
     this.route.paramMap.subscribe(params => {
-      this.filters.jenisAuditId = Number(params.get('jenisAuditId'));
+      this.filters.programAuditId = Number(params.get('programAuditId'));
       this.loadData();
     });
   }
@@ -45,16 +55,138 @@ export class JadwalAuditComponent {
     page: 1,
     limit: 10,
     search: '',
-    jenisAuditId: null as number | null,
+    programAuditId: null as number | null,
   }
   kodeJenisAudit= '';
   jadwalAudit: any[] = [];
+  isoForm = {
+    jadwalProgramAuditId: null as number | null,
+    kategoriProgram: null as string | null,
+    tanggalMulai: null as string | null,
+    tanggalSelesai: null as string | null,
+    userIdKetua: null as number | null,
+    unitKerja: [] as any[],
+    timAsesor: [] as number[],
+    rangeTanggal: '' as string
+  };
 
-  openModalEditJadwalAudit(editJadwalAudit: TemplateRef<any>) {
-    // this.resetData();
-    this.modalService.open(editJadwalAudit, { centered: true });
+
+  smkiForm = {
+    jadwalUnitKerjaAuditId: null as number | null,
+    tanggalMulai: null as string | null,
+    tanggalSelesai: null as string | null,
+    userIdKetua: null as number | null,
+    unitKerja: [] as any[],
+    timAsesor: [] as number[],
+    rangeTanggal: '' as string
+  };
+
+  unitKerjaId= [];
+  users: any[] = [];
+  usersFiltered: any[] = [];
+
+  unitKerja: UnitKerja[] = [];
+
+  onEditClickJadwalAuditIso(updateJadwalAuditIsoModal: TemplateRef<any>, id: number): void {
+    this.jadwalAuditService.getByJadwalProgramAuditId(id).subscribe(res => {
+      const ketuaId = Number(res.response.jadwalAudit.userIdKetua);
+      this.isoForm = {
+        jadwalProgramAuditId: res.response.jadwalAudit.jadwalProgramAuditId,
+        kategoriProgram: res.response.jadwalAudit.kategoriProgram,
+        tanggalMulai: res.response.jadwalAudit.tanggalMulai,
+        tanggalSelesai: res.response.jadwalAudit.tanggalSelesai,
+        userIdKetua: ketuaId,
+        unitKerja: res.response.unitKerja,
+        timAsesor: res.response.timAsesor.map((x: any) => x.userId),
+        rangeTanggal: `${res.response.jadwalAudit.tanggalMulai} to ${res.response.jadwalAudit.tanggalSelesai}`
+      };
+      this.unitKerjaId = res.response.unitKerja?.map((x: any) => x.unitKerjaId) ?? [];
+      this.getUnitkerja();
+      this.getListUserByAsesor(this.kodeJenisAudit);
+      this.modalService.open(updateJadwalAuditIsoModal, { centered: true });
+    });
   }
 
+  onEditClickJadwalAuditSmki(updateJadwalAuditSmkiModal: TemplateRef<any>, id: number): void {
+    console.log("HOHO", this.smkiForm.jadwalUnitKerjaAuditId);
+    this.jadwalAuditService.getByJadwalUnitKerjaAuditId(id).subscribe(res => {
+      this.smkiForm = {
+        jadwalUnitKerjaAuditId: res.response.jadwalAudit.jadwalUnitKerjaAuditId,
+        tanggalMulai: res.response.jadwalAudit.tanggalMulai,
+        tanggalSelesai: res.response.jadwalAudit.tanggalSelesai,
+        userIdKetua: res.response.jadwalAudit.userIdKetua,
+        unitKerja: res.response.jadwalAudit.unitKerja,
+        timAsesor: res.response.timAsesor.map((x: any) => x.userId),
+        rangeTanggal: `${res.response.jadwalAudit.tanggalMulai} to ${res.response.jadwalAudit.tanggalSelesai}`
+      };
+      this.getListUserByAsesor(this.kodeJenisAudit);
+      this.modalService.open(updateJadwalAuditSmkiModal, { centered: true });
+    });
+  }
+
+  onKetuaTimChange() {
+    this.filterTimAsesor();
+      if (this.isoForm.timAsesor?.length) {
+        this.isoForm.timAsesor = this.isoForm.timAsesor
+          .filter((id: number) => id !== this.isoForm.userIdKetua);
+      } else if (this.smkiForm.timAsesor?.length) {
+        this.smkiForm.timAsesor = this.smkiForm.timAsesor
+          .filter((id: number) => id !== this.smkiForm.userIdKetua);
+      }
+  }
+
+  filterTimAsesor() {
+    if (this.kodeJenisAudit === 'ISO')
+    {
+      this.usersFiltered = this.users.map(u => ({
+        ...u,
+        disabled: u.id === this.isoForm.userIdKetua
+      }));
+    } else if (this.kodeJenisAudit === 'SMKI') {
+      this.usersFiltered = this.users.map(u => ({
+        ...u,
+        disabled: u.id === this.smkiForm.userIdKetua
+      }));
+    }
+
+  }
+
+  onDateRangeChange() {
+    if (this.isoForm.rangeTanggal) {
+      const dates = this.isoForm.rangeTanggal.split(' to ');
+      this.isoForm.tanggalMulai = dates[0] || '';
+      this.isoForm.tanggalSelesai = dates[1] || '';
+    }
+  }
+
+  getUnitkerja() {
+    this.jadwalAuditService.getUnitKerjaByJenisAudit().subscribe({
+      next: (res: any) => {
+        this.unitKerja = res.response.list;
+        if (this.kodeJenisAudit === "SMKI") {
+          this.unitKerja = this.unitKerja
+            .filter(x => x.kodeGrupUnitKerja === 'Kepwil');
+        } else {
+          this.unitKerja = this.unitKerja
+            .filter(x => x.kodeGrupUnitKerja === 'UKPF');
+        }
+        console.log(this.unitKerja);
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  getListUserByAsesor(kode: string) {
+    this.jadwalAuditService.getListUserByAsesor(kode).subscribe({
+      next: (res: any) => {
+        this.users = res.response.list;
+        this.isoForm.userIdKetua = Number(this.isoForm.userIdKetua);
+        this.filterTimAsesor();
+      },
+      error: (err) => console.error(err)
+    });
+  }
+  
   loadData() {
     this.isLoading = true;
     this.jadwalAudit= [];
@@ -72,9 +204,71 @@ export class JadwalAuditComponent {
     });
   }
 
+  updateIso() {
+    if (!this.isoForm.jadwalProgramAuditId || !this.isoForm.rangeTanggal || !this.isoForm.userIdKetua) {
+      console.log("HAHA", this.isoForm)
+      return;
+    }
+    
+    // Parse rangeTanggal jika ada
+    if (this.isoForm.rangeTanggal) {
+      const dates = this.isoForm.rangeTanggal.split(' to ');
+      this.isoForm.tanggalMulai = dates[0] || null;
+      this.isoForm.tanggalSelesai = dates[1] || null;
+    }
+
+    // Validasi tanggal
+    if (!this.isoForm.tanggalMulai || !this.isoForm.tanggalSelesai) {
+      Swal.fire("Error", "Tanggal mulai dan selesai harus diisi", "error");
+      return;
+    }
+
+    this.jadwalAuditService.updateIso(this.isoForm).subscribe({
+      next: () => {
+        Swal.fire("Berhasil", "Jadwal Audit Berhasil Diupdate", "success");
+        this.modalService.dismissAll();
+        this.loadData();
+      },
+      error: (err) => {
+        Swal.fire("Error", err.error?.metadata?.message || "Terjadi kesalahan", "error");
+      }
+    });
+  }
+
+  updateSmki() {
+    if (!this.smkiForm.jadwalUnitKerjaAuditId || !this.smkiForm.rangeTanggal || !this.smkiForm.userIdKetua) {
+      console.log("HAHA", this.smkiForm)
+      return;
+    }
+    
+    // Parse rangeTanggal jika ada
+    if (this.smkiForm.rangeTanggal) {
+      const dates = this.smkiForm.rangeTanggal.split(' to ');
+      this.smkiForm.tanggalMulai = dates[0] || null;
+      this.smkiForm.tanggalSelesai = dates[1] || null;
+    }
+
+    // Validasi tanggal
+    if (!this.smkiForm.tanggalMulai || !this.smkiForm.tanggalSelesai) {
+      Swal.fire("Error", "Tanggal mulai dan selesai harus diisi", "error");
+      return;
+    }
+
+    this.jadwalAuditService.updateSmki(this.smkiForm).subscribe({
+      next: () => {
+        Swal.fire("Berhasil", "Jadwal Audit Berhasil Diupdate", "success");
+        this.modalService.dismissAll();
+        this.loadData();
+      },
+      error: (err) => {
+        Swal.fire("Error", err.error?.metadata?.message || "Terjadi kesalahan", "error");
+      }
+    });
+  }
+
+
+
   // ===================== FILTER =====================
-
-
   onSearchChange(): void {
     this.filters.search = this.searchQuery;
     this.filters.page = 1;
@@ -90,7 +284,7 @@ export class JadwalAuditComponent {
   }
 
   resetFilters(): void {
-    this.filters.jenisAuditId = null;
+    this.filters.programAuditId = null;
     this.searchQuery = '';
     this.filters.search = '';
     this.filters.page = 1;
@@ -150,5 +344,9 @@ export class JadwalAuditComponent {
       this.filters.page = this.currentPage;
       this.loadData();
     }
-  }  
+  }
+
+  trackByFn(item: any) {
+    return item.id;
+  }
 }
