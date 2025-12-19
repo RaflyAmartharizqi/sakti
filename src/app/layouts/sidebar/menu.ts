@@ -20,7 +20,7 @@ export const MENU: MenuItem[] = [
       }
     ]
   },
-    {
+  {
     id: 4,
     label: 'MENUITEMS.PERENCANAANPROGRAM.TEXT',
     icon: 'ri-calendar-todo-line',
@@ -31,6 +31,32 @@ export const MENU: MenuItem[] = [
         label: 'MENUITEMS.PERENCANAANPROGRAM.LIST.PROGRAMAUDIT',
         link: '/perencanaan-program/program-audit',
         parentId: 4
+      },
+    ]
+  },
+  {
+    id: 6,
+    label: 'MENUITEMS.PELAKSANAANPROGRAM.TEXT',
+    icon: 'ri-draft-line',
+    isCollapsed: true,
+    subItems: [
+      {
+        id: 7,
+        label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PENGISIANASSESMENTSMKI',
+        link: '/pelaksanaan-program/pengisian-smki',
+        parentId: 6
+      },
+      {
+        id: 8,
+        label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PELAKSANAANAUDITISO',
+        link: '/pelaksanaan-program/pelaksanaan-iso',
+        parentId: 6
+      },
+      {
+        id: 9,
+        label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PENILAIANVERIFIKASI',
+        link: '/pelaksanaan-program/penilaian-verifikasi',
+        parentId: 6
       },
     ]
   },

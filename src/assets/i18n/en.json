@@ -294,6 +294,14 @@
         "JADWALAUDIT": "Jadwal Audit"
       }
     },
+    "PELAKSANAANPROGRAM": {
+      "TEXT": "Pelaksanaan Program",
+      "LIST": {
+        "PENGISIANASSESMENTSMKI": "Pengisian Assesment SMKI / Audit Internal",
+        "PELAKSANAANAUDITISO": "Pelaksanaan Audit ISO",
+        "PENILAIANVERIFIKASI": "Penilaian / Verifikasi"
+      }
+    },
     "PENGATURAN": {
       "TEXT": "Pengaturan",
       "LIST": {
