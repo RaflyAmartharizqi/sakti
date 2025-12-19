@@ -74,6 +74,7 @@ export class AktivasiUserComponent implements OnInit {
     npp: null,
     nik: null,
     unitKerja: null,
+    kodeUnitKerja: null,
     email: null,
     status: true
   };
@@ -89,7 +90,6 @@ export class AktivasiUserComponent implements OnInit {
   selectedAsesor: number = 0;
 
   // ========== Get Insert Update Data ============
-
   loadUsers() {
     this.isTabLoading = true;
     this.users = [];   
@@ -234,7 +234,6 @@ export class AktivasiUserComponent implements OnInit {
     this.filters.search = '';
     this.filters.page = 1;
     this.currentPage = 1;
-    this.loadUsers();
   }
 
   // ===================== PAGINATION =====================
@@ -315,6 +314,7 @@ export class AktivasiUserComponent implements OnInit {
           nik: data.nik,
           unitKerja: data.unitKerja,
           email: data.email ?? null,
+          kodeUnitKerja: data.kodeUnitKerja,
           asesorId: data.asesor ? data.asesor.map((x:any) => x.id) : [],
           status: data.status
         };
@@ -355,6 +355,7 @@ export class AktivasiUserComponent implements OnInit {
           npp: data.npp,
           nik: data.nik,
           unitKerja: data.unitKerja,
+          kodeUnitKerja: data.kodeunitKerja,
           email: data.email ?? null,
           asesorId: data.asesor ? data.asesor.map((x:any) => x.id) : [],
           status: data.status
@@ -401,6 +402,7 @@ export class AktivasiUserComponent implements OnInit {
       npp: null,
       nik: null,
       unitKerja: null,
+      kodeUnitKerja: null,
       email: null,
       status: true
     };
@@ -425,6 +427,7 @@ export class AktivasiUserComponent implements OnInit {
     this.userData.nama = item.nama || '';
     this.userData.npp = item.npp || null;
     this.userData.unitKerja = item.namaunitkerja || null;
+    this.userData.kodeUnitKerja = item.kodeunitkerja || null,
     this.userData.email = item.email || null;
   }
 
