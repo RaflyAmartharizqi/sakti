@@ -54,7 +54,7 @@ export class ProgramAuditComponent implements OnInit {
   programAuditData = {
     id: null,
     standarAssesmentId: null,
-    unitKerjaId: [],
+    kodeUnitKerja: [],
     periode: null,
   }
   programAudit: any[] = [];
@@ -83,7 +83,7 @@ export class ProgramAuditComponent implements OnInit {
   create() {
     if (!this.programAuditData.periode ||
         !this.programAuditData.standarAssesmentId ||
-        this.programAuditData.unitKerjaId.length == 0) {
+        this.programAuditData.kodeUnitKerja.length == 0) {
         return;
     }
     console.log(this.programAuditData);
@@ -128,7 +128,7 @@ export class ProgramAuditComponent implements OnInit {
   update() {
     if (!this.programAuditData.periode ||
         !this.programAuditData.standarAssesmentId ||
-        this.programAuditData.unitKerjaId.length == 0) {
+        this.programAuditData.kodeUnitKerja.length == 0) {
         return;
     }
     if (!this.programAuditData.id) {
@@ -173,7 +173,7 @@ export class ProgramAuditComponent implements OnInit {
         this.programAuditData = {
           id: data.id,
           standarAssesmentId: data.standarAssesmentId,
-          unitKerjaId: data.unitKerja?.map((x: any) => x.unitKerjaId) ?? [],
+          kodeUnitKerja: data.unitKerja?.map((x: any) => x.kodeUnitKerja) ?? [],
           periode: data.periode,
         };
         this.modalService.open(updateProgramAuditModal, { centered: true });
@@ -189,19 +189,18 @@ export class ProgramAuditComponent implements OnInit {
     
     this.programAuditData.standarAssesmentId = this.selectedStandar.id;
     const kode = this.selectedStandar.kode;
-    this.programAuditData.unitKerjaId = [];
+    this.programAuditData.kodeUnitKerja = [];
     setTimeout(() => {
       if (kode === "SMKI") {
         this.unitKerja = this.unitKerjaAll
-          .filter(x => x.kodeGrupUnitKerja === 'Kepwil');
+          .filter(x => x.jenis === 'KEPWIL' || x.jenis === 'KC');
       } else {
         this.unitKerja = this.unitKerjaAll
-          .filter(x => x.kodeGrupUnitKerja === 'UKPF');
+          .filter(x => x.jenis === 'UKPF');
       }
     }, 0);
   }
 
-  // Tambahkan trackBy function
   trackByFn(item: any) {
     return item.id;
   }
@@ -210,7 +209,7 @@ export class ProgramAuditComponent implements OnInit {
     this.programAuditData = {
       id: null,
       standarAssesmentId: null,
-      unitKerjaId: [],
+      kodeUnitKerja: [],
       periode: null,
     }
   }

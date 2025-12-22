@@ -167,16 +167,16 @@
                 <ng-select
                     #unitKerjaSelect
                     [items]="unitKerja"
-                    bindLabel="unitKerja"
-                    bindValue="id"
+                    bindLabel="nama"
+                    bindValue="kode"
                     [multiple]="true"
-                    groupBy="grupUnitKerja"
+                    groupBy="induk"
                     [trackByFn]="trackByFn"
-                    [(ngModel)]="programAuditData.unitKerjaId"
-                    name="unitKerjaId">
+                    [(ngModel)]="programAuditData.kodeUnitKerja"
+                    name="kodeUnitKerja">
                 </ng-select>
                 <small class="text-danger"
-                    *ngIf="programAuditForm.submitted && (!programAuditData.unitKerjaId || programAuditData.unitKerjaId.length == 0)">
+                    *ngIf="programAuditForm.submitted && (!programAuditData.kodeUnitKerja || programAuditData.kodeUnitKerja.length == 0)">
                     Minimal pilih 1 bidang.
                 </small>
             </div>
@@ -234,16 +234,16 @@
                 <ng-select
                     #unitKerjaSelect
                     [items]="unitKerja"
-                    bindLabel="unitKerja"
-                    bindValue="id"
+                    bindLabel="nama"
+                    bindValue="kode"
                     [multiple]="true"
-                    groupBy="grupUnitKerja"
+                    groupBy="induk"
                     [trackByFn]="trackByFn"
-                    [(ngModel)]="programAuditData.unitKerjaId"
-                    name="unitKerjaId">
+                    [(ngModel)]="programAuditData.kodeUnitKerja"
+                    name="kodeUnitKerja">
                 </ng-select>
                 <small class="text-danger"
-                    *ngIf="programAuditForm.submitted && (!programAuditData.unitKerjaId || programAuditData.unitKerjaId.length == 0)">
+                    *ngIf="programAuditForm.submitted && (!programAuditData.kodeUnitKerja || programAuditData.kodeUnitKerja.length == 0)">
                     Minimal pilih 1 bidang.
                 </small>
             </div>
