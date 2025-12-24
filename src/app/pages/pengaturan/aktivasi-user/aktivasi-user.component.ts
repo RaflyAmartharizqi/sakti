@@ -114,10 +114,10 @@ export class AktivasiUserComponent implements OnInit {
       }
     });
   }
-
+  
   createUser() {
     if (this.userData.tipeUser === "bpjs") {
-      if (!this.selectedUserBpjs || !this.userData.asesorId) {
+      if (!this.selectedUserBpjs || this.userData.asesorId.length === 0) {
           return;
       }
     } else if (this.userData.tipeUser === "eksternal") {
@@ -129,6 +129,7 @@ export class AktivasiUserComponent implements OnInit {
           return;
       }
     }
+
     this.aktivasiUserService.create(this.userData).subscribe({
       next: (res) => {
         Swal.close();
@@ -153,7 +154,7 @@ export class AktivasiUserComponent implements OnInit {
 
   updateUser() {
     if (this.userData.tipeUser === "bpjs") {
-      if (!this.selectedUserBpjs || !this.userData.asesorId) {
+      if (!this.selectedUserBpjs || this.userData.asesorId.length === 0) {
           return;
       }
     } else if (this.userData.tipeUser === "eksternal") {

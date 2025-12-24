@@ -183,12 +183,12 @@
                 <ng-select
                     #unitKerjaSelect
                     [items]="unitKerja"
-                    bindLabel="unitKerja"
-                    bindValue="id"
+                    bindLabel="nama"
+                    bindValue="kode"
                     [multiple]="true"
                     [trackByFn]="trackByFn"
-                    [(ngModel)]="unitKerjaId"
-                    name="unitKerjaId"
+                    [(ngModel)]="kodeUnitKerja"
+                    name="kodeUnitKerja"
                     disabled>
                 </ng-select>
             </div>

@@ -81,7 +81,7 @@ export class JadwalAuditComponent implements OnInit {
     rangeTanggal: '' as string
   };
 
-  unitKerjaId= [];
+  kodeUnitKerja= [];
   users: any[] = [];
   usersFiltered: any[] = [];
 
@@ -100,9 +100,11 @@ export class JadwalAuditComponent implements OnInit {
         timAsesor: res.response.timAsesor.map((x: any) => x.userId),
         rangeTanggal: `${res.response.jadwalAudit.tanggalMulai} to ${res.response.jadwalAudit.tanggalSelesai}`
       };
-      this.unitKerjaId = res.response.unitKerja?.map((x: any) => x.unitKerjaId) ?? [];
+      this.kodeUnitKerja = res.response.unitKerja?.map((x: any) => x.kodeUnitKerja) ?? [];
       this.getUnitkerja();
       this.getListUserByAsesor(this.kodeJenisAudit);
+      console.log(this.kodeUnitKerja);
+            console.log(this.unitKerja);
       this.modalService.open(updateJadwalAuditIsoModal, { centered: true });
     });
   }
@@ -163,13 +165,6 @@ export class JadwalAuditComponent implements OnInit {
     this.jadwalAuditService.getUnitKerjaByJenisAudit().subscribe({
       next: (res: any) => {
         this.unitKerja = res.response.list;
-        if (this.kodeJenisAudit === "SMKI") {
-          this.unitKerja = this.unitKerja
-            .filter(x => x.kodeGrupUnitKerja === 'Kepwil');
-        } else {
-          this.unitKerja = this.unitKerja
-            .filter(x => x.kodeGrupUnitKerja === 'UKPF');
-        }
         console.log(this.unitKerja);
       },
       error: (err) => console.error(err)
@@ -265,8 +260,6 @@ export class JadwalAuditComponent implements OnInit {
       }
     });
   }
-
-
 
   // ===================== FILTER =====================
   onSearchChange(): void {
