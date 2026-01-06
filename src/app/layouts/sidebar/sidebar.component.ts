@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MENU } from './menu';
 import { MenuItem } from './menu.model';
 import { environment } from 'src/environments/environment';
+import { AuthenticationService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,13 +20,14 @@ export class SidebarComponent implements OnInit {
   @ViewChild('sideMenu') sideMenu!: ElementRef;
   @Output() mobileMenuButtonClicked = new EventEmitter();
 
-  constructor(private router: Router, public translate: TranslateService) {
+  constructor(private router: Router, public translate: TranslateService, private authService: AuthenticationService) {
     translate.setDefaultLang('en');
   }
 
   ngOnInit(): void {
-    // Menu Items
-    this.menuItems = MENU;
+    const role = this.authService.getRole(); // string
+    this.menuItems = this.filterMenuByRole(MENU, role);
+
     this.router.events.subscribe((event) => {
       if (document.documentElement.getAttribute('data-layout') != "twocolumn") {
         if (event instanceof NavigationEnd) {
@@ -34,6 +36,24 @@ export class SidebarComponent implements OnInit {
       }
     });
   }
+  private filterMenuByRole(menu: MenuItem[], role: string): MenuItem[] {
+    return menu
+      .filter(item =>
+        !item.role || item.role.includes(role)
+      )
+      .map(item => ({
+        ...item,
+        subItems: item.subItems
+          ? this.filterMenuByRole(item.subItems, role)
+          : []
+      }))
+      .filter(item =>
+        item.isTitle ||
+        item.link ||
+        (item.subItems && item.subItems.length > 0)
+      );
+  }
+
 
   /***
    * Activate droup down set

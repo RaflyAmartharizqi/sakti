@@ -22,7 +22,7 @@ export class AuthGuard  {
                 return true;
             }
         } else {
-            const currentUser = this.authFackservice.currentUserValue;
+            const currentUser = this.authenticationService.currentUserValue;
             if (currentUser) {
                 // logged in so return true
                 return true;
@@ -36,4 +36,5 @@ export class AuthGuard  {
         this.router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
         return false;
     }
+    
 }

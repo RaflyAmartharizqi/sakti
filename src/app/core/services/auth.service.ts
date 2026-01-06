@@ -67,7 +67,7 @@ export class AuthenticationService {
      * @param email email of user
      * @param password password of user
      */
-    login(email: string, password: string) {
+    login(email: string, password: string, recaptchaToken: string) {
         // return getFirebaseBackend()!.loginUser(email, password).then((response: any) => {
         //     const user = response;
         //     return user;
@@ -75,7 +75,8 @@ export class AuthenticationService {
 
         return this.http.post(AUTH_API + 'signin', {
             email,
-            password
+            password,
+            recaptchaToken,
           }, httpOptions).pipe(
               map((response: any) => {
                 const user = response;
@@ -91,8 +92,17 @@ export class AuthenticationService {
     /**
      * Returns the current user
      */
-    public currentUser(): any {
-        return getFirebaseBackend()!.getAuthenticatedUser();
+    // public currentUser(): any {
+    //     return getFirebaseBackend()!.getAuthenticatedUser();
+    // }
+
+    currentUser() {
+        const user = sessionStorage.getItem('currentUser');
+        return user ? JSON.parse(user) : null;
+    }
+
+    getRole(): string {
+        return this.currentUser()?.role ?? '';
     }
 
     /**

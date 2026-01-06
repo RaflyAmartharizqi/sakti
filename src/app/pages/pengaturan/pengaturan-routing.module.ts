@@ -4,15 +4,16 @@ import { AktivasiUserComponent } from './aktivasi-user/aktivasi-user.component';
 import { ReferensiKlausulAnnexComponent } from './referensi-klausul-annex/referensi-klausul-annex.component';
 import { ReferensiPertanyaanSmkiComponent } from './referensi-pertanyaan-smki/referensi-pertanyaan-smki.component';
 import { ReferensiPertanyaanAuditIsoComponent } from './referensi-pertanyaan-audit-iso/referensi-pertanyaan-audit-iso.component';
+import { RoleGuard } from 'src/app/core/guards/role.guard';
   
 const routes: Routes = [
   {
     path: '',
     children: [
-      { path: 'aktivasi-user', component: AktivasiUserComponent },
-      { path: 'referensi-klausul-annex', component: ReferensiKlausulAnnexComponent },
-      { path: 'referensi-pertanyaan-smki', component: ReferensiPertanyaanSmkiComponent },
-      { path: 'referensi-pertanyaan-audit-iso', component: ReferensiPertanyaanAuditIsoComponent }
+      { path: 'aktivasi-user', component: AktivasiUserComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } },
+      { path: 'referensi-klausul-annex', component: ReferensiKlausulAnnexComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } },
+      { path: 'referensi-pertanyaan-smki', component: ReferensiPertanyaanSmkiComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } },
+      { path: 'referensi-pertanyaan-audit-iso', component: ReferensiPertanyaanAuditIsoComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } }
     ]
   }
 ];

@@ -11,7 +11,7 @@ import { LayoutsModule } from "./layouts/layouts.module";
 import { PagesModule } from "./pages/pages.module";
 
 // Auth
-import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { initFirebaseBackend } from './authUtils';
@@ -34,11 +34,11 @@ export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
 
-if (environment.defaultauth === 'firebase') {
-  initFirebaseBackend(environment.firebaseConfig);
-} else {
-  FakeBackendInterceptor;
-}
+// if (environment.defaultauth === 'firebase') {
+//   initFirebaseBackend(environment.firebaseConfig);
+// } else {
+//   FakeBackendInterceptor;
+// }
 
 @NgModule({ declarations: [
         AppComponent
@@ -53,6 +53,7 @@ if (environment.defaultauth === 'firebase') {
         }),
         BrowserAnimationsModule,
         BrowserModule,
+        HttpClientModule, 
         AppRoutingModule,
         LayoutsModule,
         StoreModule.forRoot(rootReducer),
@@ -67,7 +68,7 @@ if (environment.defaultauth === 'firebase') {
         NgPipesModule], providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: FakeBackendInterceptor, multi: true },
-        provideHttpClient(withInterceptorsFromDi()),
+        // { provide: HTTP_INTERCEPTORS, useClass: FakeBackendInterceptor, multi: true },
+        // provideHttpClient(withInterceptorsFromDi()),
     ] })
 export class AppModule { }

@@ -5,7 +5,7 @@ import { SharedModule } from "../../../shared/shared.module";
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Subject, debounceTime, switchMap, distinctUntilChanged, tap } from 'rxjs';
+import { of, Subject, debounceTime, switchMap, distinctUntilChanged, tap, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -21,32 +21,7 @@ export class AktivasiUserComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private aktivasiUserService: AktivasiUserService
-  ) {
-    this.searchInput$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      tap(() => this.isLoading = true),
-      switchMap(term => {
-        if (!term || term.length < 3) {
-          this.listUserBpjs = [];
-          this.isLoading = false;
-          return [];
-        }
-        return this.aktivasiUserService.searchUserBpjs(term);
-      })
-    ).subscribe({
-      next: (res: any) => {
-        this.listUserBpjs = res.response ? [...res.response] : [];
-        this.isLoading = false;
-        console.log("LIST USER:", this.listUserBpjs);
-      },
-      error: (err) => {
-        console.error("Error:", err);
-        this.listUserBpjs = [];
-        this.isLoading = false;
-      }
-    });
-  }
+  ) {}
 
   activeTab: string = 'bpjs';
   statusFilter: string = '';
@@ -91,6 +66,7 @@ export class AktivasiUserComponent implements OnInit {
 
   // ========== Get Insert Update Data ============
   loadUsers() {
+    if (this.isTabLoading) return; // 🔥 cegah double call
     this.isTabLoading = true;
     this.users = [];   
     this.aktivasiUserService.get(this.filters).subscribe({
@@ -102,6 +78,11 @@ export class AktivasiUserComponent implements OnInit {
         this.to = res.response.to;
         this.currentPage = res.response.page;
         this.isTabLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isTabLoading = false;
+        this.users = [];
       }
     });
   }
@@ -111,6 +92,11 @@ export class AktivasiUserComponent implements OnInit {
       next: (res) => {
         this.asesor = res.response.list;
         console.log(this.asesor);
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+        this.asesor = [];
       }
     });
   }
@@ -184,12 +170,43 @@ export class AktivasiUserComponent implements OnInit {
   }
 
   // ================ ngOnInit =================
+private destroy$ = new Subject<void>();
+
+ngOnDestroy(): void {
+  this.destroy$.next();
+  this.destroy$.complete();
+}
 
   ngOnInit(): void {
     this.breadCrumbItems = [
       { label: 'Pengaturan' },
       { label: 'Aktivasi User', active: true }
     ];
+    this.searchInput$
+    .pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => this.isLoading = true),
+      switchMap(term => {
+        if (!term || term.length < 3) {
+          this.listUserBpjs = [];
+          this.isLoading = false;
+          return of([]); // ✅ BENAR
+        }
+        return this.aktivasiUserService.searchUserBpjs(term);
+      }),
+      takeUntil(this.destroy$)
+    )
+    .subscribe({
+      next: (res: any) => {
+        this.listUserBpjs = res?.response ?? [];
+        this.isLoading = false;
+      },
+      error: () => {
+        this.listUserBpjs = [];
+        this.isLoading = false;
+      }
+    });
     this.loadUsers();
     this.getAsesor();
   }

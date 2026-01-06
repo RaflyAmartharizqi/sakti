@@ -4,6 +4,7 @@ export interface MenuItem {
   icon?: string;
   isCollapsed?: any;
   link?: string;
+  role?: string[];
   subItems?: any;
   isTitle?: boolean;
   badge?: any;

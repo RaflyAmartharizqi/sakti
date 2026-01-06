@@ -1,112 +1,91 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { ReCaptchaV3Service } from 'ng-recaptcha';
 
-// Login Auth
-import { environment } from '../../../environments/environment';
-import { AuthenticationService } from '../../core/services/auth.service';
-import { AuthfakeauthenticationService } from '../../core/services/authfake.service';
-import { first } from 'rxjs/operators';
+// import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from './toast-service';
-import { Store } from '@ngrx/store';
-import { login } from 'src/app/store/Authentication/authentication.actions';
+import { LoginService } from './login.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-
-/**
- * Login Component
- */
 export class LoginComponent implements OnInit {
 
-  // Login Form
   loginForm!: UntypedFormGroup;
   submitted = false;
-  fieldTextType!: boolean;
-  error = '';
-  returnUrl!: string;
+  fieldTextType = false;
+  isLoading = false;
 
-  toast!: false;
+  year = new Date().getFullYear();
 
-  // set the current year
-  year: number = new Date().getFullYear();
-
-  constructor(private formBuilder: UntypedFormBuilder,private authenticationService: AuthenticationService,private router: Router,
-    private authFackservice: AuthfakeauthenticationService, private route: ActivatedRoute, public toastService: ToastService,
-    private store: Store) {
-      // redirect to home if already logged in
-      if (this.authenticationService.currentUserValue) {
-        this.router.navigate(['/']);
-      }
-     }
-
-  ngOnInit(): void {
-    if(sessionStorage.getItem('currentUser')) {
-      this.router.navigate(['/']);
-    }
-    /**
-     * Form Validatyion
-     */
-     this.loginForm = this.formBuilder.group({
-      email: ['admin@themesbrand.com', [Validators.required, Validators.email]],
-      password: ['123456', [Validators.required]],
-    });
-    // get return url from route parameters or default to '/'
-    // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-  }
-
-  // convenience getter for easy access to form fields
-  get f() { return this.loginForm.controls; }
-
-  /**
-   * Form submit
-   */
-   onSubmit() {
-    this.submitted = true;
-
-     // Login Api
-     this.store.dispatch(login({ email: this.f['email'].value, password: this.f['password'].value }));
-    // this.authenticationService.login(this.f['email'].value, this.f['password'].value).subscribe((data:any) => { 
-    //   if(data.status == 'success'){
-    //     sessionStorage.setItem('toast', 'true');
-    //     sessionStorage.setItem('currentUser', JSON.stringify(data.data));
-    //     sessionStorage.setItem('token', data.token);
-    //     this.router.navigate(['/']);
-    //   } else {
-    //     this.toastService.show(data.data, { classname: 'bg-danger text-white', delay: 15000 });
-    //   }
-    // });
-
-    // stop here if form is invalid
-    // if (this.loginForm.invalid) {
-    //   return;
-    // } else {
-    //   if (environment.defaultauth === 'firebase') {
-    //     this.authenticationService.login(this.f['email'].value, this.f['password'].value).then((res: any) => {
-    //       this.router.navigate(['/']);
-    //     })
-    //       .catch(error => {
-    //         this.error = error ? error : '';
-    //       });
-    //   } else {
-    //     this.authFackservice.login(this.f['email'].value, this.f['password'].value).pipe(first()).subscribe(data => {
-    //           this.router.navigate(['/']);
-    //         },
-    //         error => {
-    //           this.error = error ? error : '';
-    //         });
-    //   }
+  constructor(
+    private fb: UntypedFormBuilder,
+    private router: Router,
+    private recaptchaV3Service: ReCaptchaV3Service,
+    private loginService: LoginService,
+    public toastService: ToastService
+  ) {
+    // if (this.loginService.currentUserValue) {
+    //   this.router.navigate(['/']);
     // }
   }
 
-  /**
-   * Password Hide/Show
-   */
-   toggleFieldTextType() {
-    this.fieldTextType = !this.fieldTextType;
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
   }
 
+  get f() {
+    return this.loginForm.controls;
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+    this.isLoading = true;
+
+    if (this.loginForm.invalid) return;
+
+    this.recaptchaV3Service.execute('login').subscribe({
+      next: (captchaToken) => {
+        this.loginService.login({
+          username: this.f['username'].value,
+          password: this.f['password'].value,
+          recaptchaToken: captchaToken
+        }).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.toastService.show(
+              'Login berhasil',
+              { classname: 'bg-success text-white', delay: 500 }
+            );
+            setTimeout(() => {
+              this.router.navigate(['/']);
+            }, 1000);
+          },
+          error: (err) => {
+            this.toastService.show(
+              err?.error?.metadata?.message || 'Login gagal',
+              { classname: 'bg-danger text-white', delay: 5000 }
+            );
+            this.isLoading = false;
+          }
+        });
+      },
+      error: () => {
+        this.toastService.show(
+          'Gagal memverifikasi captcha',
+          { classname: 'bg-danger text-white', delay: 5000 }
+        );
+      }
+    });
+  }
+
+  toggleFieldTextType(): void {
+    this.fieldTextType = !this.fieldTextType;
+  }
 }
