@@ -35,9 +35,10 @@ export class ReferensiPertanyaanAuditIsoComponent {
   refPertanyaanIsoData = {
     id: null,
     refKlausulAnnexId: null,
+    jenisAuditId: 2,
     pertanyaan: '',
     hasilYangDiharapkan: '',
-    bidangIsoId: [] as number[],
+    kodeBidang: [] as number[],
     status: true
   };
 
@@ -53,10 +54,11 @@ export class ReferensiPertanyaanAuditIsoComponent {
     this.refPertanyaanIsoData = {
       id: null,
       refKlausulAnnexId: null,
+      jenisAuditId: 2,
       pertanyaan: '',
       hasilYangDiharapkan: '',
       status: true,
-      bidangIsoId: []
+      kodeBidang: []
     };
     this.selectedStandar = null;
   }
@@ -80,10 +82,11 @@ export class ReferensiPertanyaanAuditIsoComponent {
         this.refPertanyaanIsoData = {
           id: data.id,
           refKlausulAnnexId: data.refKlausulAnnexId,
+          jenisAuditId: data.jenisAuditId,
           pertanyaan: data.pertanyaan,
           hasilYangDiharapkan: data.hasilYangDiharapkan,
           status: data.status == 1,
-          bidangIsoId: data.bidang?.map((x:any) => x.id) ?? []
+          kodeBidang: data.bidang?.map((x:any) => x.kode) ?? []
         };
         this.selectedStandar = data.standarAssesmentId;
         this.getRefKlausulAnnexByStandar(data.standarAssesmentId);
@@ -133,9 +136,9 @@ export class ReferensiPertanyaanAuditIsoComponent {
         const list = res.response.list;
 
         this.bidangIso = list.map((x: any) => ({
-          namaGroups: x.grupBidangIso,
-          nama: x.bidangIso,
-          value: x.bidangIsoId
+          namaGroups: x.namaParent,
+          nama: x.nama,
+          value: x.kode
         }));
 
         console.log("Hasil Dropdown:", this.bidangIso);
@@ -163,7 +166,7 @@ export class ReferensiPertanyaanAuditIsoComponent {
     if (!this.refPertanyaanIsoData.refKlausulAnnexId ||
         !this.refPertanyaanIsoData.pertanyaan ||
         !this.refPertanyaanIsoData.hasilYangDiharapkan ||
-        this.refPertanyaanIsoData.bidangIsoId.length == 0) {
+        this.refPertanyaanIsoData.kodeBidang.length == 0) {
         return;
     }
     const payload = {
@@ -196,7 +199,7 @@ export class ReferensiPertanyaanAuditIsoComponent {
     if (!this.refPertanyaanIsoData.refKlausulAnnexId ||
         !this.refPertanyaanIsoData.pertanyaan ||
         !this.refPertanyaanIsoData.hasilYangDiharapkan ||
-        this.refPertanyaanIsoData.bidangIsoId.length == 0) {
+        this.refPertanyaanIsoData.kodeBidang.length == 0) {
         return;
     }
     if (!this.refPertanyaanIsoData.id) {

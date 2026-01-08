@@ -1,3 +1,173 @@
 <!-- Start Breadcrumbs -->
 <app-breadcrumbs title="PENGISIAN ASSESMENT SMKI" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
 <!-- End Breadcrumbs -->
+
+<div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Pengisian Assesment SMKI</h4>
+        </div>
+
+        <!-- Filter and Search Section -->
+        <div class="row mb-3 g-3">
+            <div class="col-12 col-md-6 col-lg-6">
+                <div class="d-flex align-items-center">
+                    <label class="me-2 text-nowrap">Show</label>
+                    <select class="form-select form-select-sm" style="width: 80px;" [(ngModel)]="entriesPerPage" (change)="onEntriesPerPageChange()">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                    </select>
+                    <span class="ms-2 text-nowrap">Entries</span>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="ri-search-line"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearchChange()">
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">No</th>
+                        <th class="d-lg-table-cell">Jenis Audit</th>
+                        <th class="d-lg-table-cell">Unit Kerja</th>
+                        <th class="d-md-table-cell">Periode</th>
+                        <th class="d-lg-table-cell">Waktu Pelaksanaan</th>
+                        <th class="d-lg-table-cell">Ketua Tim Asesor</th>
+                        <th class="d-lg-table-cell">Tim Asesor</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   <tr *ngFor="let data of programAudit let i = index">
+                        <td class="text-center">
+                            {{ ((currentPage - 1) * entriesPerPage) + (i + 1) }}
+                        </td>
+                        <td class="d-lg-table-cell" *ngIf="kodeJenisAudit !== 'SMKI'">{{ data.kategoriProgram }}</td>
+                        <td class="d-lg-table-cell">{{ data.unitKerja }}</td>
+                        <td class="d-md-table-cell">{{ data.periode }}</td>
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngIf="data.tanggalMulai && data.tanggalSelesai; else belumTanggal">
+                                {{ data.tanggalMulai | date:'dd MMMM yyyy' }} -
+                                {{ data.tanggalSelesai | date:'dd MMMM yyyy' }}
+                            </ng-container>
+
+                            <ng-template #belumTanggal>
+                                <span class="badge bg-warning">Belum dijadwalkan</span>
+                            </ng-template>
+                        </td>
+
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngIf="data.ketuaTim; else belumKetua">
+                                {{ data.ketuaTim }}
+                            </ng-container>
+
+                            <ng-template #belumKetua>
+                                <span class="badge bg-secondary">Belum ditentukan</span>
+                            </ng-template>
+                        </td>
+
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngIf="data.timAsesor; else belumAsesor">
+                                {{ data.timAsesor }}
+                            </ng-container>
+
+                            <ng-template #belumAsesor>
+                                <span class="badge bg-info">Belum ditambahkan</span>
+                            </ng-template>
+                        </td>
+                    </tr>
+                    <tr *ngIf="jadwalAudit.length === 0 && !isLoading">
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit !== 'SMKI'">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit == 'SMKI'">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="isLoading">
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit !== 'SMKI'">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                        <td colspan="8" class="text-center py-4" *ngIf="kodeJenisAudit == 'SMKI'">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td class="text-center">
+                            <button 
+                                class="btn btn-sm btn-success m-1"
+                                [routerLink]="[
+                                    '/pengisian-assesment-smki/detail',
+                                    
+                                ]">
+                                    <i class="ri-verified-badge-fill d-md-none"></i>
+                                    <span class="d-none d-md-inline">
+                                    Detail
+                                    </span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
+            <div>
+                <span class="text-muted">{{ paginationInfo }}</span>
+            </div>
+            <nav *ngIf="totalPage > 0">
+                <ul class="pagination mb-0 flex-wrap">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="javascript:void(0)" (click)="previousPage()" tabindex="-1">
+                            <i class="ri-arrow-left-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" 
+                        *ngFor="let page of pageNumbers"
+                        [class.active]="page === currentPage"
+                        [class.disabled]="page === -1">
+                        <a class="page-link" 
+                           href="javascript:void(0)" 
+                           (click)="page !== -1 && goToPage(page)">
+                            {{ page === -1 ? '...' : page }}
+                        </a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPage">
+                        <a class="page-link" href="javascript:void(0)" (click)="nextPage()">
+                            <i class="ri-arrow-right-s-line d-md-none"></i>
+                            <span class="d-none d-md-inline">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

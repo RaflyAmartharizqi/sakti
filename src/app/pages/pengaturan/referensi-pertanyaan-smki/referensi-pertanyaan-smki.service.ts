@@ -15,7 +15,7 @@ export class ReferensiPertanyaanSmkiService {
 
     create(payload: any) {
         return this.http.post(
-            this.API_URL + 'RefPertanyaanSmki/insert',
+            this.API_URL + 'RefPertanyaanAudit/insert',
             payload,
             {
                 headers: new HttpHeaders({
@@ -28,7 +28,7 @@ export class ReferensiPertanyaanSmkiService {
 
     get(filters: any):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefPertanyaanSmki/getlist`,
+            `${this.API_URL}RefPertanyaanAudit/getlist/smki`,
             {
                 params: {
                     page: filters.page ?? 1,
@@ -40,9 +40,9 @@ export class ReferensiPertanyaanSmkiService {
         );
     }
 
-    getSmkiBidang():Observable<any> {
+    getBidangSmki():Observable<any> {
         return this.http.get(
-            `${this.API_URL}BidangSmki/getlist`
+            `${this.API_URL}Bidang/getlist/smki`
         );
     }
 
@@ -60,7 +60,7 @@ export class ReferensiPertanyaanSmkiService {
 
     update(id: number, payload: any) {
         return this.http.put(
-            this.API_URL + `RefPertanyaanSmki/update/${id}`,
+            this.API_URL + `RefPertanyaanAudit/update/${id}`,
             payload,
             {
                 headers: new HttpHeaders({
@@ -73,7 +73,7 @@ export class ReferensiPertanyaanSmkiService {
 
     getById(id: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefPertanyaanSmki/getbyid/${id}`,
+            `${this.API_URL}RefPertanyaanAudit/getbyid/${id}`,
         );
     }
 

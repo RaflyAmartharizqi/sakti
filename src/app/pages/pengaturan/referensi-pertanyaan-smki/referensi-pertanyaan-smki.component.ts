@@ -24,9 +24,10 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
   refPertanyaanSmkiData = {
     id: null,
     refKlausulAnnexId: null,
+    jenisAuditId: 1,
     pertanyaan: '',
     hasilYangDiharapkan: '',
-    bidangSmkiId: [] as number[],
+    kodeBidang: [] as string[],
     status: true
   };
 
@@ -48,23 +49,23 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
       { label: 'Pengaturan' },
       { label: 'Referensi Pertanyaan SMKI', active: true }
     ];
-    this.getSmkiBidang();
+    this.getBidangSmki();
     this.getStandarAssesment();
     this.loadData();
   }
 
-  checkBoxBidang(bidangSmkiId:number,event:any){
+  checkBoxBidang(kode:string,event:any){
     if (event.target.checked) {
-      if (!this.refPertanyaanSmkiData.bidangSmkiId.includes(bidangSmkiId)) {
-        this.refPertanyaanSmkiData.bidangSmkiId.push(bidangSmkiId);
+      if (!this.refPertanyaanSmkiData.kodeBidang.includes(kode)) {
+        this.refPertanyaanSmkiData.kodeBidang.push(kode);
       }
     } else {
-      const index = this.refPertanyaanSmkiData.bidangSmkiId.indexOf(bidangSmkiId);
+      const index = this.refPertanyaanSmkiData.kodeBidang.indexOf(kode);
       if (index > -1) {
-        this.refPertanyaanSmkiData.bidangSmkiId.splice(index, 1);
+        this.refPertanyaanSmkiData.kodeBidang.splice(index, 1);
       }
     }
-    console.log("Updated asesorId (Eksternal):", this.refPertanyaanSmkiData.bidangSmkiId);
+    console.log("Updated asesorId (Eksternal):", this.refPertanyaanSmkiData.kodeBidang);
   }
 
   openModalReferensiPertanyaanSmki(referensiPertanyaanSmkiModal: TemplateRef<any>) {
@@ -78,8 +79,8 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
   selectedKlausulAnnex = null;
   selectedStandar: number | null = null;
 
-  getSmkiBidang() {
-    this.refPertanyaanSmkiService.getSmkiBidang().subscribe({
+  getBidangSmki() {
+    this.refPertanyaanSmkiService.getBidangSmki().subscribe({
       next: (res: any) => {
         this.smkiBidang = res.response.list;
       },
@@ -129,7 +130,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
     if (!this.refPertanyaanSmkiData.refKlausulAnnexId ||
         !this.refPertanyaanSmkiData.pertanyaan ||
         !this.refPertanyaanSmkiData.hasilYangDiharapkan ||
-        this.refPertanyaanSmkiData.bidangSmkiId.length == 0) {
+        this.refPertanyaanSmkiData.kodeBidang.length == 0) {
         return;
     }
     const payload = {
@@ -173,11 +174,13 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
         this.refPertanyaanSmkiData = {
           id: data.id,
           refKlausulAnnexId: data.refKlausulAnnexId,
+          jenisAuditId: data.jenisAuditId,
           pertanyaan: data.pertanyaan,
           hasilYangDiharapkan: data.hasilYangDiharapkan,
           status: data.status == 1,
-          bidangSmkiId: data.bidang?.map((x:any) => x.id) ?? []
+          kodeBidang: data.bidang?.map((x:any) => x.kode) ?? []
         };
+        console.log("Data for Edit:", this.refPertanyaanSmkiData);
         this.modalService.open(onEditClickReferensiPertanyaanSmki, { centered: true });
       },
       error: (err) => {
@@ -191,25 +194,19 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
     this.refPertanyaanSmkiData = {
       id: null,
       refKlausulAnnexId: null,
+      jenisAuditId: 1,
       pertanyaan: '',
       hasilYangDiharapkan: '',
       status: true,
-      bidangSmkiId: []
+      kodeBidang: []
     };
-  }
-
-  setCheckedBidang(){
-    document.querySelectorAll('.form-check-input').forEach((el: any) => {
-      const id = Number(el.value);
-      el.checked = this.refPertanyaanSmkiData.bidangSmkiId.includes(id);
-    });
   }
 
   update() {
     if (!this.refPertanyaanSmkiData.refKlausulAnnexId ||
         !this.refPertanyaanSmkiData.pertanyaan ||
         !this.refPertanyaanSmkiData.hasilYangDiharapkan ||
-        this.refPertanyaanSmkiData.bidangSmkiId.length == 0) {
+        this.refPertanyaanSmkiData.kodeBidang.length == 0) {
         return;
     }
     if (!this.refPertanyaanSmkiData.id) {

@@ -71,7 +71,7 @@
                         </td>
                         <td class="d-sm-table-cell">{{ data.namaRefKlausulAnnex }}</td>
                         <td class="d-md-table-cell">{{ data.kodeRefKlausulAnnex }}</td>
-                        <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanSmki }}</td>
+                        <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanAudit }}</td>
                         <td class="d-lg-table-cell">{{ data.pertanyaan }}</td>
                         <td class="d-lg-table-cell">{{ data.hasilYangDiharapkan }}</td>
                         <td class="d-lg-table-cell">{{ data.bidang }}</td>
@@ -198,14 +198,17 @@
                 <div class="form-check mb-2" *ngFor="let item of smkiBidang">
                     <input type="checkbox"
                             class="form-check-input"
-                            [value]="item.id"
-                            [checked]="refPertanyaanSmkiData.bidangSmkiId.includes(item.id)"
-                            (change)="checkBoxBidang(item.id,$event)"
+                            [value]="item.kode"
+                            [checked]="refPertanyaanSmkiData.kodeBidang.includes(item.kode)"
+                            (change)="checkBoxBidang(item.kode,$event)"
                             required
-                            id="smkiBidang{{item.id}}">
-                    <label class="form-check-label" for="asesor_{{item.id}}">{{ item.nama }}</label>
+                            id="smkiBidang{{item.nama}}">
+                    <label class="form-check-label" for="asesor_{{item.nama}}">
+                        {{ item.nama }}
+                        <span class="badge badge-label bg-primary"><i class="mdi mdi-circle-medium"></i> {{ item.officeType }} </span>
+                    </label>
                 </div>
-                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.bidangSmkiId.length === 0">
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.kodeBidang.length === 0">
                     Minimal pilih 1 bidang.
                 </small>
             </div>
@@ -283,13 +286,16 @@
                 <div class="form-check mb-2" *ngFor="let item of smkiBidang">
                     <input type="checkbox"
                         class="form-check-input"
-                        [value]="item.id"
-                        id="bidangEdit{{ item.id }}"
-                        [checked]="refPertanyaanSmkiData.bidangSmkiId.includes(item.id)"
-                        (change)="checkBoxBidang(item.id,$event)">
-                    <label class="form-check-label" for="bidangEdit{{ item.id }}">{{ item.nama }}</label>
+                        [value]="item.kode"
+                        id="bidangEdit{{ item.kode }}"
+                        [checked]="refPertanyaanSmkiData.kodeBidang.includes(item.kode)"
+                        (change)="checkBoxBidang(item.kode,$event)">
+                    <label class="form-check-label" for="asesor_{{item.nama}}">
+                        {{ item.nama }}
+                        <span class="badge badge-label bg-primary"><i class="mdi mdi-circle-medium"></i> {{ item.officeType }} </span>
+                    </label>
                 </div>
-                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.bidangSmkiId.length === 0">
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.kodeBidang.length === 0">
                     Minimal pilih 1 bidang.
                 </small>
             </div>

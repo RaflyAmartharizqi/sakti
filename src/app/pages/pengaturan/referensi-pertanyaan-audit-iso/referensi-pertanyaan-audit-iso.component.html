@@ -71,7 +71,7 @@
                         </td>
                         <td class="d-sm-table-cell">{{ data.namaRefKlausulAnnex }}</td>
                         <td class="d-md-table-cell">{{ data.kodeRefKlausulAnnex }}</td>
-                        <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanIso }}</td>
+                        <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanAudit }}</td>
                         <td class="d-lg-table-cell">{{ data.pertanyaan }}</td>
                         <td class="d-lg-table-cell">{{ data.hasilYangDiharapkan }}</td>
                         <td class="d-lg-table-cell">{{ data.bidang }}</td>
@@ -207,10 +207,10 @@
                     groupBy="namaGroups"
                     placeholder="Pilih bidang audit..."
                     name="bidang"
-                    [(ngModel)]="refPertanyaanIsoData.bidangIsoId">
+                    [(ngModel)]="refPertanyaanIsoData.kodeBidang">
                 </ng-select>
                 <small class="text-danger"
-                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.kodeBidang || refPertanyaanIsoData.kodeBidang.length == 0)">
                     Minimal pilih 1 bidang audit.
                 </small>
             </div>
@@ -301,10 +301,10 @@
                     groupBy="namaGroups"
                     placeholder="Pilih bidang audit..."
                     name="bidang"
-                    [(ngModel)]="refPertanyaanIsoData.bidangIsoId">
+                    [(ngModel)]="refPertanyaanIsoData.kodeBidang">
                 </ng-select>
                 <small class="text-danger"
-                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangIsoId || refPertanyaanIsoData.bidangIsoId.length == 0)">
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.kodeBidang || refPertanyaanIsoData.kodeBidang.length == 0)">
                     Minimal pilih 1 bidang.
                 </small>
             </div>

@@ -41,28 +41,28 @@ export const MENU: MenuItem[] = [
     label: 'MENUITEMS.PELAKSANAANPROGRAM.TEXT',
     icon: 'ri-draft-line',
     isCollapsed: true,
-    role: ['Admin', 'Asesi', 'Asesor'],
+    // role: ['Admin', 'Asesi', 'Asesor'],
     subItems: [
       {
         id: 7,
         label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PENGISIANASSESMENTSMKI',
         link: '/pelaksanaan-program/pengisian-smki',
         parentId: 6,
-        role: ['Asesi'],
+        // role: ['Asesi'],
       },
       {
         id: 8,
         label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PELAKSANAANAUDITISO',
         link: '/pelaksanaan-program/pelaksanaan-iso',
         parentId: 6,
-        role: ['Asesor'],
+        // role: ['Asesor'],
       },
       {
         id: 9,
         label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PENILAIANVERIFIKASI',
         link: '/pelaksanaan-program/penilaian-verifikasi',
         parentId: 6,
-        role: ['Admin', 'Asesor'],
+        // role: ['Admin', 'Asesor'],
       },
     ]
   },

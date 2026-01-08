@@ -16,7 +16,7 @@ export class ReferensiPertanyaanAuditIso {
 
     create(payload: any) {
         return this.http.post(
-            this.API_URL + 'RefPertanyaanIso/insert',
+            this.API_URL + 'RefPertanyaanAudit/insert',
             payload,
             {
                 headers: new HttpHeaders({
@@ -29,7 +29,7 @@ export class ReferensiPertanyaanAuditIso {
 
     get(filters: any):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefPertanyaanIso/getlist`,
+            `${this.API_URL}RefPertanyaanAudit/getlist/iso`,
             {
                 params: {
                     page: filters.page ?? 1,
@@ -43,7 +43,7 @@ export class ReferensiPertanyaanAuditIso {
 
     update(id: number, payload: any) {
         return this.http.put(
-            this.API_URL + `RefPertanyaanIso/update/${id}`,
+            this.API_URL + `RefPertanyaanAudit/update/${id}`,
             payload,
             {
                 headers: new HttpHeaders({
@@ -56,13 +56,13 @@ export class ReferensiPertanyaanAuditIso {
 
     getById(id: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}RefPertanyaanIso/getbyid/${id}`,
+            `${this.API_URL}RefPertanyaanAudit/getbyid/${id}`,
         );
     }
 
     getBidangIso():Observable<any> {
         return this.http.get(
-            `${this.API_URL}BidangIso/getlist`,
+            `${this.API_URL}Bidang/getlist/iso`,
         );
     }
 

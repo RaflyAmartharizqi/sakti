@@ -48,7 +48,10 @@ export class LoginComponent implements OnInit {
     this.submitted = true;
     this.isLoading = true;
 
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.isLoading = false;
+      return;
+    }
 
     this.recaptchaV3Service.execute('login').subscribe({
       next: (captchaToken) => {
