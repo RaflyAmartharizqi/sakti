@@ -27,17 +27,9 @@ export class PengisianSmkiService {
     //     );
     // }
 
-    get(filters: any):Observable<any> {
+    getJadwalAuditByKodeUnitKerja(kodeUnitKerja: any):Observable<any> {
         return this.http.get(
-            `${this.API_URL}ProgramAudit/getlist`,
-            {
-                params: {
-                    page: filters.page ?? 1,
-                    limit: filters.limit ?? 10,
-                    search: filters.search ?? null,
-                    periode: filters.periode ?? null,
-                }
-            }
+            `${this.API_URL}JadwalAudit/getjadwalbykodeunitkerja/${kodeUnitKerja}`,
         );
     }
 

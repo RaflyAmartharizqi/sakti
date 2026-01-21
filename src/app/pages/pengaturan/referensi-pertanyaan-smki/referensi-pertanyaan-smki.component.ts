@@ -27,7 +27,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
     jenisAuditId: 1,
     pertanyaan: '',
     hasilYangDiharapkan: '',
-    kodeBidang: [] as string[],
+    bidangId: [] as string[],
     status: true
   };
 
@@ -56,16 +56,16 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
 
   checkBoxBidang(kode:string,event:any){
     if (event.target.checked) {
-      if (!this.refPertanyaanSmkiData.kodeBidang.includes(kode)) {
-        this.refPertanyaanSmkiData.kodeBidang.push(kode);
+      if (!this.refPertanyaanSmkiData.bidangId.includes(kode)) {
+        this.refPertanyaanSmkiData.bidangId.push(kode);
       }
     } else {
-      const index = this.refPertanyaanSmkiData.kodeBidang.indexOf(kode);
+      const index = this.refPertanyaanSmkiData.bidangId.indexOf(kode);
       if (index > -1) {
-        this.refPertanyaanSmkiData.kodeBidang.splice(index, 1);
+        this.refPertanyaanSmkiData.bidangId.splice(index, 1);
       }
     }
-    console.log("Updated asesorId (Eksternal):", this.refPertanyaanSmkiData.kodeBidang);
+    console.log("Updated asesorId (Eksternal):", this.refPertanyaanSmkiData.bidangId);
   }
 
   openModalReferensiPertanyaanSmki(referensiPertanyaanSmkiModal: TemplateRef<any>) {
@@ -130,7 +130,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
     if (!this.refPertanyaanSmkiData.refKlausulAnnexId ||
         !this.refPertanyaanSmkiData.pertanyaan ||
         !this.refPertanyaanSmkiData.hasilYangDiharapkan ||
-        this.refPertanyaanSmkiData.kodeBidang.length == 0) {
+        this.refPertanyaanSmkiData.bidangId.length == 0) {
         return;
     }
     const payload = {
@@ -178,7 +178,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
           pertanyaan: data.pertanyaan,
           hasilYangDiharapkan: data.hasilYangDiharapkan,
           status: data.status == 1,
-          kodeBidang: data.bidang?.map((x:any) => x.kode) ?? []
+          bidangId: data.bidang?.map((x:any) => x.id) ?? []
         };
         console.log("Data for Edit:", this.refPertanyaanSmkiData);
         this.modalService.open(onEditClickReferensiPertanyaanSmki, { centered: true });
@@ -198,7 +198,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
       pertanyaan: '',
       hasilYangDiharapkan: '',
       status: true,
-      kodeBidang: []
+      bidangId: []
     };
   }
 
@@ -206,7 +206,7 @@ export class ReferensiPertanyaanSmkiComponent implements OnInit {
     if (!this.refPertanyaanSmkiData.refKlausulAnnexId ||
         !this.refPertanyaanSmkiData.pertanyaan ||
         !this.refPertanyaanSmkiData.hasilYangDiharapkan ||
-        this.refPertanyaanSmkiData.kodeBidang.length == 0) {
+        this.refPertanyaanSmkiData.bidangId.length == 0) {
         return;
     }
     if (!this.refPertanyaanSmkiData.id) {

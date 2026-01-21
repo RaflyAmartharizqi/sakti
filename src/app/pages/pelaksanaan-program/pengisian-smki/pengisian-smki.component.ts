@@ -10,18 +10,21 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import { TokenStorageService } from 'src/app/core/services/token-storage.service';
 
 @Component({
   selector: 'app-pengisian-smki',
   standalone: true,
   imports: [CommonModule, SharedModule, NgSelectModule, FormsModule, FlatpickrModule, RouterModule],
   templateUrl: './pengisian-smki.component.html',
-  styleUrl: './pengisian-smki.component.scss'
+  styleUrl: './pengisian-smki.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class PengisianSmkiComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
-    private pengisianSmkiService: PengisianSmkiService
+    private pengisianSmkiService: PengisianSmkiService,
+    private tokenStorageService: TokenStorageService
   ) {}
 
   breadCrumbItems!: Array<{}>;
@@ -30,6 +33,7 @@ export class PengisianSmkiComponent implements OnInit {
       { label: 'Pelaksanaan Program' },
       { label: 'Pengisian Assesment SMKI', active: true }
     ];
+    this.kodeUnitKerja = this.tokenStorageService.getUser().kodeOffice;
     this.loadData();
   }
 
@@ -49,28 +53,23 @@ export class PengisianSmkiComponent implements OnInit {
     search: '',
     programAuditId: null as number | null,
   }
-  kodeJenisAudit= '';
+  kodeUnitKerja= '';
   jadwalAudit: any[] = [];
 
-  kodeUnitKerja= [];
-  users: any[] = [];
-  usersFiltered: any[] = [];
-  programAudit: any[] = [];
-
   loadData() {
-    // this.isLoading = true;
-    // this.programAudit= [];
-    // this.pengisianSmkiService.getByJadwalUnitKerjaAuditId(this.filters.programAuditId!).subscribe({
-    //   next: (res) => {
-    //     this.programAudit = res.response.list;
-    //     this.totalData = res.response.totalData;
-    //     this.totalPage = res.response.totalPage;
-    //     this.from = res.response.from;
-    //     this.to = res.response.to;
-    //     this.currentPage = res.response.page;
-    //     this.isLoading = false;
-    //   }
-    // });
+    this.isLoading = true;
+    this.jadwalAudit = [];
+    this.pengisianSmkiService.getJadwalAuditByKodeUnitKerja(this.kodeUnitKerja).subscribe({
+      next: (res) => {
+        this.jadwalAudit = res.response.list;
+        this.totalData = res.response.totalData;
+        this.totalPage = res.response.totalPage;
+        this.from = res.response.from;
+        this.to = res.response.to;
+        this.currentPage = res.response.page;
+        this.isLoading = false;
+      }
+    });
   }
 
   // ===================== FILTER =====================

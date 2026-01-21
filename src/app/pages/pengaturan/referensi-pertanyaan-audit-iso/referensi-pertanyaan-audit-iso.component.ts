@@ -38,7 +38,7 @@ export class ReferensiPertanyaanAuditIsoComponent {
     jenisAuditId: 2,
     pertanyaan: '',
     hasilYangDiharapkan: '',
-    kodeBidang: [] as number[],
+    bidangId: [] as number[],
     status: true
   };
 
@@ -58,7 +58,7 @@ export class ReferensiPertanyaanAuditIsoComponent {
       pertanyaan: '',
       hasilYangDiharapkan: '',
       status: true,
-      kodeBidang: []
+      bidangId: [] as number[]
     };
     this.selectedStandar = null;
   }
@@ -86,7 +86,7 @@ export class ReferensiPertanyaanAuditIsoComponent {
           pertanyaan: data.pertanyaan,
           hasilYangDiharapkan: data.hasilYangDiharapkan,
           status: data.status == 1,
-          kodeBidang: data.bidang?.map((x:any) => x.kode) ?? []
+          bidangId: data.bidang?.map((x:any) => x.id) ?? []
         };
         this.selectedStandar = data.standarAssesmentId;
         this.getRefKlausulAnnexByStandar(data.standarAssesmentId);
@@ -136,9 +136,9 @@ export class ReferensiPertanyaanAuditIsoComponent {
         const list = res.response.list;
 
         this.bidangIso = list.map((x: any) => ({
-          namaGroups: x.namaParent,
+          namaGroups: x.jenis,
           nama: x.nama,
-          value: x.kode
+          value: x.id
         }));
 
         console.log("Hasil Dropdown:", this.bidangIso);
@@ -166,7 +166,7 @@ export class ReferensiPertanyaanAuditIsoComponent {
     if (!this.refPertanyaanIsoData.refKlausulAnnexId ||
         !this.refPertanyaanIsoData.pertanyaan ||
         !this.refPertanyaanIsoData.hasilYangDiharapkan ||
-        this.refPertanyaanIsoData.kodeBidang.length == 0) {
+        this.refPertanyaanIsoData.bidangId.length == 0) {
         return;
     }
     const payload = {
@@ -199,7 +199,7 @@ export class ReferensiPertanyaanAuditIsoComponent {
     if (!this.refPertanyaanIsoData.refKlausulAnnexId ||
         !this.refPertanyaanIsoData.pertanyaan ||
         !this.refPertanyaanIsoData.hasilYangDiharapkan ||
-        this.refPertanyaanIsoData.kodeBidang.length == 0) {
+        this.refPertanyaanIsoData.bidangId.length == 0) {
         return;
     }
     if (!this.refPertanyaanIsoData.id) {

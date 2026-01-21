@@ -74,7 +74,16 @@
                         <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanAudit }}</td>
                         <td class="d-lg-table-cell">{{ data.pertanyaan }}</td>
                         <td class="d-lg-table-cell">{{ data.hasilYangDiharapkan }}</td>
-                        <td class="d-lg-table-cell">{{ data.bidang }}</td>
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngFor="let b of data.bidang; let i = index">
+                                <span *ngIf="b.jenis === 'Kantor Cabang'" class="badge rounded-pill bg-success">
+                                    <i class="mdi mdi-circle-medium"></i> {{ b.nama }}
+                                </span>
+                                <span *ngIf="b.jenis === 'Kedeputian Wilayah'"  class="badge rounded-pill bg-primary">
+                                    <i class="mdi mdi-circle-medium"></i> {{ b.nama }}
+                                </span>
+                            </ng-container>
+                        </td>
                         <td class="text-center">
                             <span class="badge" 
                                 [class.bg-success]="data.status === 1"
@@ -198,17 +207,22 @@
                 <div class="form-check mb-2" *ngFor="let item of smkiBidang">
                     <input type="checkbox"
                             class="form-check-input"
-                            [value]="item.kode"
-                            [checked]="refPertanyaanSmkiData.kodeBidang.includes(item.kode)"
-                            (change)="checkBoxBidang(item.kode,$event)"
+                            [value]="item.id"
+                            [checked]="refPertanyaanSmkiData.bidangId.includes(item.id)"
+                            (change)="checkBoxBidang(item.id,$event)"
                             required
                             id="smkiBidang{{item.nama}}">
-                    <label class="form-check-label" for="asesor_{{item.nama}}">
+                    <label class="form-check-label" for="smkiBidang{{item.nama}}">
                         {{ item.nama }}
-                        <span class="badge badge-label bg-primary"><i class="mdi mdi-circle-medium"></i> {{ item.officeType }} </span>
+                        <span *ngIf="item.jenis === 'Kantor Cabang'" class="badge badge-label bg-success">
+                            <i class="mdi mdi-circle-medium"></i> {{ item.jenis }}
+                        </span>
+                        <span *ngIf="item.jenis === 'Kedeputian Wilayah'"  class="badge badge-label bg-primary">
+                            <i class="mdi mdi-circle-medium"></i> {{ item.jenis }}
+                        </span>
                     </label>
                 </div>
-                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.kodeBidang.length === 0">
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.bidangId.length === 0">
                     Minimal pilih 1 bidang.
                 </small>
             </div>
@@ -286,16 +300,21 @@
                 <div class="form-check mb-2" *ngFor="let item of smkiBidang">
                     <input type="checkbox"
                         class="form-check-input"
-                        [value]="item.kode"
-                        id="bidangEdit{{ item.kode }}"
-                        [checked]="refPertanyaanSmkiData.kodeBidang.includes(item.kode)"
-                        (change)="checkBoxBidang(item.kode,$event)">
-                    <label class="form-check-label" for="asesor_{{item.nama}}">
+                        [value]="item.Id"
+                        id="bidangEdit{{ item.id }}"
+                        [checked]="refPertanyaanSmkiData.bidangId.includes(item.id)"
+                        (change)="checkBoxBidang(item.id,$event)">
+                    <label class="form-check-label" for="smkiBidang{{item.nama}}">
                         {{ item.nama }}
-                        <span class="badge badge-label bg-primary"><i class="mdi mdi-circle-medium"></i> {{ item.officeType }} </span>
+                        <span *ngIf="item.jenis === 'Kantor Cabang'" class="badge badge-label bg-success">
+                            <i class="mdi mdi-circle-medium"></i> {{ item.jenis }}
+                        </span>
+                        <span *ngIf="item.jenis === 'Kedeputian Wilayah'"  class="badge badge-label bg-primary">
+                            <i class="mdi mdi-circle-medium"></i> {{ item.jenis }}
+                        </span>
                     </label>
                 </div>
-                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.kodeBidang.length === 0">
+                <small class="text-danger" *ngIf="refPertanyaanSmkiForm.submitted && refPertanyaanSmkiData.bidangId.length === 0">
                     Minimal pilih 1 bidang.
                 </small>
             </div>

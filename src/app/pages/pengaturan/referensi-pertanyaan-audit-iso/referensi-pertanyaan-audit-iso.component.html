@@ -74,7 +74,13 @@
                         <td class="d-lg-table-cell">{{ data.kodeRefPertanyaanAudit }}</td>
                         <td class="d-lg-table-cell">{{ data.pertanyaan }}</td>
                         <td class="d-lg-table-cell">{{ data.hasilYangDiharapkan }}</td>
-                        <td class="d-lg-table-cell">{{ data.bidang }}</td>
+                        <td class="d-lg-table-cell">
+                            <ng-container *ngFor="let b of data.bidang; let i = index">
+                                <span class="badge rounded-pill bg-success">
+                                    <i class="mdi mdi-circle-medium"></i> {{ b.nama }}
+                                </span>
+                            </ng-container>
+                        </td>
                         <td class="text-center">
                             <span class="badge" 
                                 [class.bg-success]="data.status === 1"
@@ -207,10 +213,10 @@
                     groupBy="namaGroups"
                     placeholder="Pilih bidang audit..."
                     name="bidang"
-                    [(ngModel)]="refPertanyaanIsoData.kodeBidang">
+                    [(ngModel)]="refPertanyaanIsoData.bidangId">
                 </ng-select>
                 <small class="text-danger"
-                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.kodeBidang || refPertanyaanIsoData.kodeBidang.length == 0)">
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangId || refPertanyaanIsoData.bidangId.length == 0)">
                     Minimal pilih 1 bidang audit.
                 </small>
             </div>
@@ -301,10 +307,10 @@
                     groupBy="namaGroups"
                     placeholder="Pilih bidang audit..."
                     name="bidang"
-                    [(ngModel)]="refPertanyaanIsoData.kodeBidang">
+                    [(ngModel)]="refPertanyaanIsoData.bidangId">
                 </ng-select>
                 <small class="text-danger"
-                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.kodeBidang || refPertanyaanIsoData.kodeBidang.length == 0)">
+                       *ngIf="refPertanyaanIsoForm.submitted && (!refPertanyaanIsoData.bidangId || refPertanyaanIsoData.bidangId.length == 0)">
                     Minimal pilih 1 bidang.
                 </small>
             </div>
