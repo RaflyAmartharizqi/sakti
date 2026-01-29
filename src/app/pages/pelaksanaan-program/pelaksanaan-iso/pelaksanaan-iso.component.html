@@ -27,28 +27,50 @@
                             {{ i+1 }}
                         </td>
                         <td class="d-lg-table-cell">{{ data.standarAssesment }}</td>
-                        <td class="d-lg-table-cell">{{ data.unitKerja }}</td>
+                        <td class="d-lg-table-cell">
+                            <a *ngFor="let data of data.unitKerja">
+                                <span 
+                                class="badge badge-lg bg-success xl m-1"
+                                style="font-size: 12px;">
+                                    {{ data.unitKerja }}
+                                </span>
+                            </a>
+                        </td>
                         <td class="d-md-table-cell">{{ data.periode }}</td>
                         <td class="d-lg-table-cell">
                             <span 
+                                *ngIf="data.ketuaTim"
                                 class="badge badge-lg bg-primary xl m-1"
                                 style="font-size: 12px;">
                                 <i class="mdi mdi-account-circle-outline"></i> {{ data.ketuaTim }}
                             </span>
+                            <span 
+                                *ngIf="!data.ketuaTim"
+                                class="badge badge-lg bg-warning xl m-1"
+                                style="font-size: 12px;">
+                                Belum Ditentukan
+                            </span>
                         </td>
                         <td class="d-md-table-cell">
                             <a *ngFor="let asesor of data.timAsesor">
-                                <span 
-                                class="badge badge-lg bg-primary xl m-1"
+                                <span
+                                *ngIf="data.timAsesor.length > 0"
+                                class="badge badge-lg bg-secondary xl m-1"
                                 style="font-size: 12px;">
                                     <i class="mdi mdi-account-circle-outline"></i> {{ asesor.nama }}
                                 </span>
                             </a>
+                            <span 
+                                *ngIf="data.timAsesor.length == 0"
+                                class="badge badge-lg bg-warning xl m-1"
+                                style="font-size: 12px;">
+                                Belum Ditentukan
+                            </span>
                         </td>
                         <td class="text-center">
                             <button 
                                 class="btn btn-sm btn-success m-1"
-                                [routerLink]="['detail-iso', data.jadwalUnitKerjaAuditId]">
+                                [routerLink]="['detail-iso', data.programAuditId ]">
                                     <i class="ri-verified-badge-fill d-md-none"></i>
                                     <span class="d-none d-md-inline">
                                     Detail

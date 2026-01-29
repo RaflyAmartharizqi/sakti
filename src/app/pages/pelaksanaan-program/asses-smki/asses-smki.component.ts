@@ -72,7 +72,7 @@ export class AssesSmkiComponent implements OnInit {
     this.breadCrumbItems = [
       { label: 'Pelaksanaan Program' },
       { label: 'Pengisian Assesment SMKI' },
-      { label: 'Detail SMKI', active: true }
+      { label: 'Asses SMKI', active: true }
     ];
     this.route.paramMap.subscribe(params => {
       this.transaksiAuditId = Number(params.get('transaksiAuditId'));

@@ -35,10 +35,16 @@ const routes: Routes = [
             .then(m => m.PelaksanaanIsoComponent)
       },
       {
-        path: 'detail-iso/:jadwalUnitKerjaAuditId',
+        path: 'detail-iso/:programAuditId',
         loadComponent: () =>
           import('./detail-iso/detail-iso.component')
             .then(m => m.DetailIsoComponent)
+      },
+      {
+        path: 'asses-iso/:transaksiAuditId',
+        loadComponent: () =>
+          import('./asses-iso/asses-iso.component')
+            .then(m => m.AssesIsoComponent)
       }
       // {
       //   path: 'asses-iso/:transaksiAuditId',

@@ -60,7 +60,7 @@ export class JadwalAuditComponent implements OnInit {
   kodeJenisAudit= '';
   jadwalAudit: any[] = [];
   isoForm = {
-    jadwalProgramAuditId: null as number | null,
+    jadwalAuditId: null as number | null,
     kategoriProgram: null as string | null,
     tanggalMulai: null as string | null,
     tanggalSelesai: null as string | null,
@@ -88,10 +88,10 @@ export class JadwalAuditComponent implements OnInit {
   unitKerja: UnitKerja[] = [];
 
   onEditClickJadwalAuditIso(updateJadwalAuditIsoModal: TemplateRef<any>, id: number): void {
-    this.jadwalAuditService.getByJadwalProgramAuditId(id).subscribe(res => {
+    this.jadwalAuditService.getEditIso(id).subscribe(res => {
       const ketuaId = Number(res.response.jadwalAudit.userIdKetua);
       this.isoForm = {
-        jadwalProgramAuditId: res.response.jadwalAudit.jadwalProgramAuditId,
+        jadwalAuditId: res.response.jadwalAudit.jadwalAuditId,
         kategoriProgram: res.response.jadwalAudit.kategoriProgram,
         tanggalMulai: res.response.jadwalAudit.tanggalMulai,
         tanggalSelesai: res.response.jadwalAudit.tanggalSelesai,
@@ -111,7 +111,7 @@ export class JadwalAuditComponent implements OnInit {
 
   onEditClickJadwalAuditSmki(updateJadwalAuditSmkiModal: TemplateRef<any>, id: number): void {
     console.log("HOHO", this.smkiForm.jadwalUnitKerjaAuditId);
-    this.jadwalAuditService.getByJadwalUnitKerjaAuditId(id).subscribe(res => {
+    this.jadwalAuditService.getEditSmki(id).subscribe(res => {
       this.smkiForm = {
         jadwalUnitKerjaAuditId: res.response.jadwalAudit.jadwalUnitKerjaAuditId,
         tanggalMulai: res.response.jadwalAudit.tanggalMulai,
@@ -200,7 +200,7 @@ export class JadwalAuditComponent implements OnInit {
   }
 
   updateIso() {
-    if (!this.isoForm.jadwalProgramAuditId || !this.isoForm.rangeTanggal || !this.isoForm.userIdKetua) {
+    if (!this.isoForm.jadwalAuditId || !this.isoForm.rangeTanggal || !this.isoForm.userIdKetua) {
       console.log("HAHA", this.isoForm)
       return;
     }

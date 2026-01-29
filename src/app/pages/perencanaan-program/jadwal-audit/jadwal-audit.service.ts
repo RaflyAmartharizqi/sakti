@@ -41,15 +41,15 @@ export class JadwalAuditService {
         );
     }
 
-    getByJadwalUnitKerjaAuditId(jadwalUnitKerjaAuditId: number):Observable<any> {
+    getEditSmki(jadwalUnitKerjaAuditId: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}JadwalAudit/getbyjadwalunitkerjaauditid/${jadwalUnitKerjaAuditId}`,
+            `${this.API_URL}JadwalAudit/geteditsmki/${jadwalUnitKerjaAuditId}`,
         );
     }
 
-    getByJadwalProgramAuditId(jadwalProgramAuditId: number):Observable<any> {
+    getEditIso(jadwalAuditId: number):Observable<any> {
         return this.http.get(
-            `${this.API_URL}JadwalAudit/getbyjadwalprogramauditid/${jadwalProgramAuditId}`,
+            `${this.API_URL}JadwalAudit/geteditiso/${jadwalAuditId}`,
         );
     }
 
