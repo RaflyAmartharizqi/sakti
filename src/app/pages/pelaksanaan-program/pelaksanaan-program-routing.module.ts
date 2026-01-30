@@ -46,19 +46,30 @@ const routes: Routes = [
           import('./asses-iso/asses-iso.component')
             .then(m => m.AssesIsoComponent)
       }
-      // {
-      //   path: 'asses-iso/:transaksiAuditId',
-      //   loadComponent: () =>
-      //     import('./asses-iso/asses-iso.component')
-      //       .then(m => m.AssesIsoComponent)
-      // }
     ]
   },
   {
     path: 'penilaian-verifikasi',
+    children: [
+      {
+        path: '',
         loadComponent: () =>
           import('./penilaian-verifikasi/penilaian-verifikasi.component')
             .then(m => m.PenilaianVerifikasiComponent)
+      },
+      {
+        path: 'detail-penilaian/:jadwalUnitKerjaAuditId',
+        loadComponent: () =>
+          import('./detail-penilaian/detail-penilaian.component')
+            .then(m => m.DetailPenilaianComponent)
+      },
+      {
+        path: 'asses-penilaian/:transaksiAuditId',
+        loadComponent: () =>
+          import('./asses-penilaian/asses-penilaian.component')
+            .then(m => m.AssesPenilaianComponent)
+      }
+    ]
   },
 ];
 

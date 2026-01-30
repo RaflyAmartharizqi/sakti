@@ -1,45 +1,50 @@
+
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { NgSelectModule } from '@ng-select/ng-select';
+import { ActivatedRoute } from '@angular/router';
 import { FlatpickrModule } from 'angularx-flatpickr';
 import { SharedModule } from 'src/app/shared/shared.module';
 import Swal from 'sweetalert2';
-import { AssesSmkiService } from './asses-smki.service';
+import { AssesPenilaianService } from './asses-penilaian.service';
 import { GlobalComponent } from 'src/app/global-component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router';
+import { AssesIsoService } from '../asses-iso/asses-iso.service';
 
 @Component({
+  selector: 'app-asses-penilaian',
   standalone: true,
   imports: [
     CommonModule,
     SharedModule,
-    NgSelectModule,
+    RouterModule,
+    CommonModule,
+    SharedModule,
     FormsModule,
     FlatpickrModule,
-    RouterModule,
-
+    RouterModule,  
   ],
-  templateUrl: './asses-smki.component.html',
-  styleUrl: './asses-smki.component.scss'
+  templateUrl: './asses-penilaian.component.html',
+  styleUrl: './asses-penilaian.component.scss'
 })
-export class AssesSmkiComponent implements OnInit {
-
-  constructor(
+export class AssesPenilaianComponent {
+constructor(
     private router: Router,
     private route: ActivatedRoute,
     private modalService: NgbModal,
-    private assesSmkiService: AssesSmkiService
+    private assesPenilaianService: AssesPenilaianService
   ) {}
 
   isLoading = false;
 
   transaksiAuditId = 0;
   jadwalUnitKerjaAuditId = 0;
-  unitKerja: any;
-  bidang: any;
+  unitKerja = {
+    kode: '',
+    nama: ''
+  }
+  bidang: any[] = [];
   progress: any;
 
   refKlausulAnnex: any[] = [];
@@ -47,14 +52,21 @@ export class AssesSmkiComponent implements OnInit {
 
   selectedStandar = 1;
   currentKlausulIndex = 0;
+  currentBidangIndex = 0;
+  selectedBidang: any;
   selectedKlausul: any;
+  selectedRatingId: number | null = null;
 
   pertanyaan: any[] = [];
+  rating: any[] = [];
+  selectedRating: any;
 
-  jawabanMap: {
+  tanggapanMap: {
     [refId: number]: {
       refPertanyaanAuditId: number;
       jawaban: string | null;
+      tanggapan: string | null;
+      ratingId?: number | null;
       attachment?: {
         id: number;
         originalFileName: string;
@@ -71,98 +83,104 @@ export class AssesSmkiComponent implements OnInit {
   ngOnInit(): void {
     this.breadCrumbItems = [
       { label: 'Pelaksanaan Program' },
-      { label: 'Pengisian Assesment SMKI' },
-      { label: 'Asses SMKI', active: true }
+      { label: 'Penilaian atau Verifikasi' },
+      { label: 'Asses Penilaian', active: true }
     ];
     this.route.paramMap.subscribe(params => {
       this.transaksiAuditId = Number(params.get('transaksiAuditId'));
       this.loadData();
     });
-
-    this.getRefKlausulAnnexByStandar(this.selectedStandar);
   }
 
   /* ================= LOAD ================= */
   loadData(): void {
     this.isLoading = true;
-
-    this.assesSmkiService
-      .getListPertanyaanSmki(this.transaksiAuditId)
+    this.assesPenilaianService.getListPertanyaanPenilaian(this.transaksiAuditId)
       .subscribe(res => {
-        this.unitKerja = res.response.unitKerja;
+        this.unitKerja.kode = res.response.unitKerja.kode;
+        this.unitKerja.nama = res.response.unitKerja.nama;
         this.jadwalUnitKerjaAuditId = res.response.unitKerja.jadwalUnitKerjaAuditId;
-        this.bidang = res.response.bidang;
         this.progress = res.response.progress;
         this.refKlausulAnnex = res.response.refKlausulAnnex;
-        this.buildJawabanMap();
-        this.setKlausul(this.currentKlausulIndex);
-
+        this.getRating();
+        this.buildTanggapanMap();
+        if (this.refKlausulAnnex.length > 0) {
+          this.setKlausul(0);
+        }
         this.isLoading = false;
       });
   }
 
-  /* ================= MAP ================= */
-  private buildJawabanMap(): void {
-    this.refKlausulAnnex.forEach((k: any) => {
-      k.pertanyaan.forEach((p: any) => {
-
-        if (this.jawabanMap[p.refPertanyaanAuditId]) return;
-
-        this.jawabanMap[p.refPertanyaanAuditId] = {
-          refPertanyaanAuditId: p.refPertanyaanAuditId,
-          jawaban: p.jawaban?.jawaban ?? null,
-          attachment: p.jawaban?.attachment ?? null,
-          previewUrl: p.jawaban?.attachment
-            ? GlobalComponent.API_URL + `Attachment/preview/${p.jawaban.attachment.storedFileName}`
-            : null
-        };
-
-        this.loadPreviewIfNeeded(p);
-      });
+  getRating(): void {
+    this.assesPenilaianService.getRating().subscribe({
+      next: (res) => {
+        this.rating = res.response.list;
+      },
     });
   }
+
+  private buildTanggapanMap(): void {
+    if (!Array.isArray(this.refKlausulAnnex)) return;
+
+    this.refKlausulAnnex.forEach((k: any) => {
+      k.pertanyaan.forEach((p: any) => {
+        if (!p?.refPertanyaanAuditId) return;
+
+        if (this.tanggapanMap[p.refPertanyaanAuditId]) return;
+
+        this.tanggapanMap[p.refPertanyaanAuditId] = {
+          refPertanyaanAuditId: p.refPertanyaanAuditId,
+          ratingId: p.jawaban?.ratingId ?? null,
+          jawaban: p.jawaban?.jawaban ?? null,
+          tanggapan: p.jawaban?.tanggapan ?? null,
+          attachment: p.jawaban?.attachment ?? null,
+          previewUrl: p.jawaban?.attachment
+            ? GlobalComponent.API_URL +
+              `Attachment/preview/${p.jawaban.attachment.storedFileName}`
+            : null
+      };
+      });
+    });
+    console.log('TANGGAPAN MAP:', this.tanggapanMap);
+  }
+
 
   private loadPreviewIfNeeded(p: any): void {
     const att = p.jawaban?.attachment;
     if (!att) return;
     if (!att.contentType?.startsWith('image/')) return;
 
-    this.assesSmkiService
+    this.assesPenilaianService
       .getAttachmentPreviewUrl(att.storedFileName)
       .subscribe(res => {
-        this.jawabanMap[p.refPertanyaanAuditId].previewUrl =
+        this.tanggapanMap[p.refPertanyaanAuditId].previewUrl =
           res.response.previewUrl;
       });
   }
 
-  /* ================= UI ================= */
   setKlausul(index: number): void {
     this.currentKlausulIndex = index;
     this.selectedKlausul = this.refKlausulAnnex[index];
 
     this.pertanyaan = this.selectedKlausul.pertanyaan.map((p: any) => ({
       ...p,
-      jawabanText: this.jawabanMap[p.refPertanyaanAuditId]?.jawaban ?? ''
+      jawabanText: this.tanggapanMap[p.refPertanyaanAuditId]?.jawaban ?? '',
+      tanggapanText: this.tanggapanMap[p.refPertanyaanAuditId]?.tanggapan ?? ''
     }));
   }
 
-  nextKlausul(): void {
+  next(): void {
     if (this.currentKlausulIndex < this.refKlausulAnnex.length - 1) {
       this.setKlausul(this.currentKlausulIndex + 1);
     }
   }
 
-  previousKlausul(): void {
+  previous(): void {
     if (this.currentKlausulIndex > 0) {
       this.setKlausul(this.currentKlausulIndex - 1);
     }
   }
 
-  /* ================= FILE ================= */
-  openFileInput(refId: number): void {
-    const el = document.getElementById('file-' + refId) as HTMLInputElement;
-    el?.click();
-  }
 
   onFileSelected(event: Event, refId: number) {
     const input = event.target as HTMLInputElement;
@@ -170,7 +188,6 @@ export class AssesSmkiComponent implements OnInit {
 
     const file = input.files[0];
 
-    /* ===== VALIDASI ===== */
     const allowedTypes = [
       'image/png',
       'image/jpeg',
@@ -197,25 +214,24 @@ export class AssesSmkiComponent implements OnInit {
       return;
     }
 
-    /* ===== INIT MAP ===== */
-    if (!this.jawabanMap[refId]) {
-      this.jawabanMap[refId] = {
+    if (!this.tanggapanMap[refId]) {
+      this.tanggapanMap[refId] = {
         refPertanyaanAuditId: refId,
-        jawaban: null
+        jawaban: null,
+        tanggapan: null
       };
     }
 
-    this.jawabanMap[refId].file = file;
+    this.tanggapanMap[refId].file = file;
 
-    /* ===== PREVIEW ===== */
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.jawabanMap[refId].previewUrl = reader.result as string;
+        this.tanggapanMap[refId].previewUrl = reader.result as string;
       };
       reader.readAsDataURL(file);
     } else {
-      this.jawabanMap[refId].previewUrl = null;
+      this.tanggapanMap[refId].previewUrl = null;
     }
   }
 
@@ -223,20 +239,20 @@ export class AssesSmkiComponent implements OnInit {
     this.modalService.open(content, { centered: true });
   }
 
-  /* ================= SAVE ================= */
   saveDraft(): void {
+    console.log('TANGGAPAN MAP:', this.tanggapanMap);
     const form = new FormData();
     form.append('TransaksiAuditId', this.transaksiAuditId.toString());
 
-    Object.values(this.jawabanMap).forEach((item, i) => {
-      form.append(`Jawaban[${i}].RefPertanyaanAuditId`, item.refPertanyaanAuditId.toString());
-      form.append(`Jawaban[${i}].Jawaban`, item.jawaban ?? '');
+    Object.values(this.tanggapanMap).forEach((item, i) => {
+      form.append(`Tanggapan[${i}].RefPertanyaanAuditId`, item.refPertanyaanAuditId.toString());
+      form.append(`Tanggapan[${i}].Tanggapan`, item.tanggapan ?? '');
+      form.append(`Tanggapan[${i}].RatingId`, item.ratingId ? item.ratingId.toString() : '');
       if (item.file) {
-        form.append(`Jawaban[${i}].Attachment`, item.file);
+        form.append(`Tanggapan[${i}].Attachment`, item.file);
       }
     });
-    this.assesSmkiService.saveDraftJawaban(form).subscribe(() => {
-      this.loadData();
+    this.assesPenilaianService.saveDraftTanggapan(form).subscribe(() => {
       Swal.fire('Berhasil', 'Draft disimpan', 'success');
     });
     this.loadData();
@@ -247,29 +263,29 @@ export class AssesSmkiComponent implements OnInit {
     const form = new FormData();
     form.append('TransaksiAuditId', this.transaksiAuditId.toString());
 
-    Object.values(this.jawabanMap).forEach((item, i) => {
-      form.append(`Jawaban[${i}].RefPertanyaanAuditId`, item.refPertanyaanAuditId.toString());
-      form.append(`Jawaban[${i}].Jawaban`, item.jawaban ?? '');
-
+    Object.values(this.tanggapanMap).forEach((item, i) => {
+      form.append(`Tanggapan[${i}].RefPertanyaanAuditId`, item.refPertanyaanAuditId.toString());
+      form.append(`Tanggapan[${i}].Tanggapan`, item.tanggapan ?? '');
+      form.append(`Tanggapan[${i}].RatingId`, item.ratingId ? item.ratingId.toString() : '');
       if (item.file) {
-        form.append(`Jawaban[${i}].Attachment`, item.file);
+        form.append(`Tanggapan[${i}].Attachment`, item.file);
       }
     });
     this.modalService.dismissAll();
     
-    this.assesSmkiService.submitJawaban(form).subscribe({
+    this.assesPenilaianService.submitTanggapan(form).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
           title: 'Berhasil',
-          text: 'Jawaban berhasil disubmit',
+          text: 'Tanggapan berhasil disubmit',
           timer: 1500,
           showConfirmButton: false
         });
         this.isLoading = false;
         setTimeout(() => {
         this.router.navigate(
-          ['../../detail-smki', this.jadwalUnitKerjaAuditId],
+          ['../../detail-penilaian', this.jadwalUnitKerjaAuditId],
           { relativeTo: this.route }
         );
         }, 1500);
@@ -277,7 +293,7 @@ export class AssesSmkiComponent implements OnInit {
       error: (err) => {
         Swal.fire(
           'Gagal',
-          err?.error?.metadata.message || 'Terjadi kesalahan saat submit jawaban',
+          err?.error?.metadata.message || 'Terjadi kesalahan saat submit tanggapan',
           'error'
         );
         this.isLoading = false;
@@ -285,10 +301,8 @@ export class AssesSmkiComponent implements OnInit {
     });
   }
 
-
-  /* ================= REF ================= */
   getRefKlausulAnnexByStandar(standar: number): void {
-    this.assesSmkiService
+    this.assesPenilaianService
       .getRefKlausulAnnexByStandar(standar)
       .subscribe(res => {
         this.refKlausulAnnexList = res.response.list;

@@ -1,4 +1,3 @@
-
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef } from '@angular/core';
@@ -296,6 +295,7 @@ export class AssesIsoComponent implements OnInit {
     this.assesIsoService.saveDraftJawaban(form).subscribe(() => {
       Swal.fire('Berhasil', 'Draft disimpan', 'success');
     });
+    this.loadData();
   }
 
   submitJawaban(): void {
