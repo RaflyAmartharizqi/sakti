@@ -171,6 +171,67 @@ export class AssesIsoComponent implements OnInit {
       });
   }
 
+    /* ================= FILE ================= */
+  openFileInput(refId: number): void {
+    const el = document.getElementById('file-' + refId) as HTMLInputElement;
+    el?.click();
+  }
+
+  onFileSelected(event: Event, refId: number) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    /* ===== VALIDASI ===== */
+    const allowedTypes = [
+      'image/png',
+      'image/jpeg',
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        title: "Error",
+        text: "Format File tidak diizinkan",
+        icon: "error"
+      });
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      Swal.fire({
+        title: "Error",
+        text: "Ukuran maksimal 2 MB",
+        icon: "error"
+      });
+      return;
+    }
+
+    /* ===== INIT MAP ===== */
+    if (!this.tanggapanMap[refId]) {
+      this.tanggapanMap[refId] = {
+        refPertanyaanAuditId: refId,
+        tanggapan: null
+      };
+    }
+
+    this.tanggapanMap[refId].file = file;
+
+    /* ===== PREVIEW ===== */
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.tanggapanMap[refId].previewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.tanggapanMap[refId].previewUrl = null;
+    }
+  }
+
   setKlausul(index: number): void {
     this.currentKlausulIndex = index;
     this.selectedKlausul = this.refKlausulAnnex[index];
@@ -219,59 +280,6 @@ export class AssesIsoComponent implements OnInit {
       const lastBidangIndex =
         this.selectedKlausul.bidang.length - 1;
       this.setBidang(lastBidangIndex);
-    }
-  }
-
-
-  onFileSelected(event: Event, refId: number) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
-
-    const file = input.files[0];
-
-    const allowedTypes = [
-      'image/png',
-      'image/jpeg',
-      'application/pdf',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      Swal.fire({
-        title: "Error",
-        text: "Format File tidak diizinkan",
-        icon: "error"
-      });
-      return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) {
-      Swal.fire({
-        title: "Error",
-        text: "Ukuran maksimal 2 MB",
-        icon: "error"
-      });
-      return;
-    }
-
-    if (!this.tanggapanMap[refId]) {
-      this.tanggapanMap[refId] = {
-        refPertanyaanAuditId: refId,
-        tanggapan: null
-      };
-    }
-
-    this.tanggapanMap[refId].file = file;
-
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.tanggapanMap[refId].previewUrl = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      this.tanggapanMap[refId].previewUrl = null;
     }
   }
 

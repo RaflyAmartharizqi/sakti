@@ -52,6 +52,22 @@
                             </button>
                         </td>
                     </tr>
+                    <tr *ngIf="listDetailIso.length === 0 && !isLoading">
+                        <td colspan="5" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                                Tidak ada data
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="isLoading">
+                        <td colspan="5" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                                Memuat Data...
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

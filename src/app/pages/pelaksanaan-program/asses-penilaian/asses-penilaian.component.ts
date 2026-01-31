@@ -240,6 +240,7 @@ constructor(
   }
 
   saveDraft(): void {
+    this.isLoading = true;
     console.log('TANGGAPAN MAP:', this.tanggapanMap);
     const form = new FormData();
     form.append('TransaksiAuditId', this.transaksiAuditId.toString());
@@ -255,6 +256,7 @@ constructor(
     this.assesPenilaianService.saveDraftTanggapan(form).subscribe(() => {
       Swal.fire('Berhasil', 'Draft disimpan', 'success');
     });
+    this.isLoading = false;
     this.loadData();
   }
 

@@ -127,8 +127,15 @@
                 </button>
             </div>
             <div class="col text-end">
-                <button class="btn btn-secondary" (click)="saveDraft()">
-                    <i class="ri-draft-line me-1"></i> Draft
+                <button 
+                    class="btn btn-secondary"
+                    (click)="saveDraft()"
+                    [disabled]="isLoading">
+
+                    <i class="ri-draft-line me-1" *ngIf="!isLoading"></i>
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1"></span>
+                    
+                    Draft
                 </button>
             </div>
         </div>

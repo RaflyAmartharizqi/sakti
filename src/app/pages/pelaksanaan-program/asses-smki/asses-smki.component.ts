@@ -225,6 +225,7 @@ export class AssesSmkiComponent implements OnInit {
 
   /* ================= SAVE ================= */
   saveDraft(): void {
+    this.isLoading = true;
     const form = new FormData();
     form.append('TransaksiAuditId', this.transaksiAuditId.toString());
 
@@ -239,6 +240,7 @@ export class AssesSmkiComponent implements OnInit {
       this.loadData();
       Swal.fire('Berhasil', 'Draft disimpan', 'success');
     });
+    this.isLoading = false;
     this.loadData();
   }
 

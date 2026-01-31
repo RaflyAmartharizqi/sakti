@@ -54,4 +54,58 @@ export class PenilaianVerifikasiComponent implements OnInit {
       }
     });
   }
+
+    // ===================== PAGINATION =====================
+
+  get paginationInfo(): string {
+    if (this.totalData === 0) {
+      return 'Showing 0 to 0 of 0 entries';
+    }
+    return `Showing ${this.from} to ${this.to} of ${this.totalData} entries`;
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const totalPages = this.totalPage;
+    const currentPage = this.currentPage;
+
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, -1, totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, -1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, -1, currentPage - 1, currentPage, currentPage + 1, -1, totalPages);
+      }
+    }
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPage && page !== this.currentPage) {
+      this.currentPage = page;
+      this.filters.page = page;
+      this.loadData();
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.filters.page = this.currentPage;
+      this.loadData();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPage) {
+      this.currentPage++;
+      this.filters.page = this.currentPage;
+      this.loadData();
+    }
+  }
 }

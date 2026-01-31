@@ -97,6 +97,26 @@
                 </div>
                 <div class="col-12 col-lg-6 mt-3">
                 <label class="form-label">Lampiran Bukti</label>
+                <div class="col-12 col-lg-6" *ngIf="tanggapanMap[p.refPertanyaanAuditId] as item">
+                    <div *ngIf="item.previewUrl && item.attachment?.contentType?.startsWith('image/')">
+                        <img
+                        [src]="item.previewUrl"
+                        class="img-thumbnail mt-2"
+                        style="max-width: 100%" />
+                    </div>
+                    <small class="text-success" *ngIf="item.file || item.attachment">
+                        {{ item.file?.name || item.attachment?.originalFileName }}
+                    </small>
+
+                    <div class="mt-2" *ngIf="item.attachment && !item.file">
+                        <a
+                        class="btn btn-outline-info btn-sm"
+                        target="_blank"
+                        [href]="item.previewUrl">
+                        Lihat File
+                        </a>
+                    </div>
+                </div>
                 <input
                     type="file"
                     class="form-control"
