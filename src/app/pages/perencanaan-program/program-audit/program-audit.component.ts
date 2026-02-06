@@ -31,6 +31,7 @@ export class ProgramAuditComponent implements OnInit {
     this.loadData();
     this.getStandarAssesment();
     this.getUnitkerja();
+    this.getPeriode();
   }
   tahun: any;
   searchQuery = '';
@@ -60,6 +61,7 @@ export class ProgramAuditComponent implements OnInit {
   programAudit: any[] = [];
   unitKerjaAll: any[] = [];
   unitKerja: any[] = [];
+  periode: number[] = [];
 
   getStandarAssesment() {
     this.programAuditService.getStandarAssesment().subscribe({
@@ -78,6 +80,15 @@ export class ProgramAuditComponent implements OnInit {
       },
       error: (err) => console.error(err)
     });
+  }
+
+  getPeriode() {
+    const currentYear = new Date().getFullYear() + 1;
+    this.periode = [];
+    for (let i = currentYear; i >= 2000; i--) {
+      this.periode.push(i);
+    }
+    console.log('HOHO', this.periode);
   }
 
   create() {

@@ -67,6 +67,36 @@ export const MENU: MenuItem[] = [
     ]
   },
   {
+    id: 10,
+    label: 'MENUITEMS.MONITORINGTINDAKLANJUT.TEXT',
+    icon: 'ri-draft-line',
+    isCollapsed: true,
+    // role: ['Admin', 'Asesi', 'Asesor'],
+    subItems: [
+      {
+        id: 11,
+        label: 'MENUITEMS.MONITORINGTINDAKLANJUT.LIST.AUDITLOG',
+        link: '/monitoring-tindak-lanjut/audit-log',
+        parentId: 10,
+        // role: ['Asesi'],
+      },
+      {
+        id: 12,
+        label: 'MENUITEMS.MONITORINGTINDAKLANJUT.LIST.REPORT',
+        link: '/monitoring-tindak-lanjut/report',
+        parentId: 10,
+        // role: ['Asesor'],
+      },
+      {
+        id: 13,
+        label: 'MENUITEMS.MONITORINGTINDAKLANJUT.LIST.UMPANBALIK',
+        link: '/monitoring-tindak-lanjut/umpan-balik-assesment',
+        parentId: 10,
+        // role: ['Admin', 'Asesor'],
+      },
+    ]
+  },
+  {
     id: 184,
     label: 'MENUITEMS.PENGATURAN.TEXT',
     icon: 'ri-settings-2-line',

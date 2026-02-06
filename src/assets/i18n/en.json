@@ -302,6 +302,14 @@
         "PENILAIANVERIFIKASI": "Penilaian / Verifikasi"
       }
     },
+    "MONITORINGTINDAKLANJUT": {
+      "TEXT": "Monitoring dan Tindak Lanjut",
+      "LIST": {
+        "AUDITLOG": "Audit Log / Tindak Lanjut",
+        "REPORT": "Report",
+        "UMPANBALIK": "Umpan Balik Assesment"
+      }
+    },
     "PENGATURAN": {
       "TEXT": "Pengaturan",
       "LIST": {

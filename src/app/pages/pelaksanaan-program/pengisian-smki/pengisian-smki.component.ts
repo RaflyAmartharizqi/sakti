@@ -59,18 +59,26 @@ export class PengisianSmkiComponent implements OnInit {
   loadData() {
     this.isLoading = true;
     this.jadwalAudit = [];
-    this.pengisianSmkiService.getJadwalAuditByKodeUnitKerja(this.kodeUnitKerja).subscribe({
-      next: (res) => {
-        this.jadwalAudit = res.response.list;
-        this.totalData = res.response.totalData;
-        this.totalPage = res.response.totalPage;
-        this.from = res.response.from;
-        this.to = res.response.to;
-        this.currentPage = res.response.page;
-        this.isLoading = false;
-      }
-    });
+
+    this.pengisianSmkiService
+      .getJadwalAuditByKodeUnitKerja(this.kodeUnitKerja)
+      .subscribe({
+        next: (res) => {
+          this.jadwalAudit = res.response.list ?? [];
+          this.totalData = res.response.totalData;
+          this.totalPage = res.response.totalPage;
+          this.from = res.response.from;
+          this.to = res.response.to;
+          this.currentPage = res.response.page;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.jadwalAudit = [];
+          this.isLoading = false;
+        }
+      });
   }
+
 
   // ===================== FILTER =====================
   onSearchChange(): void {

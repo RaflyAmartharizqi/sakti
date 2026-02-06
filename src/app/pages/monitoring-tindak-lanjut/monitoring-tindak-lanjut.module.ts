@@ -22,7 +22,7 @@ import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { FlatpickrModule } from 'angularx-flatpickr';
 
 //Module
-import { PerencanaanProgramRoutingModule } from "./perencaan-program-routing.module";
+import { MonitoringTindakLanjutRoutingModule } from "./monitoring-tindak-lanjut-routing.module";
 import { SharedModule } from '../../shared/shared.module';
 import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 
@@ -42,7 +42,7 @@ import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
     NgApexchartsModule,
     SlickCarouselModule,
     FlatpickrModule.forRoot(),
-    PerencanaanProgramRoutingModule,
+    MonitoringTindakLanjutRoutingModule,
     SharedModule,
     NgbPaginationModule,
     NgbTypeaheadModule,
@@ -56,4 +56,4 @@ import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
   ],
   schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })
-export class PerencanaanProgramModule { }
+export class MonitoringTindakLanjutModule { }

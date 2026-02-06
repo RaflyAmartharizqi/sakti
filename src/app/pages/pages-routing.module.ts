@@ -17,10 +17,13 @@ const routes: Routes = [
       path: 'pengaturan', loadChildren: () => import('./pengaturan/pengaturan.module').then(m => m.PengaturanModule)
     },
     {
-      path: 'perencanaan-program', loadChildren: () => import('./perencanaan-program/perencaan-program.module').then(m => m.PerencanaanProgramModule)
+      path: 'perencanaan-program', loadChildren: () => import('./perencanaan-program/perencanaan-program.module').then(m => m.PerencanaanProgramModule)
     },
     {
       path: 'pelaksanaan-program', loadChildren: () => import('./pelaksanaan-program/pelaksanaan-program.module').then(m => m.PelaksanaanProgramModule)
+    },
+    {
+      path: 'monitoring-tindak-lanjut', loadChildren: () => import('./monitoring-tindak-lanjut/monitoring-tindak-lanjut.module').then(m => m.MonitoringTindakLanjutModule)
     },
 ];
 

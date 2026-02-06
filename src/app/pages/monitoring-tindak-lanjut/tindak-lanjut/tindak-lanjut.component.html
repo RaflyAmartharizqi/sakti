@@ -1,0 +1,290 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="TINDAK LANJUT" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+ 
+ <div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Tindak Lanjut</h4>
+        </div>
+        <div class="px-0 pb-3 d-flex justify-content-end">
+            <button *ngIf="canSendToAsesor()" type="button" class="btn btn-success bg-gradient waves-effect waves-light" (click)="kirimKeAsesor()">
+                Kirim ke Asesor
+            </button>
+            <button *ngIf="canSendToAsesi()" type="button" class="btn btn-success bg-gradient waves-effect waves-light" (click)="kirimKeAsesi()">
+                Kirim ke Asesi
+            </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+              <thead class="table-light">
+                  <tr>
+                      <th class="text-center" style="width: 60px;">No</th>
+                      <th class="d-lg-table-cell">Klausul/Annex</th>
+                      <th class="d-lg-table-cell">Bidang</th>
+                      <th class="d-md-table-cell">Pertanyaan</th>
+                      <th class="d-lg-table-cell">Rating Awal</th>
+                      <th class="d-lg-table-cell">Rating Tindak Lanjut</th>
+                      <th class="d-lg-table-cell">Correction</th>
+                      <th class="d-lg-table-cell">Corrective Action</th>
+                      <th class="d-lg-table-cell">Root Cause</th>
+                      <th class="d-lg-table-cell">Due Date</th>
+                      <th class="d-lg-table-cell">Catatan</th>
+                      <th class="d-lg-table-cell">Status Audit</th>
+                      <th class="d-lg-table-cell">Status Tindak Lanjut</th>
+                      <th class="text-center">Aksi</th>
+                  </tr>
+              </thead>
+              <tbody>
+                 <tr *ngFor="let data of tindakLanjut let i = index">
+                      <td class="text-center">
+                          {{ i+1 }}
+                      </td>
+                      <td class="d-lg-table-cell">{{ data.refKlausulAnnex }}</td>
+                      <td class="d-lg-table-cell">{{ data.bidang }}</td>
+                      <td class="d-md-table-cell">{{ data.pertanyaan }}</td>
+                      <td class="d-md-table-cell">{{ data.ratingAwal }}</td>
+                      <td class="d-md-table-cell">{{ data.ratingTindakLanjut }}</td>
+                      <td class="d-md-table-cell">{{ data.correction }}</td>
+                      <td class="d-md-table-cell">{{ data.correctiveAction }}</td>
+                      <td class="d-md-table-cell">{{ data.rootCause }}</td>
+                      <td class="d-md-table-cell">{{ data.dueDate | date:'dd/MM/yy' }}</td>
+                      <td class="d-md-table-cell">{{ data.catatan }}</td>
+                      <td class="d-md-table-cell">{{ data.statusAudit }}</td>
+                      <td class="d-md-table-cell">
+                        <span 
+                          class="badge" 
+                          [ngClass]="{
+                            'bg-success': data.statusTindakLanjutId === 2,
+                            'bg-primary': data.statusTindakLanjutId === 1,
+                            'bg-danger': data.statusTindakLanjutId === 3
+                          }">
+                          {{ data.statusTindakLanjut }}
+                        </span>
+                      </td>
+                      <td class="text-center">
+                          <button *ngIf="role == 'Asesi' && (data.statusAuditId == 3 || data.statusAuditId == 4) && data.statusTindakLanjutId != 2" class="btn btn-sm btn-primary m-1" (click)="openEdit(modalEdit, data)">
+                          Edit
+                          </button>
+                          <button *ngIf="role == 'Asesor' && data.statusAuditId == 5" class="btn btn-sm btn-warning m-1" (click)="openReview(modalReview, data)">
+                          Review
+                          </button>
+                      </td>
+                  </tr>
+                  <tr *ngIf="tindakLanjut.length == 0 && !isLoading">
+                      <td colspan="14" class="text-center py-4">
+                          <div class="text-muted">
+                              <i class="ri-file-list-line fs-1 d-block mb-2"></i>
+                              Tidak ada data
+                          </div>
+                      </td>
+                  </tr>
+                  <tr *ngIf="isLoading">
+                      <td colspan="14" class="text-center py-4">
+                          <div class="text-muted">
+                              <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
+                              Memuat Data...
+                          </div>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+
+<ng-template #modalEdit let-modal>
+  <form #formEdit="ngForm">
+  <div class="modal-body">
+
+    <div class="mb-2">
+      <strong>Temuan :</strong> {{ selectedData?.tanggapan }}
+    </div>
+
+    <div class="mb-2">
+      <label>Root Cause</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="rootCause"
+        required
+        [(ngModel)]="form.rootCause"
+        #rootCause="ngModel"
+        [class.is-invalid]="rootCause.invalid && rootCause.touched">
+      </textarea>
+      <div class="invalid-feedback">Root Cause wajib diisi</div>
+    </div>
+
+    <div class="mb-2">
+      <label>Correction</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="correction"
+        required
+        [(ngModel)]="form.correction"
+        #correction="ngModel"
+        [class.is-invalid]="correction.invalid && correction.touched">
+      </textarea>
+      <div class="invalid-feedback">Correction wajib diisi</div>
+    </div>
+
+    <div class="mb-2">
+      <label>Corrective Action</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="correctiveAction"
+        required
+        [(ngModel)]="form.correctiveAction"
+        #correctiveAction="ngModel"
+        [class.is-invalid]="correctiveAction.invalid && correctiveAction.touched">
+      </textarea>
+      <div class="invalid-feedback">Corrective Action wajib diisi</div>
+    </div>
+
+    <div class="mb-2">
+      <label>Due Date</label>
+      <input
+        type="date"
+        class="form-control"
+        name="dueDate"
+        required
+        [(ngModel)]="form.dueDate"
+        #dueDate="ngModel"
+        [class.is-invalid]="dueDate.invalid && dueDate.touched">
+      <div class="invalid-feedback">Due Date wajib diisi</div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button
+      class="btn btn-warning"
+      [disabled]="isLoading || formEdit.invalid"
+      (click)="updateTL(modal)">
+
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+      {{ isLoading ? 'Menyimpan...' : 'Submit' }}
+
+    </button>
+  </div>
+  </form>
+</ng-template>
+
+<ng-template #modalReview let-modal>
+  <form #formReview="ngForm">
+  <div class="modal-body">
+
+    <div class="mb-2">
+      <strong>Temuan :</strong> {{ selectedData?.tanggapan }}
+    </div>
+
+    <div class="mb-2">
+      <label>Root Cause</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="rootCause"
+        required
+        [(ngModel)]="form.rootCause"
+        #rootCause="ngModel"
+        [class.is-invalid]="rootCause.invalid && rootCause.touched"
+        disabled="true">
+      </textarea>
+      <div class="invalid-feedback">Root Cause wajib diisi</div>
+    </div>
+
+    <div class="mb-2">
+      <label>Correction</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="correction"
+        required
+        [(ngModel)]="form.correction"
+        #correction="ngModel"
+        [class.is-invalid]="correction.invalid && correction.touched"
+        disabled="true">
+      </textarea>
+      <div class="invalid-feedback">Correction wajib diisi</div>
+    </div>
+
+    <div class="mb-2">
+      <label>Corrective Action</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="correctiveAction"
+        required
+        [(ngModel)]="form.correctiveAction"
+        #correctiveAction="ngModel"
+        [class.is-invalid]="correctiveAction.invalid && correctiveAction.touched"
+        disabled="true">
+      </textarea>
+      <div class="invalid-feedback">Corrective Action wajib diisi</div>
+    </div>
+
+    <div class="mb-2">
+      <label>Due Date</label>
+      <input
+        type="date"
+        class="form-control"
+        name="dueDate"
+        required
+        [(ngModel)]="form.dueDate"
+        #dueDate="ngModel"
+        [class.is-invalid]="dueDate.invalid && dueDate.touched"
+        disabled="true">
+      <div class="invalid-feedback">Due Date wajib diisi</div>
+    </div>
+    
+    <div class="mb-2">
+      <label>Rating</label>
+      <select
+        class="form-control"
+        name="ratingId"
+        required
+        [(ngModel)]="form.ratingId"
+        #ratingId="ngModel"
+        [class.is-invalid]="ratingId.invalid && ratingId.touched">
+
+        <option value="">Pilih rating</option>
+        <option *ngFor="let rate of rating" [value]="rate.id">
+          {{ rate.nama }}
+        </option>
+      </select>
+      <div class="invalid-feedback">Rating wajib dipilih</div>
+    </div>
+
+    <div class="mb-2">
+      <label>Catatan</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="catatan"
+        required
+        [(ngModel)]="form.catatan"
+        #catatan="ngModel"
+        [class.is-invalid]="catatan.invalid && catatan.touched">
+      </textarea>
+      <div class="invalid-feedback">Catatan wajib diisi</div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button
+      class="btn btn-warning"
+      [disabled]="formReview.invalid"
+      (click)="submitReview(modal)">
+
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+      {{ isLoading ? 'Menyimpan...' : 'Submit' }}
+
+    </button>
+  </div>
+  </form>
+</ng-template>
+
