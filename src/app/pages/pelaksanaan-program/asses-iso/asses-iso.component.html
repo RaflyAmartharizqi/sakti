@@ -78,7 +78,7 @@
             <textarea
                 class="form-control"
                 rows="3"
-                [(ngModel)]="tanggapanMap[p.refPertanyaanAuditId].tanggapan"
+                [(ngModel)]="tanggapanMap[buildKey(p.refPertanyaanAuditId, selectedBidang.bidangId)].tanggapan"
                 name="tanggapan-{{ p.refPertanyaanAuditId }}-{{ currentBidangIndex }}"
                 placeholder="Isi tanggapan audit disini">
             </textarea>
@@ -86,7 +86,7 @@
                 <div class="col-12 col-lg-6 mt-3">
                     <label class="form-label">Rating</label>
                     <select class="form-select"
-                    [(ngModel)]="tanggapanMap[p.refPertanyaanAuditId].ratingId"
+                    [(ngModel)]="tanggapanMap[buildKey(p.refPertanyaanAuditId, selectedBidang.bidangId)].ratingId"
                     name="rating-{{ p.refPertanyaanAuditId }}-{{ currentBidangIndex }}">
                         <option [ngValue]="null" selected disabled>Pilih Rating</option>
                         <option *ngFor="let data of rating;" [ngValue]="data.id">
@@ -97,7 +97,7 @@
                 </div>
                 <div class="col-12 col-lg-6 mt-3">
                 <label class="form-label">Lampiran Bukti</label>
-                <div class="col-12 col-lg-6" *ngIf="tanggapanMap[p.refPertanyaanAuditId] as item">
+                <div class="col-12 col-lg-6" *ngIf="tanggapanMap[buildKey(p.refPertanyaanAuditId, selectedBidang.bidangId)] as item">
                     <div *ngIf="item.previewUrl && item.attachment?.contentType?.startsWith('image/')">
                         <img
                         [src]="item.previewUrl"
@@ -108,7 +108,7 @@
                         {{ item.file?.name || item.attachment?.originalFileName }}
                     </small>
 
-                    <div class="mt-2" *ngIf="item.attachment && !item.file">
+                    <div class="mt-2 mb-2" *ngIf="item.attachment && !item.file">
                         <a
                         class="btn btn-outline-info btn-sm"
                         target="_blank"
@@ -118,9 +118,10 @@
                     </div>
                 </div>
                 <input
+                    id="file-{{ buildKey(p.refPertanyaanAuditId, selectedBidang.bidangId) }}"
                     type="file"
                     class="form-control"
-                    (change)="onFileSelected($event, p.refPertanyaanAuditId)">
+                    (change)="onFileSelected($event, p.refPertanyaanAuditId, selectedBidang.bidangId)">
                 </div>
             </div>
             <hr>

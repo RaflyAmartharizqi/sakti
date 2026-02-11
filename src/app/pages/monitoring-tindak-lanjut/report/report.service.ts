@@ -25,4 +25,35 @@ export class ReportService {
             `${this.API_URL}UnitKerja/getlist`,
         );
     }
+
+    getReportList(param: any):Observable<any> {
+        return this.http.get(
+            `${this.API_URL}Report/getlist`,
+            {
+                params: {
+                    KodeUnitKerja: param.kodeUnitKerja ?? '',
+                    StandarAssesmentId: param.standarAssesmentId ?? '',
+                    Periode: param.periode ?? '',
+                }
+            }
+        );
+    }
+
+    uploadReport(payload: FormData):Observable<any> {
+        return this.http.post(
+            `${this.API_URL}Report/uploadreport`,
+            payload
+        );
+    }
+
+    downloadAttachment(id: number) {
+        return this.http.get(
+            `${this.API_URL}Attachment/download/${id}`,
+            {
+            responseType: 'blob',
+            observe: 'response'
+            }
+        );
+    }
+
 }

@@ -9,7 +9,7 @@
             <h4 class="mb-0">Report</h4>
         </div>
         <!-- Filter and Search Section -->
-        <div class="row mb-3">
+        <div class="row mb-3" *ngIf="userInfo.role != 'Asesi'">
             <div class="col-12 col-md-6">
                 <ng-select
                     [items]="standarAssesment"
@@ -29,7 +29,7 @@
                 </ng-select>
             </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-3" *ngIf="userInfo.role != 'Asesi'">
             <div class="col-12">
                 <ng-select
                     [items]="unitKerja"
@@ -51,18 +51,31 @@
                         <th class="d-md-table-cell">Periode</th>
                         <th class="d-lg-table-cell">Ketua Tim Asesor</th>
                         <th class="d-lg-table-cell">Tim Asesor</th>
+                        <th class="d-sm-table-cell">C</th>
+                        <th class="d-sm-table-cell">NC</th>
+                        <th class="d-sm-table-cell">OFI</th>
                         <th class="d-lg-table-cell">Hasil Verifikasi</th>
                         <th class="d-lg-table-cell">Hasil Tindak Lanjut</th>
+                        <th class="d-lg-table-cell">Jumlah Klausal TL</th>
+                        <th class="d-lg-table-cell">Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                   <!-- <tr *ngFor="let data of jadwalAudit let i = index">
+                   <tr *ngFor="let data of reportList let i = index">
                         <td class="text-center">
                             {{ i+1 }}
                         </td>
                         <td class="d-lg-table-cell">{{ data.standarAssesment }}</td>
-                        <td class="d-lg-table-cell">{{ data.unitKerja }}</td>
+                        <td class="d-md-table-cell">
+                            <a *ngFor="let unitKerja of data.unitKerja">
+                                <span 
+                                class="badge badge-lg bg-success xl m-1"
+                                style="font-size: 12px;">
+                                    {{ unitKerja.unitKerja }}
+                                </span>
+                            </a>
+                        </td>
                         <td class="d-md-table-cell">{{ data.periode }}</td>
                         <td class="d-lg-table-cell">
                             <span 
@@ -80,19 +93,48 @@
                                 </span>
                             </a>
                         </td>
+                        <td class="d-sm-table-cell">{{ data.c }}</td>
+                        <td class="d-sm-table-cell">{{ data.nc }}</td>
+                        <td class="d-sm-table-cell">{{ data.ofi }}</td>
+                        <td class="d-md-table-cell">{{ data.persentaseVerifikasi }}%</td>
+                        <td class="d-md-table-cell">{{ data.persentaseTindakLanjut }}%</td>
+                        <td class="d-md-table-cell">{{ data.jumlahKlausaTL }}</td>
+                        <td class="d-md-table-cell">
+                            <span 
+                            class="badge badge-lg xl m-1"
+                            style="font-size: 12px;"
+                            [ngClass]="data.isOpen ? 'bg-success' : 'bg-warning'">
+                                {{ data.isOpen   ? 'Open' : 'Close' }}
+                            </span>
+                        </td>
                         <td class="text-center">
                             <button 
+                                *ngIf="userInfo.role != 'Asesi'"
                                 class="btn btn-sm btn-success m-1"
                                 [routerLink]="['detail-smki', data.jadwalUnitKerjaAuditId]">
                                     <i class="ri-verified-badge-fill d-md-none"></i>
                                     <span class="d-none d-md-inline">
-                                    Detail
+                                    Download Draft
+                                    </span>
+                            </button>
+                            <button 
+                                *ngIf="userInfo.role != 'Asesi'"
+                                class="btn btn-sm btn-primary m-1" (click)="openModal(modalUploadReport, data)">
+                                Upload Report
+                            </button>
+                            <button 
+                                *ngIf="data.attachment != null"
+                                class="btn btn-sm btn-success m-1"
+                                (click)="downloadAttachment(data.attachment.attachmentId, data)">
+                                    <i class="ri-verified-badge-fill d-md-none"></i>
+                                    <span class="d-none d-md-inline">
+                                    Download Report
                                     </span>
                             </button>
                         </td>
                     </tr>
-                    <tr *ngIf="jadwalAudit.length == 0 && !isLoading">
-                        <td colspan="7" class="text-center py-4">
+                    <tr *ngIf="reportList.length == 0 && !isLoading">
+                        <td colspan="13" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="ri-file-list-line fs-1 d-block mb-2"></i>
                                 Tidak ada data
@@ -100,15 +142,54 @@
                         </td>
                     </tr>
                     <tr *ngIf="isLoading">
-                        <td colspan="7" class="text-center py-4">
+                        <td colspan="13" class="text-center py-4">
                             <div class="text-muted">
                                 <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
                                 Memuat Data...
                             </div>
                         </td>
-                    </tr> -->
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+<ng-template #modalUploadReport let-modal>
+    <form #formUploadReport="ngForm" (ngSubmit)="uploadReport()">
+  <div class="modal-body">
+
+    <div class="mb-2">
+        <label>Upload File</label>
+        <input
+            type="file"
+            class="form-control"
+            accept="application/pdf"
+            (change)="onFileSelected($event)"
+            required
+        />
+    </div>
+
+
+    <div class="modal-footer">
+        <div class="mt-2" *ngIf="selectedAttachment != null">
+            <a
+            class="btn btn-outline-info btn-sm"
+            target="_blank"
+            [href]="attachmentUrl">
+            Lihat File
+            </a>
+        </div>
+        <button
+        class="btn btn-primary"
+        [disabled]="formUploadReport.invalid"
+
+        >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isLoading ? 'Menyimpan...' : 'Submit' }}
+
+        </button>
+    </div>
+  </div>
+  </form>
+</ng-template>

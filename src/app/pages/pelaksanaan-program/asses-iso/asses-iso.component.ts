@@ -59,11 +59,13 @@ export class AssesIsoComponent implements OnInit {
   pertanyaan: any[] = [];
   rating: any[] = [];
   selectedRating: any;
+  programAuditId: any;
 
   tanggapanMap: {
-    [refId: number]: {
+    [key: string]: {
       refPertanyaanAuditId: number;
       tanggapan: string | null;
+      bidangId: number;
       ratingId?: number | null;
       attachment?: {
         id: number;
@@ -75,6 +77,10 @@ export class AssesIsoComponent implements OnInit {
       previewUrl?: string | null;
     };
   } = {};
+
+  public buildKey(refId: number, bidangId: number): string {
+    return `${refId}_${bidangId}`;
+  }
 
   /* ================= INIT ================= */
   breadCrumbItems!: Array<{}>;
@@ -96,6 +102,7 @@ export class AssesIsoComponent implements OnInit {
     this.isLoading = true;
     this.assesIsoService.getListPertanyaanIso(this.transaksiAuditId)
       .subscribe(res => {
+        this.programAuditId = res.response.programAuditId;
         this.unitKerja.kode = res.response.unitKerja.kode;
         this.unitKerja.nama = res.response.unitKerja.nama;
         this.jadwalUnitKerjaAuditId = res.response.unitKerja.jadwalUnitKerjaAuditId;
@@ -109,6 +116,7 @@ export class AssesIsoComponent implements OnInit {
         }
         this.isLoading = false;
       });
+
   }
 
   getRating(): void {
@@ -137,14 +145,15 @@ export class AssesIsoComponent implements OnInit {
         if (!Array.isArray(b.pertanyaan)) return;
 
         b.pertanyaan.forEach((p: any) => {
-          if (!p?.refPertanyaanAuditId) return;
+          const key = this.buildKey(p.refPertanyaanAuditId, b.bidangId);
 
-          if (this.tanggapanMap[p.refPertanyaanAuditId]) return;
+          if (this.tanggapanMap[key]) return;
 
-          this.tanggapanMap[p.refPertanyaanAuditId] = {
+          this.tanggapanMap[key] = {
             refPertanyaanAuditId: p.refPertanyaanAuditId,
-            ratingId: p.jawaban?.ratingId ?? null,
             tanggapan: p.jawaban?.tanggapan ?? null,
+            bidangId: b.bidangId,
+            ratingId: p.jawaban?.ratingId ?? null,
             attachment: p.jawaban?.attachment ?? null,
             previewUrl: p.jawaban?.attachment
               ? GlobalComponent.API_URL +
@@ -152,6 +161,7 @@ export class AssesIsoComponent implements OnInit {
               : null
           };
         });
+
       });
     });
     console.log('TANGGAPAN MAP:', this.tanggapanMap);
@@ -166,18 +176,20 @@ export class AssesIsoComponent implements OnInit {
     this.assesIsoService
       .getAttachmentPreviewUrl(att.storedFileName)
       .subscribe(res => {
-        this.tanggapanMap[p.refPertanyaanAuditId].previewUrl =
-          res.response.previewUrl;
+        const key = this.buildKey(p.refPertanyaanAuditId, this.selectedBidang.bidangId);
+        this.tanggapanMap[key].previewUrl = res.response.previewUrl;          
+        res.response.previewUrl;
       });
   }
 
     /* ================= FILE ================= */
-  openFileInput(refId: number): void {
-    const el = document.getElementById('file-' + refId) as HTMLInputElement;
+  openFileInput(refId: number, bidangId: number) {
+    const key = this.buildKey(refId, bidangId);
+    const el = document.getElementById('file-' + key) as HTMLInputElement;
     el?.click();
   }
 
-  onFileSelected(event: Event, refId: number) {
+  onFileSelected(event: Event, refId: number, bidangId: number) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
@@ -210,25 +222,25 @@ export class AssesIsoComponent implements OnInit {
       return;
     }
 
-    /* ===== INIT MAP ===== */
-    if (!this.tanggapanMap[refId]) {
-      this.tanggapanMap[refId] = {
+    const key = this.buildKey(refId, bidangId);
+    if (!this.tanggapanMap[key]) {
+      this.tanggapanMap[key] = {
         refPertanyaanAuditId: refId,
+        bidangId: bidangId,
         tanggapan: null
       };
     }
 
-    this.tanggapanMap[refId].file = file;
-
+    this.tanggapanMap[key].file = file;
     /* ===== PREVIEW ===== */
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.tanggapanMap[refId].previewUrl = reader.result as string;
+        this.tanggapanMap[key].previewUrl = reader.result as string;
       };
       reader.readAsDataURL(file);
     } else {
-      this.tanggapanMap[refId].previewUrl = null;
+      this.tanggapanMap[key].previewUrl = null;
     }
   }
 
@@ -249,10 +261,16 @@ export class AssesIsoComponent implements OnInit {
     this.currentBidangIndex = index;
     this.selectedBidang = this.selectedKlausul.bidang[index];
 
-    this.pertanyaan = this.selectedBidang.pertanyaan.map((p: any) => ({
-      ...p,
-      tanggapanText: this.tanggapanMap[p.refPertanyaanAuditId]?.tanggapan ?? ''
-    }));
+    this.pertanyaan = this.selectedBidang.pertanyaan.map((p: any) => {
+      const key = this.buildKey(p.refPertanyaanAuditId, this.selectedBidang.bidangId);
+
+      return {
+        ...p,
+        bidangId: this.selectedBidang.bidangId,
+        tanggapanText: this.tanggapanMap[key]?.tanggapan ?? ''
+      };
+    });
+
     console.log('REF:', this.refKlausulAnnex);
     console.log('BIDANG KLAUSUL 0:', this.refKlausulAnnex[0]?.bidang);
   }
@@ -295,6 +313,7 @@ export class AssesIsoComponent implements OnInit {
     Object.values(this.tanggapanMap).forEach((item, i) => {
       form.append(`Tanggapan[${i}].RefPertanyaanAuditId`, item.refPertanyaanAuditId.toString());
       form.append(`Tanggapan[${i}].Tanggapan`, item.tanggapan ?? '');
+      form.append(`Tanggapan[${i}].BidangId`, item.bidangId.toString());
       form.append(`Tanggapan[${i}].RatingId`, item.ratingId ? item.ratingId.toString() : '');
       if (item.file) {
         form.append(`Tanggapan[${i}].Attachment`, item.file);
@@ -314,6 +333,7 @@ export class AssesIsoComponent implements OnInit {
     Object.values(this.tanggapanMap).forEach((item, i) => {
       form.append(`Tanggapan[${i}].RefPertanyaanAuditId`, item.refPertanyaanAuditId.toString());
       form.append(`Tanggapan[${i}].Tanggapan`, item.tanggapan ?? '');
+      form.append(`Tanggapan[${i}].BidangId`, item.bidangId.toString());
       form.append(`Tanggapan[${i}].RatingId`, item.ratingId ? item.ratingId.toString() : '');
       if (item.file) {
         form.append(`Tanggapan[${i}].Attachment`, item.file);
@@ -333,7 +353,7 @@ export class AssesIsoComponent implements OnInit {
         this.isLoading = false;
         setTimeout(() => {
         this.router.navigate(
-          ['../../detail-iso', this.jadwalUnitKerjaAuditId],
+          ['../../detail-iso', this.programAuditId],
           { relativeTo: this.route }
         );
         }, 1500);
@@ -357,7 +377,7 @@ export class AssesIsoComponent implements OnInit {
       });
   }
 
-  trackByRefId(_: number, item: any): number {
-    return item.refPertanyaanAuditId;
+  trackByRefId(_: number, item: any): string {
+    return item.refPertanyaanAuditId + '_' + item.bidangId;
   }
 }

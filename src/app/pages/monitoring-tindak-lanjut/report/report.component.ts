@@ -6,6 +6,9 @@ import { FlatpickrModule } from 'angularx-flatpickr';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ReportService } from './report.service';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import Swal from 'sweetalert2';
+import { TokenStorageService } from 'src/app/core/services/token-storage.service';
 
 @Component({
   selector: 'app-report',
@@ -27,15 +30,21 @@ import { NgSelectModule } from '@ng-select/ng-select';
 export class ReportComponent implements OnInit {
   constructor(
       private reportService: ReportService,
+      private modalService: NgbModal,
+      private tokenStorageService: TokenStorageService
   ) {}
 
   breadCrumbItems!: Array<{}>;
   ngOnInit(): void {
-      console.log('🔥 ngOnInit DIPANGGIL');
     this.breadCrumbItems = [
       { label: 'Monitoring dan Tindak Lanjut' },
       { label: 'Report' }
     ];
+    this.userInfo = this.tokenStorageService.getUser();
+    this.loadData();
+    this.getStandarAssesment();
+    this.getPeriode();
+    this.getUnitKerja()
   }
 
   standarAssesment: any[] = [];
@@ -46,6 +55,50 @@ export class ReportComponent implements OnInit {
     kodeUnitKerja: null as null | string,
     standarAssesmentId: null as null | number,
     periode: null as null | number,
+    page: 1,
+    limit: 10,
+  }
+
+  totalData = 0;
+  totalPage = 0;
+  from = 0;
+  to = 0;
+  currentPage = 0;
+  userInfo: any;
+
+  isLoading = false;
+  reportList: any[] = [];
+  selectedFile: File | null = null;
+
+  selectedProgramAuditId = null;
+  selectedJadwalUnitKerjaAuditId = null;
+  selectedAttachment = null;
+  attachmentUrl = null;
+
+  loadData() {
+    if (this.userInfo.role == 'Asesi')
+    {
+      if (this.userInfo.kodeOffice == '00')
+      {
+        this.filters.kodeUnitKerja = this.userInfo.kodeUnitKerja;
+      } else if (this.userInfo.kodeOffice != '00') {
+        this.filters.kodeUnitKerja = this.userInfo.kodeOffice;
+      }
+    }
+    this.isLoading = true;
+    this.reportList= [];
+    this.reportService.getReportList(this.filters).subscribe({
+      next: (res) => {
+        this.reportList = res.response.list;
+        this.totalData = res.response.totalData;
+        this.totalPage = res.response.totalPage;
+        this.from = res.response.from;
+        this.to = res.response.to;
+        this.currentPage = res.response.page;
+        this.isLoading = false;
+        console.log(this.reportList);
+      }
+    });
   }
   
   getStandarAssesment() {
@@ -70,10 +123,113 @@ export class ReportComponent implements OnInit {
     for (let i = currentYear; i >= 2000; i--) {
       this.periode.push(i);
     }
-    console.log('HOHO', this.periode);
   }
 
+  downloadAttachment(attachmentId: number, data: any) {
+    this.reportService.downloadAttachment(attachmentId).subscribe({
+      next: (res) => {
+        const blob = res.body!;
+        const contentDisposition = res.headers.get('content-disposition');
+        let extension = 'pdf';
+
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?(.+)"?/);
+          if (match?.[1]) {
+            const originalName = match[1];
+            extension = originalName.split('.').pop() || 'pdf';
+          }
+        }
+        const unitKerjaName = data.unitKerja?.[0]?.unitKerja || 'UnitKerja';
+        const safeName = `${data.standarAssesment}_${data.periode}_${unitKerjaName}`
+          .replace(/[/\\?%*:|"<>]/g, '_');
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${safeName}.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+    });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const maxSize = 2 * 1024 * 1024;
+
+    if (file.type !== 'application/pdf') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Format salah',
+        text: 'Hanya file PDF yang diperbolehkan'
+      });
+      event.target.value = null;
+      return;
+    }
+
+    if (file.size > maxSize) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'File terlalu besar',
+        text: 'Ukuran maksimal 2 MB'
+      });
+      event.target.value = null;
+      return;
+    }
+
+    this.selectedFile = file;
+  }
+
+  uploadReport() {
+    if (!this.selectedFile) {
+      Swal.fire('Oops', 'Pilih file dulu', 'warning');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('programAuditId', String(this.selectedProgramAuditId));
+    formData.append('jadwalUnitKerjaAuditId', String(this.selectedJadwalUnitKerjaAuditId));
+    formData.append('fileReport', this.selectedFile);
+
+    this.isLoading = true;
+
+    this.reportService.uploadReport(formData).subscribe({
+      next: res => {
+        this.isLoading = false;
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: 'File berhasil diupload',
+          timer: 500,
+          showConfirmButton: false
+        });
+
+        this.modalService.dismissAll();
+        this.loadData();
+      },
+      error: err => {
+        this.isLoading = false;
+        Swal.fire('Gagal', 'Upload gagal', 'error');
+      }
+    });
+  }
+
+
+  openModal(content: any, data: any) {
+    const firstUnit = data.unitKerja?.[0];
+    this.selectedProgramAuditId = data.programAuditId;
+    this.selectedJadwalUnitKerjaAuditId = firstUnit.jadwalUnitKerjaAuditId;
+    this.selectedAttachment = data.attachment ?? null;
+    this.attachmentUrl = data.attachment?.url ?? null;
+    this.selectedFile = data.attachment?.storedFileName ?? null;
+    this.modalService.open(content, { size: 'lg', centered: true });
+  }
+
+
   onFiltersChange() {
-    console.log(this.filters);
+    this.loadData();
   }
 }
