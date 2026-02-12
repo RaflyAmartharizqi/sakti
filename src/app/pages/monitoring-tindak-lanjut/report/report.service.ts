@@ -56,4 +56,19 @@ export class ReportService {
         );
     }
 
+    downloadDraft(programAuditId: number, jadwalUnitKerjaAuditId: number) {
+        return this.http.get(
+            `${this.API_URL}Report/draftreport/download`,
+            {
+            params: {
+                programAuditId: programAuditId,
+                jadwalUnitKerjaAuditId: jadwalUnitKerjaAuditId
+            },
+            responseType: 'blob',
+            observe: 'response'
+            }
+        );
+    }
+
+
 }

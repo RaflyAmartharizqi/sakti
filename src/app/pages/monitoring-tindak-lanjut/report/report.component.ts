@@ -183,6 +183,51 @@ export class ReportComponent implements OnInit {
     this.selectedFile = file;
   }
 
+  downloadDraft(data: any) {
+    this.reportService
+      .downloadDraft(data.programAuditId, data.unitKerja?.[0]?.jadwalUnitKerjaAuditId)
+      .subscribe({
+        next: (res) => {
+          // 👉 pastikan blob Word
+          const blob = new Blob([res.body!], {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          });
+
+          const contentDisposition = res.headers.get('content-disposition');
+
+          let extension = 'docx'; // default Word
+
+          if (contentDisposition) {
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (match?.[1]) {
+              extension = match[1].split('.').pop() || 'docx';
+            }
+          }
+
+          const unitKerjaName =
+            data.unitKerja?.[0]?.unitKerja || 'UnitKerja';
+
+          const safeName = `Draft_${data.standarAssesment}_${data.periode}_${unitKerjaName}`
+            .replace(/[/\\?%*:|"<>]/g, '_');
+
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+
+          a.href = url;
+          a.download = `${safeName}.${extension}`;
+
+          document.body.appendChild(a);
+          a.click();
+
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Download gagal:', err);
+        }
+      });
+  }
+
   uploadReport() {
     if (!this.selectedFile) {
       Swal.fire('Oops', 'Pilih file dulu', 'warning');

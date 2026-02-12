@@ -111,7 +111,7 @@
                             <button 
                                 *ngIf="userInfo.role != 'Asesi'"
                                 class="btn btn-sm btn-success m-1"
-                                [routerLink]="['detail-smki', data.jadwalUnitKerjaAuditId]">
+                                (click)="downloadDraft(data)">
                                     <i class="ri-verified-badge-fill d-md-none"></i>
                                     <span class="d-none d-md-inline">
                                     Download Draft
