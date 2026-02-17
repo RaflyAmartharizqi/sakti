@@ -157,7 +157,7 @@ export class AssesIsoComponent implements OnInit {
             attachment: p.jawaban?.attachment ?? null,
             previewUrl: p.jawaban?.attachment
               ? GlobalComponent.API_URL +
-                `Attachment/preview/${p.jawaban.attachment.storedFileName}`
+                `Attachment/preview/${p.jawaban.attachment.id}`
               : null
           };
         });
@@ -174,7 +174,7 @@ export class AssesIsoComponent implements OnInit {
     if (!att.contentType?.startsWith('image/')) return;
 
     this.assesIsoService
-      .getAttachmentPreviewUrl(att.storedFileName)
+      .getAttachmentPreviewUrl(att.id)
       .subscribe(res => {
         const key = this.buildKey(p.refPertanyaanAuditId, this.selectedBidang.bidangId);
         this.tanggapanMap[key].previewUrl = res.response.previewUrl;          

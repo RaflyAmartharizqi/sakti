@@ -32,6 +32,8 @@ export class UmpanBalikComponent implements OnInit {
       { label: 'Monitoring dan Tindak Lanjut' },
       { label: 'Umpan Balik Assesment' }
     ];
+    this.getStandarAssesment();
+    this.getPeriode();
   }
 
   standarAssesment: any[] = [];
@@ -58,6 +60,39 @@ export class UmpanBalikComponent implements OnInit {
     }
     console.log('HOHO', this.periode);
   }
+
+  downloadExcel() {
+
+    if (!this.filters.standarAssesmentId || !this.filters.periode) {
+      alert('Standar Assesment dan Periode wajib dipilih!');
+      return;
+    }
+
+    this.umpanBalikService
+      .exportExcel(this.filters)
+      .subscribe({
+        next: (response: Blob) => {
+
+          const blob = new Blob([response], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          });
+
+          const url = window.URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Assessment_${this.filters.standarAssesmentId}_${this.filters.periode}.xlsx`;
+          a.click();
+
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Gagal download file');
+        }
+      });
+  }
+
 
   onFiltersChange() {
     console.log(this.filters);

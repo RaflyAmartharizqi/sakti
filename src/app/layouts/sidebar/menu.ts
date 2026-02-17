@@ -10,15 +10,8 @@ export const MENU: MenuItem[] = [
     id: 2,
     label: 'MENUITEMS.DASHBOARD.TEXT',
     icon: 'ri-dashboard-2-line',
-    isCollapsed: true,
-    subItems: [
-      {
-        id: 3,
-        label: 'MENUITEMS.DASHBOARD.LIST.ANALYTICS',
-        link: '/',
-        parentId: 2
-      }
-    ]
+    link: '/',
+    role: ['Admin', 'Asesi', 'Asesor'],
   },
   {
     id: 4,
@@ -41,28 +34,30 @@ export const MENU: MenuItem[] = [
     label: 'MENUITEMS.PELAKSANAANPROGRAM.TEXT',
     icon: 'ri-draft-line',
     isCollapsed: true,
-    // role: ['Admin', 'Asesi', 'Asesor'],
+    role: ['Admin', 'Asesi', 'Asesor'],
     subItems: [
       {
         id: 7,
         label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PENGISIANASSESMENTSMKI',
         link: '/pelaksanaan-program/pengisian-smki',
         parentId: 6,
-        // role: ['Asesi'],
+        role: ['Asesi'],
       },
       {
         id: 8,
         label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PELAKSANAANAUDITISO',
         link: '/pelaksanaan-program/pelaksanaan-iso',
         parentId: 6,
-        // role: ['Asesor'],
+        role: ['Asesor'],
+        jenisAsesor: ['ISO']
       },
       {
         id: 9,
         label: 'MENUITEMS.PELAKSANAANPROGRAM.LIST.PENILAIANVERIFIKASI',
         link: '/pelaksanaan-program/penilaian-verifikasi',
         parentId: 6,
-        // role: ['Admin', 'Asesor'],
+        role: ['Admin', 'Asesor'],
+        jenisAsesor: ['SMKI']
       },
     ]
   },
@@ -71,28 +66,28 @@ export const MENU: MenuItem[] = [
     label: 'MENUITEMS.MONITORINGTINDAKLANJUT.TEXT',
     icon: 'ri-draft-line',
     isCollapsed: true,
-    // role: ['Admin', 'Asesi', 'Asesor'],
+    role: ['Admin', 'Asesi', 'Asesor'],
     subItems: [
       {
         id: 11,
         label: 'MENUITEMS.MONITORINGTINDAKLANJUT.LIST.AUDITLOG',
         link: '/monitoring-tindak-lanjut/audit-log',
         parentId: 10,
-        // role: ['Asesi'],
+        role: ['Admin', 'Asesi', 'Asesor'],
       },
       {
         id: 12,
         label: 'MENUITEMS.MONITORINGTINDAKLANJUT.LIST.REPORT',
         link: '/monitoring-tindak-lanjut/report',
         parentId: 10,
-        // role: ['Asesor'],
+        role: ['Admin', 'Asesi', 'Asesor'],
       },
       {
         id: 13,
         label: 'MENUITEMS.MONITORINGTINDAKLANJUT.LIST.UMPANBALIK',
         link: '/monitoring-tindak-lanjut/umpan-balik-assesment',
         parentId: 10,
-        // role: ['Admin', 'Asesor'],
+        role: ['Admin'],
       },
     ]
   },

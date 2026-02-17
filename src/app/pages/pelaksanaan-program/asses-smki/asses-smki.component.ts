@@ -113,7 +113,7 @@ export class AssesSmkiComponent implements OnInit {
           jawaban: p.jawaban?.jawaban ?? null,
           attachment: p.jawaban?.attachment ?? null,
           previewUrl: p.jawaban?.attachment
-            ? GlobalComponent.API_URL + `Attachment/preview/${p.jawaban.attachment.storedFileName}`
+            ? GlobalComponent.API_URL + `Attachment/preview/${p.jawaban.attachment.id}`
             : null
         };
 
@@ -128,7 +128,7 @@ export class AssesSmkiComponent implements OnInit {
     if (!att.contentType?.startsWith('image/')) return;
 
     this.assesSmkiService
-      .getAttachmentPreviewUrl(att.storedFileName)
+      .getAttachmentPreviewUrl(att.id)
       .subscribe(res => {
         this.jawabanMap[p.refPertanyaanAuditId].previewUrl =
           res.response.previewUrl;

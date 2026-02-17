@@ -31,6 +31,7 @@ export class AktivasiUserComponent implements OnInit {
   listUserBpjs: any[] = [];
   selectedUserBpjs: any = null;
   isLoading = false;
+  loadingId: number | null = null;
   searchInput$ = new Subject<string>();
   
   filters = {
@@ -166,6 +167,24 @@ export class AktivasiUserComponent implements OnInit {
         error: (err) => {
           Swal.fire("Error", err.error?.metadata?.message || "Gagal update user", "error");
         }
+    });
+  }
+  
+  sendActivation(id: number) {
+
+    if (!confirm("Kirim email aktivasi?")) return;
+
+    this.loadingId = id;
+
+    this.aktivasiUserService.sendActivation(id).subscribe({
+      next: () => {
+        alert("Email aktivasi berhasil dikirim");
+        this.loadingId = null;
+      },
+      error: (err) => {
+        alert(err.error?.message || "Terjadi kesalahan");
+        this.loadingId = null;
+      }
     });
   }
 

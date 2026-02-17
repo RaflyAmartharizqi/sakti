@@ -29,6 +29,7 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthenticationEffects } from './store/Authentication/authentication.effects';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -65,10 +66,11 @@ export function createTranslateLoader(http: HttpClient): any {
             AuthenticationEffects,
         ]),
         PagesModule,
-        NgPipesModule], providers: [
+        NgPipesModule,], providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         // { provide: HTTP_INTERCEPTORS, useClass: FakeBackendInterceptor, multi: true },
         // provideHttpClient(withInterceptorsFromDi()),
+        provideCharts(withDefaultRegisterables()),
     ] })
 export class AppModule { }

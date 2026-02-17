@@ -1,3 +1,100 @@
 <!-- Start Breadcrumbs -->
 <app-breadcrumbs title="DASHBOARD" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
 <!-- End Breadcrumbs -->
+
+<div class="card p-3 rounded-3">
+    <div class="card-body">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <h4 class="mb-0">Dashboard</h4>
+        </div>
+        <!-- Filter and Search Section -->
+        <div class="row mb-3">
+            <div class="col-12 col-md-6 mb-3 mb-md-0">
+                <ng-select
+                    [items]="standarAssesment"
+                    bindLabel="nama"
+                    bindValue="id"
+                    placeholder="Semua Kategori Program"
+                    [(ngModel)]="filters.standarAssesmentId"
+                    (change)="onFiltersChange()">
+                </ng-select>
+            </div>
+            <div class="col-12 col-md-6">
+               <ng-select
+                [items]="periode"
+                bindLabel="nama"
+                bindValue="id"
+                placeholder="Semua Periode"
+                [(ngModel)]="filters.periode"
+                (change)="onFiltersChange()">
+                </ng-select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <ng-select
+                    [items]="unitKerja"
+                    bindLabel="nama"
+                    bindValue="kode"
+                    placeholder="Semua Unit Kerja"
+                    [(ngModel)]="filters.kodeUnitKerja"
+                    [disabled]="isUnitKerjaDisabled"
+                    (change)="onFiltersChange()">
+                </ng-select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-md-3 col-sm-6">
+            <div class="card p-4">
+                <h2>{{ totalAudit }}</h2>
+                <p>Total Audit</p>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="card p-4">
+                <h2>{{ totalConformity }}</h2>
+                <p>Conformity (C)</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card p-4">
+                <h2>{{ totalNonConformity }}</h2>
+                <p>Non Conformity (NC)</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card p-4">
+                <h2>{{ totalOfi }}</h2>
+                <p>Opportunity For Improvement (OFI)</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+       <div class="col-md-6">
+            <div class="card p-4">
+                <h5 class="mb-3">Distribusi Hasil Audit</h5>
+
+                <ng-container *ngIf="!isEmptyChart; else emptyState">
+                <canvas
+                    baseChart
+                    [data]="doughnutChartData"
+                    [type]="doughnutChartType"
+                    [options]="doughnutChartOptions">
+                </canvas>
+                </ng-container>
+
+                <ng-template #emptyState>
+                <div class="text-center text-muted py-5">
+                    Tidak ada data audit untuk kriteria ini
+                </div>
+                </ng-template>
+            </div>
+            </div>
+  </div>
+</div>

@@ -31,7 +31,6 @@ import { PengaturanModule } from './pengaturan/pengaturan.module';
 
 @NgModule({
   declarations: [
-    DashboardComponent,
   ],
   imports: [
     CommonModule,

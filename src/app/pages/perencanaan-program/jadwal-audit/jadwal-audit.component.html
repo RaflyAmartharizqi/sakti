@@ -199,7 +199,8 @@
                 <input
                     class="form-control"
                     mwlFlatpickr
-                    [minDate]="isoForm.tanggalMulai || 'today'"
+                    [minDate]="today"
+                    [maxDate]="maxDateThisYear"
                     mode="range"
                     [(ngModel)]="isoForm.rangeTanggal"
                     name="rangeTanggal"
@@ -328,10 +329,11 @@
              <!-- Waktu -->
             <div class="mb-3">
                 <label class="form-label">Waktu</label>
-                <input
+               <input
                     class="form-control"
                     mwlFlatpickr
-                    [minDate]="smkiForm.tanggalMulai || 'today'"
+                    [minDate]="today"
+                    [maxDate]="maxDateThisYear"
                     mode="range"
                     [(ngModel)]="smkiForm.rangeTanggal"
                     name="rangeTanggal"

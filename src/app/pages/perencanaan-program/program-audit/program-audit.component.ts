@@ -47,7 +47,6 @@ export class ProgramAuditComponent implements OnInit {
     limit: 10,
     search: '',
   }
-
   isLoading= false;
   standarAssesment: any[] = [];
   programAuditId= 0;

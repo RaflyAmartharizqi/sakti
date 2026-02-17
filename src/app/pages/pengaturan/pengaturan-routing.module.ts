@@ -13,7 +13,7 @@ const routes: Routes = [
       { path: 'aktivasi-user', component: AktivasiUserComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } },
       { path: 'referensi-klausul-annex', component: ReferensiKlausulAnnexComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } },
       { path: 'referensi-pertanyaan-smki', component: ReferensiPertanyaanSmkiComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } },
-      { path: 'referensi-pertanyaan-audit-iso', component: ReferensiPertanyaanAuditIsoComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } }
+      { path: 'referensi-pertanyaan-audit-iso', component: ReferensiPertanyaanAuditIsoComponent, canActivate: [RoleGuard], data: { role: ['Admin'] } },
     ]
   }
 ];

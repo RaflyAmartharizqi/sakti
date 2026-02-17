@@ -72,5 +72,12 @@ export class AktivasiUserService {
         );
     }
 
+    sendActivation(id: number): Observable<any> {
+        return this.http.post(
+        `${this.API_URL}User/send-activation/${id}`,
+        {}
+        );
+    }
+
 }
 

@@ -5,7 +5,8 @@ export interface MenuItem {
   isCollapsed?: any;
   link?: string;
   role?: string[];
-  subItems?: any;
+  jenisAsesor?: string[];
+  subItems?: MenuItem[];
   isTitle?: boolean;
   badge?: any;
   parentId?: number;

@@ -46,9 +46,9 @@ export class AssesSmkiService {
         );
     }
 
-    getAttachmentPreviewUrl(storedFileName: string):Observable<any> {
+    getAttachmentPreviewUrl(id: string):Observable<any> {
         return this.http.get(
-            `${this.API_URL}Attachment/preview/${storedFileName}`
+            `${this.API_URL}Attachment/preview/${id}`
         );
     }
 }

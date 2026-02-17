@@ -105,6 +105,11 @@ export class AuthenticationService {
         return this.currentUser()?.role ?? '';
     }
 
+    getJenisAsesor(): string[] {
+        const user = this.currentUser(); // atau cara kamu ambil user
+        return user?.jenisAsesor || [];
+    }
+
     /**
      * Logout the user
      */

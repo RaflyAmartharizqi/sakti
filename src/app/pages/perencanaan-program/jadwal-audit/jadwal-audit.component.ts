@@ -40,6 +40,8 @@ export class JadwalAuditComponent implements OnInit {
     ];
     this.route.paramMap.subscribe(params => {
       this.filters.programAuditId = Number(params.get('programAuditId'));
+      const now = new Date();
+      this.maxDateThisYear = new Date(now.getFullYear(), 11, 31); // ✅ Date object
       this.loadData();
     });
   }
@@ -70,6 +72,8 @@ export class JadwalAuditComponent implements OnInit {
     rangeTanggal: '' as string
   };
 
+  maxDateThisYear!: Date;
+  today = new Date();
 
   smkiForm = {
     jadwalUnitKerjaAuditId: null as number | null,

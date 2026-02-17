@@ -10,7 +10,7 @@
         </div>
         <!-- Filter and Search Section -->
         <div class="row mb-3">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 mb-3">
                 <ng-select
                     [items]="standarAssesment"
                     bindLabel="nama"
@@ -20,7 +20,7 @@
                     (change)="onFiltersChange()">
                 </ng-select>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 mb-3">
                <ng-select
                     [items]="periode"
                     placeholder="Semua Periode"
@@ -29,74 +29,13 @@
                 </ng-select>
             </div>
         </div>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th class="text-center" style="width: 60px;">No</th>
-                        <th class="d-lg-table-cell">Jenis Audit</th>
-                        <th class="d-lg-table-cell">Unit Kerja</th>
-                        <th class="d-md-table-cell">Periode</th>
-                        <th class="d-lg-table-cell">Ketua Tim Asesor</th>
-                        <th class="d-lg-table-cell">Tim Asesor</th>
-                        <th class="d-lg-table-cell">Hasil Verifikasi</th>
-                        <th class="d-lg-table-cell">Hasil Tindak Lanjut</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                   <!-- <tr *ngFor="let data of jadwalAudit let i = index">
-                        <td class="text-center">
-                            {{ i+1 }}
-                        </td>
-                        <td class="d-lg-table-cell">{{ data.standarAssesment }}</td>
-                        <td class="d-lg-table-cell">{{ data.unitKerja }}</td>
-                        <td class="d-md-table-cell">{{ data.periode }}</td>
-                        <td class="d-lg-table-cell">
-                            <span 
-                                class="badge badge-lg bg-primary xl m-1"
-                                style="font-size: 12px;">
-                                <i class="mdi mdi-account-circle-outline"></i> {{ data.ketuaTim }}
-                            </span>
-                        </td>
-                        <td class="d-md-table-cell">
-                            <a *ngFor="let asesor of data.timAsesor">
-                                <span 
-                                class="badge badge-lg bg-primary xl m-1"
-                                style="font-size: 12px;">
-                                    <i class="mdi mdi-account-circle-outline"></i> {{ asesor.nama }}
-                                </span>
-                            </a>
-                        </td>
-                        <td class="text-center">
-                            <button 
-                                class="btn btn-sm btn-success m-1"
-                                [routerLink]="['detail-smki', data.jadwalUnitKerjaAuditId]">
-                                    <i class="ri-verified-badge-fill d-md-none"></i>
-                                    <span class="d-none d-md-inline">
-                                    Detail
-                                    </span>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr *ngIf="jadwalAudit.length == 0 && !isLoading">
-                        <td colspan="7" class="text-center py-4">
-                            <div class="text-muted">
-                                <i class="ri-file-list-line fs-1 d-block mb-2"></i>
-                                Tidak ada data
-                            </div>
-                        </td>
-                    </tr>
-                    <tr *ngIf="isLoading">
-                        <td colspan="7" class="text-center py-4">
-                            <div class="text-muted">
-                                <i class=" ri-refresh-line fs-1 d-block mb-2"></i>
-                                Memuat Data...
-                            </div>
-                        </td>
-                    </tr> -->
-                </tbody>
-            </table>
+        <div class="row">
+            <button 
+                type="button"
+                (click)="downloadExcel()"
+                class="btn btn-info waves-effect waves-light col-12 ml-2 mr-2">
+                Download
+            </button>
         </div>
     </div>
 </div>

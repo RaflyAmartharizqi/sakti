@@ -25,8 +25,13 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const role = this.authService.getRole(); // string
-    this.menuItems = this.filterMenuByRole(MENU, role);
+
+    const role = this.authService.getRole();
+    const jenisAsesor = this.authService.getJenisAsesor();
+    
+      console.log('ROLE:', role);
+      console.log('JENIS ASESOR:', jenisAsesor);
+    this.menuItems = this.filterMenu(MENU, role, jenisAsesor);
 
     this.router.events.subscribe((event) => {
       if (document.documentElement.getAttribute('data-layout') != "twocolumn") {
@@ -36,23 +41,50 @@ export class SidebarComponent implements OnInit {
       }
     });
   }
-  private filterMenuByRole(menu: MenuItem[], role: string): MenuItem[] {
+
+  private filterMenu(
+    menu: MenuItem[],
+    role: string,
+    jenisAsesor: string[]
+  ): MenuItem[] {
+
     return menu
-      .filter(item =>
-        !item.role || item.role.includes(role)
-      )
-      .map(item => ({
-        ...item,
-        subItems: item.subItems
-          ? this.filterMenuByRole(item.subItems, role)
-          : []
-      }))
-      .filter(item =>
-        item.isTitle ||
-        item.link ||
-        (item.subItems && item.subItems.length > 0)
-      );
+      .map(item => {
+
+        // 1️⃣ Filter subItems dulu (recursive)
+        const filteredSubItems = item.subItems
+          ? this.filterMenu(item.subItems, role, jenisAsesor)
+          : [];
+
+        // 2️⃣ Cek role
+        const roleAllowed =
+          !item.role || item.role.includes(role);
+
+        // 3️⃣ Cek jenisAsesor (HANYA jika role = Asesor)
+        let jenisAllowed = true;
+
+        if (role === 'Asesor' && item.jenisAsesor) {
+          jenisAllowed = item.jenisAsesor.some(j =>
+            jenisAsesor.includes(j)
+          );
+        }
+
+        // 4️⃣ Tentukan apakah item boleh tampil
+        const shouldShow =
+          (roleAllowed && jenisAllowed) ||
+          (filteredSubItems && filteredSubItems.length > 0) ||
+          item.isTitle;
+
+        if (!shouldShow) return null;
+
+        return {
+          ...item,
+          subItems: filteredSubItems
+        };
+      })
+      .filter(Boolean) as MenuItem[];
   }
+
 
 
   /***

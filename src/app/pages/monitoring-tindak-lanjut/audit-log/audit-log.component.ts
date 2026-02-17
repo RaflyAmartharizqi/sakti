@@ -111,7 +111,6 @@ export class AuditLogComponent implements OnInit {
   }
 
   onFiltersChange() {
-    console.log(this.filters);
     this.loadData();
   }
 

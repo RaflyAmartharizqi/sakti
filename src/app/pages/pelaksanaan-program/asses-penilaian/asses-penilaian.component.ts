@@ -136,7 +136,7 @@ constructor(
           attachment: p.jawaban?.attachment ?? null,
           previewUrl: p.jawaban?.attachment
             ? GlobalComponent.API_URL +
-              `Attachment/preview/${p.jawaban.attachment.storedFileName}`
+              `Attachment/preview/${p.jawaban.attachment.id}`
             : null
       };
       });
@@ -151,7 +151,7 @@ constructor(
     if (!att.contentType?.startsWith('image/')) return;
 
     this.assesPenilaianService
-      .getAttachmentPreviewUrl(att.storedFileName)
+      .getAttachmentPreviewUrl(att.id)
       .subscribe(res => {
         this.tanggapanMap[p.refPertanyaanAuditId].previewUrl =
           res.response.previewUrl;

@@ -25,4 +25,18 @@ export class UmpanBalikService {
             `${this.API_URL}UnitKerja/getlist`,
         );
     }
+
+    exportExcel(filters: any) {
+        return this.http.get(
+            `${this.API_URL}UmpanBalik/export-excel`,
+            {
+            params: {
+                standarAssesmentId: filters.standarAssesmentId,
+                periode: filters.periode
+            },
+            responseType: 'blob' // WAJIB supaya tidak corrupt
+            }
+        );
+    }
+
 }
