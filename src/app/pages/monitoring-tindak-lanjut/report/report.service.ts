@@ -70,5 +70,18 @@ export class ReportService {
         );
     }
 
-
+    downloadExcel(params?: any) {
+        return this.http.get(
+            `${this.API_URL}Report/exportexcel`,
+            {
+                params: {
+                    KodeUnitKerja: params?.kodeUnitKerja ?? null,
+                    StandarAssesmentId: params?.standarAssesmentId ?? null,
+                    Periode: params?.periode ?? null,
+                },
+                responseType: 'blob',
+                observe: 'response'
+            }
+        );
+    }
 }

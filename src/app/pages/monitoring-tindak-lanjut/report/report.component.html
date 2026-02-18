@@ -9,8 +9,8 @@
             <h4 class="mb-0">Report</h4>
         </div>
         <!-- Filter and Search Section -->
-        <div class="row mb-3" *ngIf="userInfo.role != 'Asesi'">
-            <div class="col-12 col-md-6">
+        <div class="row" *ngIf="userInfo.role != 'Asesi'">
+            <div class="col-12 col-md-6 mb-3">
                 <ng-select
                     [items]="standarAssesment"
                     bindLabel="nama"
@@ -20,7 +20,7 @@
                     (change)="onFiltersChange()">
                 </ng-select>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 mb-3">
                <ng-select
                     [items]="periode"
                     placeholder="Semua Periode"
@@ -40,6 +40,11 @@
                     (change)="onFiltersChange()">
                 </ng-select>
             </div>
+        </div>
+        <div class="px-0 pb-3 d-flex justify-content-end">
+            <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" (click)="downloadExcel()">
+                Export Excel
+            </button>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-hover">

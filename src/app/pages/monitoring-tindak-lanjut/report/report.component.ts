@@ -75,6 +75,29 @@ export class ReportComponent implements OnInit {
   selectedAttachment = null;
   attachmentUrl = null;
 
+  downloadExcel() {
+    const params = {
+      kodeUnitKerja: this.filters.kodeUnitKerja,
+      standarAssesmentId: this.filters.standarAssesmentId,
+      periode: this.filters.periode
+    };
+    this.reportService.downloadExcel(params).subscribe({
+      next: (res) => {
+        const blob = new Blob([res.body!], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const contentDisposition = res.headers.get('content-disposition');
+        let filename = 'report.xlsx';
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+    });
+  }
+
   loadData() {
     if (this.userInfo.role == 'Asesi')
     {
