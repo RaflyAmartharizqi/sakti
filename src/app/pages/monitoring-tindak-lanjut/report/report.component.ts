@@ -76,6 +76,7 @@ export class ReportComponent implements OnInit {
   attachmentUrl = null;
 
   downloadExcel() {
+    this.isLoading = true;
     const params = {
       kodeUnitKerja: this.filters.kodeUnitKerja,
       standarAssesmentId: this.filters.standarAssesmentId,
@@ -94,6 +95,11 @@ export class ReportComponent implements OnInit {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
       }
     });
   }
@@ -202,7 +208,6 @@ export class ReportComponent implements OnInit {
       event.target.value = null;
       return;
     }
-
     this.selectedFile = file;
   }
 
@@ -246,7 +251,7 @@ export class ReportComponent implements OnInit {
           window.URL.revokeObjectURL(url);
         },
         error: (err) => {
-          console.error('Download gagal:', err);
+          Swal.fire('Gagal', 'Download draft gagal', 'error');
         }
       });
   }

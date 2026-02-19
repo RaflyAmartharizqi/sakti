@@ -128,13 +128,14 @@
             <div class="col text-center">
                 <button class="btn btn-primary me-2"
                         (click)="previousKlausul()"
-                        [disabled]="currentKlausulIndex === 0">
+                         [disabled]="currentKlausulIndex === 0">
                     Previous
                 </button>
 
                 <button class="btn btn-primary"
                         (click)="nextKlausul()"
-                        [disabled]="currentKlausulIndex + 1 === refKlausulAnnexList.length - 1">
+                        [disabled]="
+                            currentKlausulIndex === refKlausulAnnex.length - 1">
                     Next
                 </button>
             </div>

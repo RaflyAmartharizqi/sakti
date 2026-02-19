@@ -33,7 +33,9 @@
             <button 
                 type="button"
                 (click)="downloadExcel()"
+                [disabled]="isLoading || !filters.standarAssesmentId || !filters.periode"
                 class="btn btn-info waves-effect waves-light col-12 ml-2 mr-2">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                 Download
             </button>
         </div>

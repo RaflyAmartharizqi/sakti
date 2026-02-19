@@ -42,7 +42,8 @@
             </div>
         </div>
         <div class="px-0 pb-3 d-flex justify-content-end">
-            <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" (click)="downloadExcel()">
+            <button type="button" class="btn btn-success bg-gradient waves-effect waves-light" (click)="downloadExcel()" [disabled]="isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                 Export Excel
             </button>
         </div>
@@ -117,7 +118,7 @@
                                 *ngIf="userInfo.role != 'Asesi'"
                                 class="btn btn-sm btn-success m-1"
                                 (click)="downloadDraft(data)">
-                                    <i class="ri-verified-badge-fill d-md-none"></i>
+                                    <i class="ri-file-download-line d-md-none"></i>
                                     <span class="d-none d-md-inline">
                                     Download Draft
                                     </span>
@@ -131,7 +132,7 @@
                                 *ngIf="data.attachment != null"
                                 class="btn btn-sm btn-success m-1"
                                 (click)="downloadAttachment(data.attachment.attachmentId, data)">
-                                    <i class="ri-verified-badge-fill d-md-none"></i>
+                                    <i class="ri-file-download-line d-md-none"></i>
                                     <span class="d-none d-md-inline">
                                     Download Report
                                     </span>
@@ -170,11 +171,14 @@
             type="file"
             class="form-control"
             accept="application/pdf"
+            
             (change)="onFileSelected($event)"
             required
         />
     </div>
-
+    <small class="text-muted">
+        *Format: PDF | *Maks. 2 MB
+    </small>
 
     <div class="modal-footer">
         <div class="mt-2" *ngIf="selectedAttachment != null">
@@ -188,11 +192,9 @@
         <button
         class="btn btn-primary"
         [disabled]="formUploadReport.invalid"
-
         >
         <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
         {{ isLoading ? 'Menyimpan...' : 'Submit' }}
-
         </button>
     </div>
   </div>

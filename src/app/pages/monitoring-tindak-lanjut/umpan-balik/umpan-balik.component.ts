@@ -38,6 +38,7 @@ export class UmpanBalikComponent implements OnInit {
 
   standarAssesment: any[] = [];
   periode: number[] = [];
+  isLoading = false;
 
   filters = {
     standarAssesmentId: null as null | number,
@@ -68,6 +69,7 @@ export class UmpanBalikComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
     this.umpanBalikService
       .exportExcel(this.filters)
       .subscribe({
@@ -85,10 +87,12 @@ export class UmpanBalikComponent implements OnInit {
           a.click();
 
           window.URL.revokeObjectURL(url);
+          this.isLoading = false;
         },
         error: (err) => {
           console.error(err);
           alert('Gagal download file');
+          this.isLoading = false;
         }
       });
   }
