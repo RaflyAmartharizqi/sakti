@@ -1,4 +1,15 @@
 <div class="auth-page-wrapper pt-5">
+    <div class="toast-container">
+        <div class="alert alert-danger shadow"
+            *ngIf="errorMessage">
+            {{ errorMessage }}
+        </div>
+
+        <div class="alert alert-success shadow"
+            *ngIf="successMessage">
+            {{ successMessage }}
+        </div>
+    </div>
     <div class="auth-page-content">
         <div class="container">
 
@@ -21,38 +32,50 @@
 
                             <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
 
-                                <div class="mb-3">
+                                <div class="mb-3 position-relative">
                                     <label class="form-label">Password Baru</label>
-                                    <input type="password"
-                                           class="form-control"
-                                           formControlName="password">
+
+                                    <input
+                                        [type]="showPassword ? 'text' : 'password'"
+                                        class="form-control pe-5"
+                                        formControlName="password">
+
+                                    <i
+                                        class="ri-eye-line position-absolute"
+                                        style="right: 10px; top: 38px; cursor: pointer;"
+                                        (click)="showPassword = !showPassword">
+                                    </i>
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3 position-relative">
                                     <label class="form-label">Konfirmasi Password</label>
-                                    <input type="password"
-                                           class="form-control"
-                                           formControlName="confirmPassword">
-                                </div>
 
-                                <div class="alert alert-danger" *ngIf="errorMessage">
-                                    {{ errorMessage }}
-                                </div>
+                                    <input
+                                        [type]="showConfirmPassword ? 'text' : 'password'"
+                                        class="form-control pe-5"
+                                        formControlName="confirmPassword">
 
-                                <div class="alert alert-success" *ngIf="successMessage">
-                                    {{ successMessage }}
+                                    <i
+                                        class="ri-eye-line position-absolute"
+                                        style="right: 10px; top: 38px; cursor: pointer;"
+                                        (click)="showConfirmPassword = !showConfirmPassword">
+                                    </i>
                                 </div>
-
+                                <div class="alert alert-warning">
+                                    <ul class="list-group p-2">
+                                        <li>Password harus memiliki minimal 8 karakter</li>
+                                        <li>Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, dan satu angka</li>
+                                        <li>Password harus mengandung karakter khusus seperti &#64;, &#35;, &#36;, dll</li>
+                                    </ul>
+                                </div>
                                 <div class="d-grid">
-                                    <button class="btn btn-primary"
+                                    <button class="btn btn-success"
                                             type="submit"
                                             [disabled]="form.invalid || loading">
                                         {{ loading ? 'Memproses...' : 'Aktivasi' }}
                                     </button>
                                 </div>
-
                             </form>
-
                         </div>
                     </div>
                 </div>

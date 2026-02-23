@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit {
     datasets: [
       {
         data: [this.totalConformity, this.totalNonConformity, this.totalOfi], // default supaya chart tidak kosong
-        backgroundColor: ['#6c7bd9', '#63c58b', '#3bb2a5'],
+        backgroundColor: ['#63c58b', '#f05c5c', '#44a1e0'],
         borderWidth: 0
       }
     ]
@@ -118,7 +118,7 @@ export class DashboardComponent implements OnInit {
                 this.totalNonConformity,
                 this.totalOfi
               ],
-              backgroundColor: ['#6c7bd9', '#63c58b', '#3bb2a5'],
+              backgroundColor: ['#63c58b', '#f05c5c', '#44a1e0'],
               borderWidth: 0
             }
           ]

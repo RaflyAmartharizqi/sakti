@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivateService } from './activate.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-activate',
@@ -18,6 +19,8 @@ export class ActivateComponent implements OnInit {
   loading = false;
   errorMessage = '';
   successMessage = '';
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,10 +47,11 @@ export class ActivateComponent implements OnInit {
 
     if (this.form.invalid) return;
 
-    if (this.form.value.password !== this.form.value.confirmPassword) {
-      this.errorMessage = "Password tidak sama";
-      return;
-    }
+  if (this.form.value.password !== this.form.value.confirmPassword) {
+    this.errorMessage = "Password tidak sama";
+    setTimeout(() => this.errorMessage = '', 3000);
+    return;
+  }
 
     this.loading = true;
     this.errorMessage = '';
@@ -61,14 +65,20 @@ export class ActivateComponent implements OnInit {
       next: () => {
         this.successMessage = "Akun berhasil diaktivasi";
         this.loading = false;
-
-        setTimeout(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: 'Akun berhasil diaktivasi!, Anda akan diarahkan ke halaman login',
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
           this.router.navigate(['/auth/login']);
-        }, 2000);
+        });
       },
       error: err => {
-        this.errorMessage = err.error?.message || "Terjadi kesalahan";
+        this.errorMessage = err.error?.metadata.message || "Terjadi kesalahan";
         this.loading = false;
+        setTimeout(() => this.errorMessage = '', 3000);
       }
     });
   }

@@ -205,9 +205,23 @@
                                         <i class="ri-edit-line d-md-none"></i>
                                         <span class="d-none d-md-inline">Edit</span>
                                     </button>
-                                    <button *ngIf="!user.isActivate" class="btn btn-sm btn-success m-1" (click)="sendActivation(user.id)">
-                                        <i class="ri-verified-badge-fill d-md-none"></i>
-                                        <span class="d-none d-md-inline">Kirim Aktivasi</span>
+                                    <button 
+                                        *ngIf="!user.isActivate"
+                                        class="btn btn-sm btn-success m-1"
+                                        (click)="sendActivation(user.id)"
+                                        [disabled]="loadingId === user.id && isLoading">
+                                        <span 
+                                            *ngIf="loadingId === user.id && isLoading" 
+                                            class="spinner-border spinner-border-sm me-1">
+                                        </span>
+
+                                        <i 
+                                            *ngIf="!(loadingId === user.id && isLoading)" 
+                                            class="ri-verified-badge-fill d-md-none">
+                                        </i>
+                                        <span class="d-none d-md-inline">
+                                            {{ (loadingId === user.id && isLoading) ? 'Mengirim...' : 'Kirim Aktivasi' }}
+                                        </span>
                                     </button>
                                 </td>
                             </tr>

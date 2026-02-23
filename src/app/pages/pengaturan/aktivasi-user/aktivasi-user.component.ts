@@ -171,19 +171,19 @@ export class AktivasiUserComponent implements OnInit {
   }
   
   sendActivation(id: number) {
-
-    if (!confirm("Kirim email aktivasi?")) return;
-
+    this.isLoading = true;
     this.loadingId = id;
 
     this.aktivasiUserService.sendActivation(id).subscribe({
       next: () => {
-        alert("Email aktivasi berhasil dikirim");
+        Swal.fire("Berhasil", "Email aktivasi berhasil dikirim", "success");
         this.loadingId = null;
+        this.isLoading = false;
       },
       error: (err) => {
-        alert(err.error?.message || "Terjadi kesalahan");
+        Swal.fire("Error", err.error?.metadata?.message || "Terjadi kesalahan", "error");
         this.loadingId = null;
+        this.isLoading = false;
       }
     });
   }
