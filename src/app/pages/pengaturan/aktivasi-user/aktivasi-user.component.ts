@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { of, Subject, debounceTime, switchMap, distinctUntilChanged, tap, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
+import { act } from '@ngrx/effects';
 
 @Component({
   selector: 'app-aktivasi-user',
@@ -45,6 +46,7 @@ export class AktivasiUserComponent implements OnInit {
   userData = {
     id: null,
     asesorId: [] as number[],
+    isActivate: false,
     tipeUser: '',
     nama: '',
     npp: null,
@@ -347,6 +349,7 @@ ngOnDestroy(): void {
           id: data.id,
           tipeUser: data.tipeUser,
           nama: data.nama,
+          isActivate: data.isActivate,
           npp: data.npp,
           nik: data.nik,
           unitKerja: data.unitKerja,
@@ -389,6 +392,7 @@ ngOnDestroy(): void {
           id: data.id,
           tipeUser: data.tipeUser,
           nama: data.nama,
+          isActivate: data.isActivate,
           npp: data.npp,
           nik: data.nik,
           unitKerja: data.unitKerja,
@@ -435,6 +439,7 @@ ngOnDestroy(): void {
       id: null,
       asesorId: [],
       tipeUser: '',
+      isActivate: false,
       nama: '',
       npp: null,
       nik: null,

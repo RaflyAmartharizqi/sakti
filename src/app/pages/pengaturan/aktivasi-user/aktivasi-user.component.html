@@ -581,8 +581,8 @@
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="text" class="form-control" [(ngModel)]="userData.email" name="Email" placeholder="Masukkan email user">
+            <label class="form-label">Email </label>
+            <input type="text" class="form-control" [(ngModel)]="userData.email" name="Email" placeholder="Masukkan email user" [disabled]="userData.isActivate === true">
             <small class="text-danger"
                 *ngIf="userForm.submitted && !userData.email">
                 Email wajib diisi.
